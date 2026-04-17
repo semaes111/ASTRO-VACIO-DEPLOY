@@ -1,0 +1,133 @@
+{
+  "name": "AstroDorado — Horóscopo diario (v2 — schema completo)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "cronExpression",
+              "expression": "30 5 * * *"
+            }
+          ]
+        }
+      },
+      "id": "trigger-cron",
+      "name": "Cron diario 05:30 UTC",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [160, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generar los 12 items, uno por signo\nconst signs = [\n  { id: 1,  slug: 'aries',       name: 'Aries',       planet: 'Marte' },\n  { id: 2,  slug: 'tauro',       name: 'Tauro',       planet: 'Venus' },\n  { id: 3,  slug: 'geminis',     name: 'Géminis',     planet: 'Mercurio' },\n  { id: 4,  slug: 'cancer',      name: 'Cáncer',      planet: 'Luna' },\n  { id: 5,  slug: 'leo',         name: 'Leo',         planet: 'Sol' },\n  { id: 6,  slug: 'virgo',       name: 'Virgo',       planet: 'Mercurio' },\n  { id: 7,  slug: 'libra',       name: 'Libra',       planet: 'Venus' },\n  { id: 8,  slug: 'escorpio',    name: 'Escorpio',    planet: 'Plutón' },\n  { id: 9,  slug: 'sagitario',   name: 'Sagitario',   planet: 'Júpiter' },\n  { id: 10, slug: 'capricornio', name: 'Capricornio', planet: 'Saturno' },\n  { id: 11, slug: 'acuario',     name: 'Acuario',     planet: 'Urano' },\n  { id: 12, slug: 'piscis',      name: 'Piscis',      planet: 'Neptuno' }\n];\n\nconst areas = ['amor','trabajo','dinero','salud','familia','creatividad','viaje','espiritualidad'];\nconst today = new Date().toISOString().split('T')[0];\n\nreturn signs.map(s => ({\n  json: {\n    ...s,\n    date: today,\n    area: areas[Math.floor(Math.random() * areas.length)]\n  }\n}));"
+      },
+      "id": "split-signs",
+      "name": "Generar 12 inputs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [380, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "anthropicApi",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "anthropic-version", "value": "2023-06-01" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  model: 'claude-haiku-4-5-20251001',\n  max_tokens: 800,\n  messages: [{\n    role: 'user',\n    content: `Genera el horóscopo de HOY para ${$json.name} (signo ID ${$json.id}).\\nFecha: ${$json.date}\\nPlaneta regente: ${$json.planet}\\nÁrea del día: ${$json.area}\\n\\nDevuelve SOLO JSON válido sin markdown:\\n{\\n  \"energia_general\": \"2-3 frases directas, tono empático estilo Co-Star, 80-200 chars\",\\n  \"consejo\": \"1 frase de acción concreta, 40-180 chars\",\\n  \"numero_suerte\": número 1-99,\\n  \"color_dia\": \"un color\",\\n  \"compatibilidad_dia_id\": id 1-12 del signo más afín hoy (NO el mismo),\\n  \"frase_impacto\": \"frase poética máx 100 chars\",\\n  \"nivel_amor\": 0-100,\\n  \"nivel_fortuna\": 0-100,\\n  \"nivel_salud\": 0-100,\\n  \"nivel_trabajo\": 0-100,\\n  \"nivel_energia\": 0-100\\n}\\n\\nEstilo: directo, sin condescendencia, verdades cósmicas concretas. Sin clichés.`\n  }]\n}) }}"
+      },
+      "id": "claude-haiku",
+      "name": "Claude Haiku genera",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [600, 300],
+      "credentials": {
+        "anthropicApi": { "id": "8Qq81OHs8p9HF49i", "name": "Anthropic" }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const sign = $('Generar 12 inputs').item.json;\nconst response = $input.item.json;\n\ntry {\n  const raw = response.content[0].text;\n  const clean = raw.replace(/```json|```/g, '').trim();\n  const p = JSON.parse(clean);\n\n  // Validar nivelados dentro de rango (mutation-resistant)\n  const clamp = (n) => Math.max(0, Math.min(100, Number(n) || 50));\n\n  return [{\n    json: {\n      sign_id: sign.id,\n      reading_date: sign.date,\n      energia_general: String(p.energia_general || '').slice(0, 500),\n      area_destacada: sign.area,\n      consejo: String(p.consejo || '').slice(0, 240),\n      numero_suerte: Math.max(1, Math.min(99, Number(p.numero_suerte) || 7)),\n      color_dia: String(p.color_dia || 'dorado').slice(0, 40),\n      compatibilidad_dia: Number(p.compatibilidad_dia_id) || null,\n      frase_impacto: String(p.frase_impacto || '').slice(0, 120) || null,\n      nivel_amor: clamp(p.nivel_amor),\n      nivel_fortuna: clamp(p.nivel_fortuna),\n      nivel_salud: clamp(p.nivel_salud),\n      nivel_trabajo: clamp(p.nivel_trabajo),\n      nivel_energia: clamp(p.nivel_energia),\n      model_used: 'claude-haiku-4-5-20251001',\n      tokens_in: response.usage?.input_tokens || null,\n      tokens_out: response.usage?.output_tokens || null,\n      generation_cost_usd: ((response.usage?.input_tokens || 0) * 0.8 + (response.usage?.output_tokens || 0) * 4) / 1000000\n    }\n  }];\n} catch (e) {\n  return [{ json: { error: e.message, sign_id: sign.id, raw: response.content?.[0]?.text?.slice(0, 200) } }];\n}"
+      },
+      "id": "parse-response",
+      "name": "Parsear y validar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [820, 300]
+    },
+    {
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "schema": {
+          "__rl": true,
+          "value": "astrodorado",
+          "mode": "list"
+        },
+        "table": {
+          "__rl": true,
+          "value": "daily_horoscopes",
+          "mode": "list"
+        },
+        "matchingColumns": ["sign_id", "reading_date"],
+        "columnsToSend": "sign_id,reading_date,energia_general,area_destacada,consejo,numero_suerte,color_dia,compatibilidad_dia,frase_impacto,nivel_amor,nivel_fortuna,nivel_salud,nivel_trabajo,nivel_energia,model_used,tokens_in,tokens_out,generation_cost_usd"
+      },
+      "id": "supabase-upsert",
+      "name": "Upsert Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [1040, 300],
+      "credentials": {
+        "supabaseApi": { "name": "Supabase bpazmmbjjducdmxgfoum" }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://astrodorado.com/api/revalidate",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "x-revalidate-token", "value": "={{ $env.REVALIDATE_TOKEN }}" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ paths: ['/', `/${$json.slug}`] }) }}"
+      },
+      "id": "trigger-isr",
+      "name": "Trigger ISR revalidate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1260, 300]
+    }
+  ],
+  "connections": {
+    "Cron diario 05:30 UTC": {
+      "main": [[{ "node": "Generar 12 inputs", "type": "main", "index": 0 }]]
+    },
+    "Generar 12 inputs": {
+      "main": [[{ "node": "Claude Haiku genera", "type": "main", "index": 0 }]]
+    },
+    "Claude Haiku genera": {
+      "main": [[{ "node": "Parsear y validar", "type": "main", "index": 0 }]]
+    },
+    "Parsear y validar": {
+      "main": [[{ "node": "Upsert Supabase", "type": "main", "index": 0 }]]
+    },
+    "Upsert Supabase": {
+      "main": [[{ "node": "Trigger ISR revalidate", "type": "main", "index": 0 }]]
+    }
+  },
+  "pinData": {},
+  "settings": { "executionOrder": "v1" },
+  "tags": [{ "name": "astrodorado" }, { "name": "daily" }]
+}

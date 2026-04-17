@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# Testing
+coverage/
+.nyc_output/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Secrets — NUNCA commitear
+.env
+.env.local
+.env.production
+.env.development.local
+.env.test.local
+
+# Supabase
+.supabase/
+supabase/.temp/
+
+# Misc
+.DS_Store
+*.pem
+.vscode/
+.idea/
+*.tsbuildinfo
+next-env.d.ts
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Vercel (por si se usa como preview)
+.vercel
