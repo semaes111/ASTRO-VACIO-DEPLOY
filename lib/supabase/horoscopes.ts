@@ -18,16 +18,13 @@ import type {
   SiteSettingKey,
 } from '@/lib/types/astrodorado';
 
-const SCHEMA = 'astrodorado';
-
 // ---------------------------------------------------------------------
 // getZodiacSigns — catálogo completo para generateStaticParams y landing
 // ---------------------------------------------------------------------
 export async function getZodiacSigns(): Promise<ZodiacSign[]> {
   const supabase = createPublicClient();
   const { data, error } = await supabase
-    .schema(SCHEMA)
-    .from('zodiac_signs')
+    .from('astrodorado_zodiac_signs')
     .select(
       'id, slug, name_es, name_en, ruling_planet, element, modality, date_start, date_end, image_url, hex_primary, seo_description, created_at',
     )
@@ -45,8 +42,7 @@ export async function getZodiacSigns(): Promise<ZodiacSign[]> {
 export async function getZodiacBySlug(slug: ZodiacSlug): Promise<ZodiacSign | null> {
   const supabase = createPublicClient();
   const { data, error } = await supabase
-    .schema(SCHEMA)
-    .from('zodiac_signs')
+    .from('astrodorado_zodiac_signs')
     .select(
       'id, slug, name_es, name_en, ruling_planet, element, modality, date_start, date_end, image_url, hex_primary, seo_description, created_at',
     )
@@ -66,8 +62,7 @@ export async function getZodiacBySlug(slug: ZodiacSlug): Promise<ZodiacSign | nu
 export async function getCurrentHoroscopes(): Promise<CurrentHoroscope[]> {
   const supabase = createPublicClient();
   const { data, error } = await supabase
-    .schema(SCHEMA)
-    .from('current_horoscopes')
+    .from('astrodorado_current_horoscopes')
     .select(
       'sign_id, slug, name_es, name_en, ruling_planet, element, modality, hex_primary, image_url, seo_description, date_start, date_end, reading_id, reading_date, energy_general, advice, featured_area, dominant_planet, compatibility, costar_phrase, vip_reading, nivel_amor, nivel_fortuna, nivel_salud, nivel_trabajo, nivel_energia, lucky_number, lucky_color, reading_created_at',
     )
@@ -89,8 +84,7 @@ export async function getReadingBySignAndDate(
 ): Promise<DailyReading | null> {
   const supabase = createPublicClient();
   const { data, error } = await supabase
-    .schema(SCHEMA)
-    .from('daily_readings')
+    .from('astrodorado_daily_readings')
     .select(
       'id, date, sign, energy_general, featured_area, advice, dominant_planet, compatibility, costar_phrase, vip_reading, created_at, nivel_amor, nivel_fortuna, nivel_salud, nivel_trabajo, nivel_energia, lucky_number, lucky_color, model_used, tokens_in, tokens_out, generation_cost_usd',
     )
@@ -112,8 +106,7 @@ export async function getPublicSetting<K extends SiteSettingKey>(
 ): Promise<SiteSettingsMap[K] | null> {
   const supabase = createPublicClient();
   const { data, error } = await supabase
-    .schema(SCHEMA)
-    .from('site_settings')
+    .from('astrodorado_site_settings')
     .select('value')
     .eq('key', key)
     .maybeSingle();
