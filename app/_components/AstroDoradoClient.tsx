@@ -223,21 +223,47 @@ export default function AstroDoradoClient({ horoscopes, pricing, telegramBot, ta
   };
 
   const handleSubscribe = () => {
-    const input = document.getElementById('sbi') as HTMLInputElement | null;
-    if (!input) return;
-    const v = input.value.trim();
-    if (!v) {
-      input.style.borderColor = '#e74c3c';
+    // Canal Telegram: abre @Astrodorado_bot
+    if (channel === "telegram") {
+      const url = telegramBot?.url || "https://t.me/Astrodorado_bot";
+      window.open(url, "_blank", "noopener,noreferrer");
+      const signName = userSign ? SIGN_META[userSign]!.name : "tu signo";
+      setSubscribeFeedback("Abriendo @Astrodorado_bot para tu carta de " + signName + "...");
+      setTimeout(() => setShowStickyBar(false), 3000);
       return;
     }
-    const signName = userSign ? SIGN_META[userSign]!.name : 'tu signo';
-    setSubscribeFeedback(`✓ Suscrito! Recibirás tu carta de ${signName} cada mañana por ${channel}`);
+    // WhatsApp: enlace wa.me con mensaje
+    if (channel === "whatsapp") {
+      const signName = userSign ? SIGN_META[userSign]!.name : "mi signo";
+      const msg = encodeURIComponent("Hola! Quiero recibir mi horoscopo de " + signName + " cada manana");
+      window.open("https://wa.me/34640056272?text=" + msg, "_blank", "noopener,noreferrer");
+      setSubscribeFeedback("Abriendo WhatsApp...");
+      setTimeout(() => setShowStickyBar(false), 3000);
+      return;
+    }
+    // Email: validacion basica
+    const input = document.getElementById("sbi") as HTMLInputElement | null;
+    if (!input) return;
+    const v = input.value.trim();
+    if (!v || !v.includes("@")) {
+      input.style.borderColor = "#e74c3c";
+      return;
+    }
+    const signName = userSign ? SIGN_META[userSign]!.name : "tu signo";
+    setSubscribeFeedback("Te apuntamos! Recibiras tu carta de " + signName + " en " + v);
     setTimeout(() => setShowStickyBar(false), 4000);
   };
 
   // ────────────── Render ──────────────
   return (
     <>
+            {/* Nav superior: volver a landing */}
+      <nav className="app-nav">
+        <a href="https://astrodorado.vercel.app" className="back-link">&larr; AstroDorado</a>
+        <span className="nav-brand">El oraculo dorado</span>
+        <span style={{ width: 80 }} />
+      </nav>
+
       {/* Fondo estático */}
       <div className="bg" />
       <svg style={{ position: 'absolute', width: 0, height: 0 }}>
@@ -556,7 +582,7 @@ export default function AstroDoradoClient({ horoscopes, pricing, telegramBot, ta
       {/* ═══════════ FOOTER ═══════════ */}
       <footer>
         <div className="ft1">ASTRODORADO</div>
-        <div className="ft2">Powered by NextHorizont AI</div>
+        <div className="ft2">Powered by NextHorizont AI &middot; <a href="https://astrodorado.vercel.app" className="ft-link">Primera vez? Conocenos</a></div>
         {telegramBot?.url && (
           <div style={{ marginTop: 10, fontSize: 11, color: 'rgba(232,224,208,.3)' }}>
             <a href={telegramBot.url} target="_blank" rel="noreferrer" style={{ color: '#d4a853' }}>
