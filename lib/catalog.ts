@@ -177,7 +177,7 @@ export const CATALOG: CatalogProduct[] = [
     name_es: 'Oraculo 360',
     tagline: 'Las seis tradiciones convergen en ti',
     short_description: 'El volumen completo de 400+ paginas que reune los 6 informes + capitulo exclusivo de sintesis.',
-    price_eur: 129,
+    price_eur: 99,
     theme_slug: 'convergencia-360',
     primary_color: '#7a5e0f',
     accent_color: '#d4af37',
@@ -200,5 +200,5 @@ export const getCatalogProduct = (slug: string): CatalogProduct | undefined =>
 export const getCatalogProductByType = (productType: ProductType): CatalogProduct | undefined =>
   CATALOG.find((p) => p.product_type === productType);
 
-export const ORACULO_360_SAVINGS = 12; // EUR de ahorro vs 141 individuales
+export const ORACULO_360_SAVINGS = 42; // EUR de ahorro vs 141 EUR suma individuales (29.8 pct)
 export const ORACULO_360_SUM_INDIVIDUAL = 141; // EUR suma de los 6 sueltos
