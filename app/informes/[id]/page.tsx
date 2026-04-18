@@ -133,3 +133,5 @@ export async function generateMetadata({ params }: Params) {
     description: 'Tu carta natal, tu numerologia, y la cartografia de tu destino.',
   };
 }
+
+// Build: 2026-04-18T18:17:51Z
