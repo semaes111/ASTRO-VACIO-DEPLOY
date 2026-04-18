@@ -1,0 +1,2185 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Astro Dorado · Informe Personal del Alma</title>
+<meta name="description" content="Tu carta natal, tu numerología, y la cartografía de tu destino.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,500;1,600;1,700;1,800;1,900&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   ASTRO DORADO · INFORME PERSONAL DEL ALMA
+   Estilo editorial-ritual · místico · dorado sobre negro cósmico
+   ============================================================ */
+
+:root{
+  --void: #000000;
+  --cosmos: #050510;
+  --nebula: #0a0a1a;
+  --stardust: #111128;
+  --deep: #1a1a3a;
+
+  --ink: #f5ecd7;
+  --ink-dim: #bfb39a;
+  --ink-mute: #6e6653;
+
+  --gold: #d4af37;
+  --gold-bright: #f0ce5a;
+  --gold-deep: #9c7e1f;
+  --gold-wash: rgba(212,175,55,.08);
+
+  --aurora: #7B68EE;
+  --aurora-dim: #5b48ce;
+  --eclipse: #9370DB;
+  --celestial: #4169E1;
+  --supernova: #FF6B6B;
+
+  --fire: #FF4500;
+  --earth: #2E8B57;
+  --air: #87CEEB;
+  --water: #4682B4;
+
+  --serif: "Cormorant Garamond", "Playfair Display", serif;
+  --display: "Playfair Display", serif;
+  --sans: "DM Sans", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --max: 1360px;
+  --read: 720px;
+
+  --ease-out: cubic-bezier(.16,1,.3,1);
+  --ease-smooth: cubic-bezier(.65,0,.35,1);
+  --ease-drama: cubic-bezier(.85,0,.15,1);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--void);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+html{scroll-behavior:smooth}
+body{
+  min-height:100vh;
+  overflow-x:hidden;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% -10%, rgba(123,104,238,.18), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 40%, rgba(212,175,55,.07), transparent 60%),
+    radial-gradient(ellipse 70% 50% at 10% 80%, rgba(147,112,219,.12), transparent 60%),
+    linear-gradient(180deg, #000 0%, #050510 40%, #0a0a1a 100%);
+  cursor: none;
+}
+@media (pointer:coarse){
+  body{cursor:auto}
+  .cursor-dot,.cursor-ring{display:none}
+}
+
+a{color:inherit;text-decoration:none}
+button{background:none;border:0;color:inherit;font:inherit;cursor:none}
+img{max-width:100%;display:block}
+::selection{background:var(--gold);color:var(--void)}
+
+/* ---------- CURSOR ---------- */
+.cursor-dot,.cursor-ring{
+  position:fixed;top:0;left:0;pointer-events:none;z-index:9999;
+  transform:translate(-50%,-50%);
+  will-change:transform;
+}
+.cursor-dot{
+  width:6px;height:6px;border-radius:50%;
+  background:var(--gold-bright);
+  box-shadow:0 0 8px var(--gold),0 0 20px rgba(212,175,55,.4);
+  transition:transform .15s var(--ease-out), background .3s;
+}
+.cursor-ring{
+  width:36px;height:36px;border-radius:50%;
+  border:1px solid rgba(212,175,55,.5);
+  transition:transform .35s var(--ease-out), width .3s, height .3s, border-color .3s;
+}
+.cursor-ring.hover{width:70px;height:70px;border-color:var(--gold-bright);mix-blend-mode:screen}
+.cursor-dot.hover{background:var(--stellar, #fff);box-shadow:0 0 20px #fff}
+
+/* ---------- GRAIN ---------- */
+.grain{
+  position:fixed;inset:-50%;pointer-events:none;z-index:9990;opacity:.08;
+  background-image:url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyMDAnIGhlaWdodD0nMjAwJz48ZmlsdGVyIGlkPSduJz48ZmVUdXJidWxlbmNlIHR5cGU9J2ZyYWN0YWxOb2lzZScgYmFzZUZyZXF1ZW5jeT0nMC45JyBudW1PY3RhdmVzPScyJyBzdGl0Y2hUaWxlcz0nc3RpdGNoJy8+PGZlQ29sb3JNYXRyaXggdmFsdWVzPScwIDAgMCAwIDEgMCAwIDAgMCAxIDAgMCAwIDAgMSAwIDAgMCAwLjYgMCcvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPScyMDAnIGhlaWdodD0nMjAwJyBmaWx0ZXI9J3VybCglMjNuKScvPjwvc3ZnPg==");
+  animation:grain 8s steps(10) infinite;
+  mix-blend-mode:overlay;
+}
+@keyframes grain{
+  0%,100%{transform:translate(0,0)}
+  10%{transform:translate(-5%,-10%)}
+  20%{transform:translate(-15%,5%)}
+  30%{transform:translate(7%,-25%)}
+  40%{transform:translate(-5%,25%)}
+  50%{transform:translate(-15%,10%)}
+  60%{transform:translate(15%,0)}
+  70%{transform:translate(0,15%)}
+  80%{transform:translate(3%,35%)}
+  90%{transform:translate(-10%,10%)}
+}
+
+/* ---------- STARFIELD ---------- */
+.starfield{
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+}
+.star{
+  position:absolute;width:2px;height:2px;border-radius:50%;
+  background:#fff;
+  animation: twinkle var(--dur,3s) ease-in-out infinite;
+  animation-delay: var(--delay,0s);
+}
+@keyframes twinkle{
+  0%,100%{opacity:.2;transform:scale(1)}
+  50%{opacity:1;transform:scale(1.4)}
+}
+
+/* ---------- CONSTELLATION OVERLAY ---------- */
+.constellation-overlay{
+  position:fixed;inset:0;width:100%;height:100%;
+  pointer-events:none;z-index:1;opacity:.5;
+  will-change:transform;
+}
+
+/* ---------- TOP MARGINALIA ---------- */
+.top-marginalia{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  padding:18px 32px;
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-mute);
+  mix-blend-mode:difference;
+}
+.mono{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-mute)}
+
+/* ---------- SCROLL TRACK ---------- */
+.scroll-track{
+  position:fixed;top:0;left:0;width:100%;height:1px;z-index:100;
+  background:rgba(212,175,55,.08);
+}
+.scroll-fill{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,var(--gold-deep),var(--gold-bright),var(--gold));
+  box-shadow:0 0 10px var(--gold);
+  transition:width .1s linear;
+}
+
+/* ---------- GLOBAL LAYOUT ---------- */
+main#app{position:relative;z-index:5}
+section.band{
+  position:relative;
+  padding: clamp(80px, 10vw, 160px) clamp(24px, 5vw, 80px);
+  overflow:hidden;
+}
+.container{max-width:var(--max);margin:0 auto;position:relative}
+.read{max-width:var(--read);margin:0 auto}
+
+/* ---------- TYPE ---------- */
+.eyebrow{
+  font-family:var(--mono);
+  font-size:11px;letter-spacing:.32em;text-transform:uppercase;
+  color:var(--gold);
+  display:inline-flex;align-items:center;gap:12px;
+}
+.eyebrow::before,.eyebrow::after{
+  content:"";display:inline-block;width:24px;height:1px;background:var(--gold-deep);
+}
+.eyebrow.no-lines::before,.eyebrow.no-lines::after{display:none}
+
+h1.display{
+  font-family:var(--display);
+  font-weight:400;
+  font-size: clamp(54px, 9vw, 150px);
+  line-height:.9;letter-spacing:-0.02em;
+  color:var(--ink);
+}
+h1.display em{font-style:italic;color:var(--gold-bright);font-weight:500}
+
+h2.section-title{
+  font-family:var(--display);
+  font-weight:400;
+  font-size: clamp(42px, 6vw, 96px);
+  line-height:.95;letter-spacing:-0.015em;
+}
+h2.section-title em{font-style:italic;color:var(--gold-bright)}
+
+h3.chapter{
+  font-family:var(--display);font-weight:500;font-style:italic;
+  font-size: clamp(28px, 3vw, 42px);
+  line-height:1.1;color:var(--ink);
+  letter-spacing:-0.01em;
+}
+
+h4.sub{
+  font-family:var(--mono);
+  font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom: 18px;
+}
+
+p{
+  font-family: var(--serif);
+  font-size: clamp(17px, 1.25vw, 19px);
+  line-height:1.75;
+  color:var(--ink-dim);
+  font-weight:400;
+}
+p strong{color:var(--ink);font-weight:600}
+p em{color:var(--gold-bright);font-style:italic}
+
+.lead{
+  font-family:var(--serif);
+  font-style:italic;
+  font-size: clamp(22px, 2vw, 28px);
+  line-height:1.5;
+  color:var(--ink);
+  font-weight:400;
+}
+.dropcap::first-letter{
+  font-family:var(--display);font-weight:700;
+  float:left;font-size: 5.2em;line-height:.85;
+  padding:8px 16px 0 0;
+  color:var(--gold);
+  font-style:italic;
+}
+
+blockquote.ritual{
+  font-family:var(--display);font-style:italic;font-weight:400;
+  font-size: clamp(26px, 2.4vw, 38px);
+  line-height:1.3;
+  color:var(--gold-bright);
+  padding: 40px 0 40px 40px;
+  border-left:1px solid var(--gold-deep);
+  margin: 48px 0;
+  position:relative;
+}
+blockquote.ritual::before{
+  content:"✦";position:absolute;left:-9px;top:32px;
+  background:var(--void);color:var(--gold);padding:4px 0;
+  font-size:14px;
+}
+
+/* ---------- REVEAL ---------- */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity 1s var(--ease-out), transform 1s var(--ease-out)}
+.reveal.in{opacity:1;transform:translateY(0)}
+.reveal-up{opacity:0;transform:translateY(80px);transition:opacity 1.2s var(--ease-out), transform 1.2s var(--ease-out)}
+.reveal-up.in{opacity:1;transform:translateY(0)}
+
+.stagger > *{opacity:0;transform:translateY(20px);transition:opacity .8s var(--ease-out), transform .8s var(--ease-out)}
+.stagger.in > *{opacity:1;transform:translateY(0)}
+.stagger.in > *:nth-child(1){transition-delay:.05s}
+.stagger.in > *:nth-child(2){transition-delay:.15s}
+.stagger.in > *:nth-child(3){transition-delay:.25s}
+.stagger.in > *:nth-child(4){transition-delay:.35s}
+.stagger.in > *:nth-child(5){transition-delay:.45s}
+.stagger.in > *:nth-child(6){transition-delay:.55s}
+.stagger.in > *:nth-child(7){transition-delay:.65s}
+.stagger.in > *:nth-child(8){transition-delay:.75s}
+
+/* character reveal for display heading */
+.char{display:inline-block;opacity:0;transform:translateY(60%) rotate(6deg);transition:opacity 1s var(--ease-out), transform 1s var(--ease-out)}
+.char.in{opacity:1;transform:translateY(0) rotate(0)}
+
+/* ---------- HERO ---------- */
+.hero{
+  min-height: 100vh;
+  display:grid;
+  grid-template-columns: 1fr;
+  align-items:center;
+  padding-top: 80px;
+  position:relative;
+}
+.hero-inner{
+  display:grid;
+  grid-template-columns: 1fr minmax(320px, 480px);
+  gap: clamp(40px, 6vw, 120px);
+  align-items:center;
+  position:relative;
+  z-index:5;
+}
+@media (max-width: 980px){.hero-inner{grid-template-columns:1fr;gap:60px}}
+
+.hero-meta{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:24px;margin-top:56px;margin-bottom:56px;
+  border-top:1px solid rgba(212,175,55,.14);
+  border-bottom:1px solid rgba(212,175,55,.14);
+  padding: 20px 0;
+}
+.hero-meta-cell{display:flex;flex-direction:column;gap:6px}
+.hero-meta-cell .k{font-family:var(--mono);font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-mute)}
+.hero-meta-cell .v{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--ink)}
+
+.hero-description{
+  max-width: 520px;
+  margin-top: 32px;
+}
+
+/* Natal chart SVG */
+.natal-wrap{
+  position:relative;
+  width: 100%;
+  aspect-ratio: 1/1;
+}
+.natal-wrap svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.rotate-slow{animation: rotSlow 140s linear infinite}
+.rotate-med{animation: rotSlow 80s linear infinite reverse}
+@keyframes rotSlow{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+
+.planet-glow{filter: drop-shadow(0 0 8px currentColor)}
+
+/* ---------- TOC / RESUMEN ---------- */
+.toc-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:0;margin-top:80px;
+  border-top:1px solid rgba(212,175,55,.15);
+}
+.toc-item{
+  padding: 32px 28px;
+  border-right:1px solid rgba(212,175,55,.12);
+  border-bottom:1px solid rgba(212,175,55,.12);
+  transition: background .5s, border-color .5s;
+  position:relative;
+}
+.toc-item:hover{background:var(--gold-wash)}
+.toc-item:hover .toc-arrow{transform:translate(6px,-6px);color:var(--gold-bright)}
+.toc-num{font-family:var(--mono);font-size:11px;color:var(--gold);letter-spacing:.2em}
+.toc-title{font-family:var(--display);font-style:italic;font-size:28px;margin-top:18px;line-height:1.1;color:var(--ink)}
+.toc-desc{font-family:var(--serif);font-size:15px;color:var(--ink-mute);margin-top:12px;line-height:1.5}
+.toc-arrow{position:absolute;top:28px;right:24px;color:var(--gold-deep);font-family:var(--mono);font-size:20px;transition:transform .4s var(--ease-out), color .4s}
+
+/* ---------- KEY/VALUE STRIPS ---------- */
+.kv-strip{
+  display:grid;grid-template-columns: repeat(auto-fit, minmax(180px,1fr));
+  gap:0;
+  border-top:1px solid rgba(212,175,55,.18);
+  border-bottom:1px solid rgba(212,175,55,.18);
+  margin: 48px 0;
+}
+.kv-cell{
+  padding: 24px 20px;
+  border-right:1px solid rgba(212,175,55,.10);
+}
+.kv-cell:last-child{border-right:0}
+.kv-cell .k{font-family:var(--mono);font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--ink-mute)}
+.kv-cell .v{font-family:var(--display);font-style:italic;font-size:clamp(24px,2.2vw,32px);color:var(--gold-bright);margin-top:8px;font-weight:500}
+
+/* ---------- TWO-COLUMN READ ---------- */
+.two-col{
+  display:grid;grid-template-columns: 1fr 1fr;gap:clamp(32px,4vw,80px);
+  align-items:start;
+}
+@media (max-width:860px){.two-col{grid-template-columns:1fr}}
+
+.read-col p + p{margin-top: 1.2em}
+.read-col h4.sub{margin-top: 40px}
+
+/* ---------- NUMEROLOGY ---------- */
+.numerology-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:1px;background:rgba(212,175,55,.14);
+  border:1px solid rgba(212,175,55,.14);
+  margin-top:64px;
+}
+.num-cell{
+  background: linear-gradient(180deg, rgba(10,10,26,.9), rgba(5,5,16,.95));
+  padding: 40px 28px;
+  display:flex;flex-direction:column;gap:10px;
+  position:relative;overflow:hidden;
+  transition: background .6s;
+}
+.num-cell::before{
+  content:"";position:absolute;top:-40%;left:-20%;width:80%;height:80%;
+  background:radial-gradient(circle, rgba(212,175,55,.12), transparent 60%);
+  transition: transform .8s var(--ease-out);
+}
+.num-cell:hover::before{transform: translate(20%,20%)}
+.num-big{
+  font-family:var(--display);font-weight:300;font-style:italic;
+  font-size: clamp(72px,7vw,110px);line-height:.9;color:var(--gold-bright);
+  letter-spacing:-0.04em;
+}
+.num-label{font-family:var(--mono);font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-mute)}
+.num-desc{font-family:var(--serif);font-size:15px;color:var(--ink-dim);line-height:1.55;margin-top:12px}
+
+/* ---------- SCORE ROW (amor/dinero/suerte) ---------- */
+.score-row{
+  display:grid;grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap:32px;margin: 56px 0;
+}
+.score{
+  position:relative;
+  padding: 28px 20px;
+  border: 1px solid rgba(212,175,55,.2);
+  background: linear-gradient(180deg, rgba(17,17,40,.6), rgba(5,5,16,.3));
+}
+.score .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-mute)}
+.score .val{font-family:var(--display);font-style:italic;font-size:42px;color:var(--gold-bright);margin:8px 0}
+.score .bar{height:2px;background:rgba(212,175,55,.14);position:relative;margin-top:12px;overflow:hidden}
+.score .bar::after{content:"";position:absolute;left:0;top:0;height:100%;width:var(--w,70%);background:linear-gradient(90deg,var(--gold-deep),var(--gold-bright));transition: width 1.5s var(--ease-out)}
+.score .note{font-family:var(--serif);font-size:14px;color:var(--ink-dim);margin-top:12px;line-height:1.5}
+
+/* ---------- TIMELINE ---------- */
+.timeline{
+  position:relative;margin-top: 56px;
+  border-left:1px solid rgba(212,175,55,.2);
+  padding-left: 44px;
+}
+.tl-item{
+  position:relative;padding: 0 0 56px 0;
+}
+.tl-item::before{
+  content:"";position:absolute;left:-50px;top:8px;
+  width:12px;height:12px;border-radius:50%;
+  background:var(--gold);box-shadow:0 0 0 4px var(--void), 0 0 16px var(--gold);
+}
+.tl-date{font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold)}
+.tl-title{font-family:var(--display);font-style:italic;font-size:28px;color:var(--ink);margin:10px 0 12px;line-height:1.2}
+.tl-body{font-family:var(--serif);font-size:17px;color:var(--ink-dim);line-height:1.7;max-width:640px}
+
+/* ---------- TRANSITS TABLE ---------- */
+.transits{
+  width:100%;border-collapse:collapse;margin-top:48px;
+  font-family:var(--serif);
+}
+.transits th,.transits td{
+  padding: 20px 16px;text-align:left;
+  border-bottom:1px solid rgba(212,175,55,.12);
+  font-size: 16px;
+}
+.transits th{
+  font-family:var(--mono);font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:400;
+  border-bottom:1px solid rgba(212,175,55,.25);
+}
+.transits tr:hover td{background:rgba(212,175,55,.04)}
+.transits td .glyph{color:var(--gold-bright);font-size:22px;margin-right:10px;font-family:var(--display)}
+
+/* ---------- RUNE CARDS (rituales/suerte) ---------- */
+.rune-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap: 24px;margin-top:56px;
+}
+.rune-card{
+  position:relative;
+  padding: 40px 28px;
+  border:1px solid rgba(212,175,55,.2);
+  background: radial-gradient(ellipse at top, rgba(123,104,238,.08), transparent 60%), linear-gradient(180deg, rgba(10,10,26,.6), rgba(0,0,0,.3));
+  text-align:center;
+  transition: border-color .5s, transform .5s var(--ease-out);
+}
+.rune-card:hover{border-color:var(--gold);transform:translateY(-6px)}
+.rune-glyph{
+  font-family:var(--display);font-size:72px;color:var(--gold-bright);line-height:1;
+  margin-bottom: 20px;
+  filter: drop-shadow(0 0 12px rgba(212,175,55,.35));
+}
+.rune-title{font-family:var(--display);font-style:italic;font-size:24px;color:var(--ink);margin-bottom:10px}
+.rune-body{font-family:var(--serif);font-size:15px;color:var(--ink-dim);line-height:1.6}
+
+/* ---------- FOOTER / CIERRE ---------- */
+.cierre{
+  text-align:center;
+  padding: clamp(120px, 15vw, 220px) 32px;
+  position:relative;
+}
+.cierre .sigil{
+  width: 180px;height: 180px;
+  margin: 0 auto 56px;
+  display:block;
+  animation: rotSlow 120s linear infinite;
+}
+.cierre h2{
+  font-family:var(--display);font-style:italic;font-weight:400;
+  font-size: clamp(42px, 6vw, 84px);line-height:1.05;
+  color:var(--ink);max-width: 900px;margin: 0 auto;
+}
+.cierre h2 em{color:var(--gold-bright)}
+.cierre .sig-line{
+  font-family:var(--mono);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-mute);
+  margin-top: 80px;
+}
+
+.cta-area{margin-top: 72px;display:flex;flex-direction:column;align-items:center;gap: 24px}
+.btn-ritual{
+  display:inline-block;
+  padding: 22px 48px;
+  border:1px solid var(--gold);
+  color:var(--gold-bright);
+  font-family:var(--mono);font-size:12px;letter-spacing:.32em;text-transform:uppercase;
+  position:relative;overflow:hidden;
+  transition: color .5s, border-color .5s;
+}
+.btn-ritual::before{
+  content:"";position:absolute;inset:0;
+  background: linear-gradient(90deg, var(--gold-deep), var(--gold-bright));
+  transform: translateX(-101%);
+  transition: transform .6s var(--ease-out);
+  z-index:-1;
+}
+.btn-ritual:hover{color:var(--void);border-color:var(--gold-bright)}
+.btn-ritual:hover::before{transform:translateX(0)}
+.btn-ritual .arrow{margin-left:12px;display:inline-block;transition:transform .4s}
+.btn-ritual:hover .arrow{transform:translateX(6px)}
+
+.btn-ghost{
+  font-family:var(--mono);font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--ink-dim);
+  border-bottom:1px solid var(--ink-mute);padding-bottom:4px;
+  transition: color .3s, border-color .3s;
+}
+.btn-ghost:hover{color:var(--gold);border-color:var(--gold)}
+
+/* ---------- CHAPTER SYMBOL ---------- */
+.chapter-symbol{
+  width: clamp(120px, 14vw, 180px);
+  height: clamp(120px, 14vw, 180px);
+  display:block;
+  margin: 0 0 32px;
+  filter: drop-shadow(0 0 18px rgba(212,175,55,.25));
+  opacity:0;transform:translateY(20px) scale(.9) rotate(-6deg);
+  transition: opacity 1.2s var(--ease-out), transform 1.2s var(--ease-out);
+}
+.reveal-up.in .chapter-symbol,
+.reveal.in .chapter-symbol,
+.chapter-symbol.in{opacity:1;transform:translateY(0) scale(1) rotate(0)}
+.chapter-symbol.float{animation: floatSym 9s ease-in-out infinite}
+@keyframes floatSym{
+  0%,100%{transform: translateY(0) rotate(0)}
+  50%{transform: translateY(-10px) rotate(2deg)}
+}
+
+/* ---------- SECTION DIVIDER ---------- */
+.divider-sigil{
+  display:flex;align-items:center;justify-content:center;gap:24px;
+  margin: 80px auto;opacity:.6;
+}
+.divider-sigil .line{flex:1;max-width:200px;height:1px;background:linear-gradient(90deg,transparent,var(--gold-deep),transparent)}
+.divider-sigil .sigil{color:var(--gold);font-size:20px;font-family:var(--display)}
+
+/* ---------- PARALLAX DEPTH ---------- */
+.depth-1{will-change:transform}
+.depth-2{will-change:transform}
+.depth-3{will-change:transform}
+
+/* subtle ornament glyph */
+.corner-ornament{
+  position:absolute;
+  font-family:var(--display);font-style:italic;color:var(--gold-deep);
+  opacity:.4;font-size:40px;line-height:1;
+  pointer-events:none;user-select:none;
+}
+
+/* ---------- ZODIAC WHEEL ---------- */
+.wheel-label{font-family:var(--mono);font-size:10px;letter-spacing:.2em;fill:var(--ink-mute);text-transform:uppercase}
+.wheel-glyph{font-family:var(--display);fill:var(--gold-bright);font-size:24px}
+.wheel-ring{fill:none;stroke:rgba(212,175,55,.3);stroke-width:.5}
+.wheel-spoke{stroke:rgba(212,175,55,.15);stroke-width:.5}
+.wheel-gold{fill:var(--gold-bright)}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 640px){
+  section.band{padding: 90px 20px}
+  .hero-meta{grid-template-columns:1fr}
+  .kv-strip{grid-template-columns:1fr 1fr}
+  .top-marginalia{padding:12px 16px}
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+  .reveal,.reveal-up,.char{opacity:1!important;transform:none!important}
+  .stagger > *{opacity:1!important;transform:none!important}
+}
+
+</style>
+
+<style id="print-styles">
+@media print {
+  @page { size: A4; margin: 18mm 16mm; }
+  html, body {
+    background: #faf7ed !important;
+    color: #2a2118 !important;
+    cursor: auto !important;
+  }
+  body::before, body::after,
+  .cursor-dot, .cursor-ring, .grain, .starfield,
+  .constellation-overlay, .scroll-track,
+  .top-marginalia, .bar, .btn-ghost, .btn-ritual,
+  .cta-area { display: none !important; }
+  main#app { max-width: none !important; padding: 0 !important; }
+  .container { max-width: 680px !important; margin: 0 auto !important; padding: 0 !important; }
+  h1, h2, h3, .section-title, .display, .eyebrow {
+    color: #7a5e0f !important;
+    text-shadow: none !important;
+    page-break-after: avoid;
+  }
+  p, .lead, .k, .lbl, .hero-description {
+    color: #2a2118 !important;
+    text-shadow: none !important;
+  }
+  .dropcap { color: #9c7e1f !important; text-shadow: none !important; }
+  .chapter-symbol { filter: none !important; }
+  .chapter-symbol path, .chapter-symbol circle, .chapter-symbol line, .chapter-symbol text {
+    stroke: #9c7e1f !important;
+  }
+  .chapter-symbol [fill]:not([fill="none"]) { fill: #c99b30 !important; }
+  .chapter-symbol text { fill: #7a5e0f !important; }
+  blockquote {
+    border-left-color: #9c7e1f !important;
+    background: #f5ecd4 !important;
+    color: #4a3818 !important;
+  }
+  em { color: #9c7e1f !important; }
+  strong { color: #2a2118 !important; }
+  .band, .band.hero, .band.cierre { background: transparent !important; }
+  .kv-strip, .hero-meta, .divider-sigil {
+    border-color: rgba(156, 126, 31, 0.3) !important;
+    background: transparent !important;
+  }
+  * { box-shadow: none !important; text-shadow: none !important; }
+  .glyph, .divider-sigil svg *,
+  svg[class*="chapter"] * {
+    filter: none !important;
+  }
+  /* page breaks inteligentes */
+  .band { page-break-inside: avoid; }
+  h2, .section-title { page-break-before: auto; break-before: auto; }
+  h2:first-child { page-break-before: avoid; }
+  blockquote, .chapter-symbol { page-break-inside: avoid; }
+}
+</style>
+
+</head>
+
+<body>
+<div class="cursor-dot" id="cursor-dot"></div>
+<div class="cursor-ring" id="cursor-ring"></div>
+<div class="grain"></div>
+<div class="starfield" id="starfield"></div>
+<svg class="constellation-overlay" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice" id="constellation-overlay" aria-hidden="true"></svg>
+<header class="top-marginalia">
+  <div class="mono">astro·dorado · vol. i · edición del alma</div>
+  <div class="mono mono-right" id="clock">—</div>
+</header>
+<div class="scroll-track" aria-hidden="true"><div class="scroll-fill" id="scroll-fill"></div></div>
+<main id="app"></main>
+<script>
+/* ==== DATA: report content (Spanish, mystical, ~7000 words) ==== */
+window.REPORT = {
+  clientSalute: "Apreciado Sergio",
+  issuedAt: "18 de Abril, 2026",
+  issuedCode: "AD·2026·04·18 / Vol. I · No. 01",
+  delivery: "Edición personal — intransferible",
+  birthDate: "30 de Junio de 1973",
+  birthTime: "12:00",
+  birthPlace: "Almería, España",
+  latitude: "36°50′N",
+  longitude: "02°28′W",
+  sun: "Cáncer · 08°31′",
+  moon: "Cáncer · 08°07′",
+  ascendant: "Piscis · 22°32′",
+  midheaven: "Sagitario · —",
+  element: "Agua / Cardinal",
+  modality: "Receptivo emocional",
+  lifePath: "8",
+  soulNumber: "6",
+  destinyNumber: "1",
+  expressionNumber: "7",
+  birthYearVibration: "2",
+};
+
+</script>
+<script>
+/* SYMBOLS — motivos simbólicos dorados para cada capítulo.
+   Cada símbolo devuelve SVG inline, decorativo, con glow dorado.
+*/
+window.SYMBOLS = {
+  // Carta Natal — ojo celestial con rayos
+  cartaNatal: () => `
+    <svg class="chapter-symbol" viewBox="0 0 200 200" aria-hidden="true">
+      <defs>
+        <radialGradient id="eyeGlow"><stop offset="0" stop-color="rgba(240,206,90,.5)"/><stop offset="1" stop-color="transparent"/></radialGradient>
+      </defs>
+      <circle cx="100" cy="100" r="70" fill="url(#eyeGlow)"/>
+      ${Array.from({length:24}).map((_,i)=>{
+        const a=(i*15)*Math.PI/180;
+        const r1 = i%2===0 ? 78 : 84;
+        const r2 = i%2===0 ? 92 : 96;
+        const x1=100+Math.cos(a)*r1,y1=100+Math.sin(a)*r1;
+        const x2=100+Math.cos(a)*r2,y2=100+Math.sin(a)*r2;
+        return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#d4af37" stroke-width=".8"/>`;
+      }).join('')}
+      <ellipse cx="100" cy="100" rx="50" ry="28" fill="none" stroke="#f0ce5a" stroke-width="1"/>
+      <ellipse cx="100" cy="100" rx="50" ry="28" fill="rgba(5,5,16,.8)"/>
+      <circle cx="100" cy="100" r="18" fill="#d4af37"/>
+      <circle cx="100" cy="100" r="10" fill="#050510"/>
+      <circle cx="100" cy="100" r="4" fill="#f0ce5a"/>
+      <circle cx="96" cy="96" r="2" fill="#fff" opacity=".8"/>
+    </svg>`,
+
+  // Numerología — cuadrado mágico con 7/22 y sigilos
+  numerologia: () => `
+    <svg class="chapter-symbol" viewBox="0 0 200 200" aria-hidden="true">
+      <rect x="40" y="40" width="120" height="120" fill="none" stroke="#d4af37" stroke-width=".8"/>
+      <rect x="40" y="40" width="120" height="120" fill="none" stroke="#9c7e1f" stroke-width=".4" transform="rotate(45 100 100)"/>
+      ${[1,2].map(i=>`<line x1="40" y1="${40+i*40}" x2="160" y2="${40+i*40}" stroke="#9c7e1f" stroke-width=".4"/>
+      <line x1="${40+i*40}" y1="40" x2="${40+i*40}" y2="160" stroke="#9c7e1f" stroke-width=".4"/>`).join('')}
+      <text x="60" y="70" font-family="Playfair Display" font-size="22" font-style="italic" fill="#f0ce5a" text-anchor="middle">7</text>
+      <text x="100" y="70" font-family="Playfair Display" font-size="14" fill="#bfb39a" text-anchor="middle">3</text>
+      <text x="140" y="70" font-family="Playfair Display" font-size="14" fill="#bfb39a" text-anchor="middle">9</text>
+      <text x="60" y="110" font-family="Playfair Display" font-size="14" fill="#bfb39a" text-anchor="middle">2</text>
+      <text x="100" y="110" font-family="Playfair Display" font-size="22" font-style="italic" fill="#f0ce5a" text-anchor="middle">22</text>
+      <text x="140" y="110" font-family="Playfair Display" font-size="14" fill="#bfb39a" text-anchor="middle">5</text>
+      <text x="60" y="150" font-family="Playfair Display" font-size="14" fill="#bfb39a" text-anchor="middle">4</text>
+      <text x="100" y="150" font-family="Playfair Display" font-size="14" fill="#bfb39a" text-anchor="middle">8</text>
+      <text x="140" y="150" font-family="Playfair Display" font-size="14" fill="#bfb39a" text-anchor="middle">1</text>
+      <circle cx="100" cy="100" r="90" fill="none" stroke="#d4af37" stroke-width=".4" stroke-dasharray="1 4"/>
+    </svg>`,
+
+  // Amor — Cupido: arco dorado con flecha y corazón
+  amor: () => `
+    <svg class="chapter-symbol" viewBox="0 0 200 200" aria-hidden="true">
+      <defs>
+        <radialGradient id="heartGlow"><stop offset="0" stop-color="rgba(240,206,90,.4)"/><stop offset="1" stop-color="transparent"/></radialGradient>
+      </defs>
+      <circle cx="100" cy="105" r="80" fill="url(#heartGlow)"/>
+      <!-- Arco -->
+      <path d="M 50,40 Q 30,100 50,160" fill="none" stroke="#d4af37" stroke-width="2" stroke-linecap="round"/>
+      <path d="M 50,40 Q 35,100 50,160" fill="none" stroke="#f0ce5a" stroke-width=".6" stroke-linecap="round"/>
+      <!-- Cuerda -->
+      <line x1="50" y1="40" x2="50" y2="160" stroke="#9c7e1f" stroke-width=".5"/>
+      <!-- Flecha -->
+      <line x1="55" y1="100" x2="155" y2="100" stroke="#d4af37" stroke-width="1.2"/>
+      <polygon points="155,100 145,95 148,100 145,105" fill="#f0ce5a"/>
+      <polygon points="55,100 60,96 58,100 60,104" fill="#f0ce5a"/>
+      <!-- Corazón atravesado -->
+      <path d="M 130 95 C 130 88, 122 85, 118 90 C 114 85, 106 88, 106 95 C 106 102, 118 112, 118 112 C 118 112, 130 102, 130 95 Z"
+            fill="#f0ce5a" stroke="#d4af37" stroke-width=".5"/>
+      <!-- Plumas -->
+      <path d="M 48 95 L 40 90 M 48 100 L 38 100 M 48 105 L 40 110" stroke="#f0ce5a" stroke-width=".8" stroke-linecap="round"/>
+    </svg>`,
+
+  // Dinero — moneda de oro con cara solar
+  dinero: () => `
+    <svg class="chapter-symbol" viewBox="0 0 200 200" aria-hidden="true">
+      <defs>
+        <radialGradient id="coinGrad" cx=".35" cy=".35">
+          <stop offset="0" stop-color="#fff6c2"/>
+          <stop offset=".45" stop-color="#f0ce5a"/>
+          <stop offset="1" stop-color="#9c7e1f"/>
+        </radialGradient>
+        <radialGradient id="coinGlow"><stop offset="0" stop-color="rgba(240,206,90,.5)"/><stop offset="1" stop-color="transparent"/></radialGradient>
+      </defs>
+      <circle cx="100" cy="100" r="90" fill="url(#coinGlow)"/>
+      <!-- moneda 3 -->
+      <circle cx="60" cy="130" r="28" fill="url(#coinGrad)" stroke="#9c7e1f" stroke-width="1"/>
+      <circle cx="60" cy="130" r="22" fill="none" stroke="#9c7e1f" stroke-width=".4"/>
+      <text x="60" y="136" font-family="Playfair Display" font-size="20" fill="#9c7e1f" text-anchor="middle" font-style="italic">☼</text>
+      <!-- moneda 2 -->
+      <circle cx="140" cy="125" r="32" fill="url(#coinGrad)" stroke="#9c7e1f" stroke-width="1"/>
+      <circle cx="140" cy="125" r="26" fill="none" stroke="#9c7e1f" stroke-width=".4"/>
+      <text x="140" y="133" font-family="Playfair Display" font-size="24" fill="#9c7e1f" text-anchor="middle" font-style="italic">☼</text>
+      <!-- moneda 1 grande arriba -->
+      <circle cx="100" cy="80" r="42" fill="url(#coinGrad)" stroke="#9c7e1f" stroke-width="1.2"/>
+      <circle cx="100" cy="80" r="34" fill="none" stroke="#9c7e1f" stroke-width=".5"/>
+      ${Array.from({length:16}).map((_,i)=>{
+        const a=(i*22.5)*Math.PI/180;
+        const x1=100+Math.cos(a)*36,y1=80+Math.sin(a)*36;
+        const x2=100+Math.cos(a)*42,y2=80+Math.sin(a)*42;
+        return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#9c7e1f" stroke-width=".6"/>`;
+      }).join('')}
+      <text x="100" y="88" font-family="Playfair Display" font-size="30" fill="#7a5e0f" text-anchor="middle" font-style="italic" font-weight="600">☉</text>
+      <!-- brillito -->
+      <circle cx="88" cy="68" r="3" fill="#fff6c2" opacity=".9"/>
+    </svg>`,
+
+  // Negocios — columna/pilar jónico con capitel
+  negocios: () => `
+    <svg class="chapter-symbol" viewBox="0 0 200 200" aria-hidden="true">
+      <defs>
+        <linearGradient id="colG" x1="0" x2="1"><stop offset="0" stop-color="#9c7e1f"/><stop offset=".5" stop-color="#f0ce5a"/><stop offset="1" stop-color="#9c7e1f"/></linearGradient>
+      </defs>
+      <!-- base -->
+      <rect x="50" y="168" width="100" height="10" fill="url(#colG)"/>
+      <rect x="54" y="162" width="92" height="6" fill="#d4af37"/>
+      <!-- columna fuste -->
+      <rect x="70" y="60" width="60" height="102" fill="url(#colG)"/>
+      ${[0,1,2,3,4,5].map(i=>`<line x1="${78+i*10}" y1="60" x2="${78+i*10}" y2="162" stroke="#7a5e0f" stroke-width=".6"/>`).join('')}
+      <!-- capitel jónico: volutas -->
+      <rect x="56" y="44" width="88" height="16" fill="#d4af37"/>
+      <rect x="56" y="40" width="88" height="4" fill="#f0ce5a"/>
+      <circle cx="68" cy="52" r="7" fill="none" stroke="#7a5e0f" stroke-width="1.2"/>
+      <circle cx="68" cy="52" r="3" fill="#f0ce5a"/>
+      <circle cx="132" cy="52" r="7" fill="none" stroke="#7a5e0f" stroke-width="1.2"/>
+      <circle cx="132" cy="52" r="3" fill="#f0ce5a"/>
+      <!-- laurel arriba -->
+      <path d="M 70,32 Q 100,10 130,32" fill="none" stroke="#d4af37" stroke-width="1"/>
+      ${[-20,-10,0,10,20].map(dx=>`<ellipse cx="${100+dx}" cy="${18+Math.abs(dx)*.5}" rx="3" ry="6" fill="#d4af37" transform="rotate(${dx*2} ${100+dx} ${18+Math.abs(dx)*.5})"/>`).join('')}
+      <circle cx="100" cy="14" r="3" fill="#f0ce5a"/>
+    </svg>`,
+
+  // Suerte — Fortuna: rueda con venda y cornucopia
+  suerte: () => `
+    <svg class="chapter-symbol" viewBox="0 0 200 200" aria-hidden="true">
+      <defs>
+        <radialGradient id="fortGlow"><stop offset="0" stop-color="rgba(240,206,90,.4)"/><stop offset="1" stop-color="transparent"/></radialGradient>
+      </defs>
+      <circle cx="100" cy="100" r="85" fill="url(#fortGlow)"/>
+      <!-- rueda exterior -->
+      <circle cx="100" cy="100" r="70" fill="none" stroke="#d4af37" stroke-width="1.5"/>
+      <circle cx="100" cy="100" r="60" fill="none" stroke="#9c7e1f" stroke-width=".5"/>
+      <circle cx="100" cy="100" r="14" fill="#f0ce5a" stroke="#9c7e1f"/>
+      <circle cx="100" cy="100" r="6" fill="#050510"/>
+      <!-- radios -->
+      ${Array.from({length:8}).map((_,i)=>{
+        const a=(i*45)*Math.PI/180;
+        const x1=100+Math.cos(a)*14,y1=100+Math.sin(a)*14;
+        const x2=100+Math.cos(a)*70,y2=100+Math.sin(a)*70;
+        return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#d4af37" stroke-width="1"/>`;
+      }).join('')}
+      <!-- clavos decorativos -->
+      ${Array.from({length:16}).map((_,i)=>{
+        const a=(i*22.5)*Math.PI/180;
+        const x=100+Math.cos(a)*65,y=100+Math.sin(a)*65;
+        return `<circle cx="${x}" cy="${y}" r="1.8" fill="#f0ce5a"/>`;
+      }).join('')}
+      <!-- letras F (Fortuna) -->
+      <text x="100" y="108" font-family="Playfair Display" font-size="18" font-style="italic" fill="#050510" text-anchor="middle" font-weight="700">F</text>
+      <!-- cinta arriba -->
+      <path d="M 70 30 Q 100 20 130 30 L 125 40 Q 100 32 75 40 Z" fill="#d4af37" stroke="#9c7e1f"/>
+      <text x="100" y="38" font-family="JetBrains Mono" font-size="6" fill="#050510" text-anchor="middle" letter-spacing="1">FORTVNA</text>
+    </svg>`,
+
+  // Eventos — calendario/luna con puntos marcados
+  eventos: () => `
+    <svg class="chapter-symbol" viewBox="0 0 200 200" aria-hidden="true">
+      <defs>
+        <radialGradient id="moonGrad" cx=".35" cy=".35">
+          <stop offset="0" stop-color="#fff6c2"/>
+          <stop offset="1" stop-color="#d4af37"/>
+        </radialGradient>
+      </defs>
+      <!-- fases lunares alrededor -->
+      ${Array.from({length:8}).map((_,i)=>{
+        const a=(i*45-90)*Math.PI/180;
+        const x=100+Math.cos(a)*75, y=100+Math.sin(a)*75;
+        const phase = i/8;
+        return `<g transform="translate(${x},${y})">
+          <circle r="9" fill="#050510" stroke="#d4af37" stroke-width=".5"/>
+          <path d="M 0,-9 A 9,9 0 0,1 0,9 A ${9-phase*18},9 0 0,${phase<.5?1:0} 0,-9" fill="#f0ce5a"/>
+        </g>`;
+      }).join('')}
+      <!-- luna central llena -->
+      <circle cx="100" cy="100" r="40" fill="url(#moonGrad)" stroke="#9c7e1f" stroke-width="1"/>
+      <!-- cráteres -->
+      <circle cx="90" cy="92" r="4" fill="#9c7e1f" opacity=".4"/>
+      <circle cx="108" cy="100" r="6" fill="#9c7e1f" opacity=".3"/>
+      <circle cx="96" cy="112" r="3" fill="#9c7e1f" opacity=".5"/>
+      <circle cx="115" cy="88" r="2" fill="#9c7e1f" opacity=".5"/>
+      <!-- conexiones órbita -->
+      <circle cx="100" cy="100" r="75" fill="none" stroke="#d4af37" stroke-width=".4" stroke-dasharray="2 4"/>
+    </svg>`,
+
+  // Tránsitos — espiral planetaria con trazado
+  transitos: () => `
+    <svg class="chapter-symbol" viewBox="0 0 200 200" aria-hidden="true">
+      <defs>
+        <radialGradient id="trGlow"><stop offset="0" stop-color="rgba(240,206,90,.35)"/><stop offset="1" stop-color="transparent"/></radialGradient>
+      </defs>
+      <circle cx="100" cy="100" r="85" fill="url(#trGlow)"/>
+      <!-- órbitas -->
+      <ellipse cx="100" cy="100" rx="85" ry="34" fill="none" stroke="#d4af37" stroke-width=".5" transform="rotate(-20 100 100)"/>
+      <ellipse cx="100" cy="100" rx="65" ry="65" fill="none" stroke="#9c7e1f" stroke-width=".4"/>
+      <ellipse cx="100" cy="100" rx="75" ry="25" fill="none" stroke="#d4af37" stroke-width=".4" transform="rotate(30 100 100)"/>
+      <ellipse cx="100" cy="100" rx="55" ry="20" fill="none" stroke="#d4af37" stroke-width=".4" transform="rotate(70 100 100)"/>
+      <!-- sol central -->
+      <circle cx="100" cy="100" r="14" fill="#f0ce5a" stroke="#9c7e1f"/>
+      ${Array.from({length:12}).map((_,i)=>{
+        const a=(i*30)*Math.PI/180;
+        const x1=100+Math.cos(a)*16,y1=100+Math.sin(a)*16;
+        const x2=100+Math.cos(a)*22,y2=100+Math.sin(a)*22;
+        return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#f0ce5a" stroke-width="1.2"/>`;
+      }).join('')}
+      <!-- planetas -->
+      <circle cx="180" cy="95" r="4" fill="#f0ce5a"/>
+      <circle cx="40" cy="70" r="5" fill="#d4af37" stroke="#9c7e1f"/>
+      <circle cx="150" cy="150" r="6" fill="#fff6c2" stroke="#9c7e1f"/>
+      <circle cx="60" cy="145" r="3" fill="#9c7e1f"/>
+      <!-- anillo saturno -->
+      <ellipse cx="150" cy="150" rx="12" ry="3" fill="none" stroke="#d4af37" stroke-width=".8" transform="rotate(20 150 150)"/>
+    </svg>`,
+
+  // Rituales — cáliz/copa dorada con llama
+  rituales: () => `
+    <svg class="chapter-symbol" viewBox="0 0 200 200" aria-hidden="true">
+      <defs>
+        <linearGradient id="chalG" x1="0" x2="1"><stop offset="0" stop-color="#9c7e1f"/><stop offset=".5" stop-color="#f0ce5a"/><stop offset="1" stop-color="#9c7e1f"/></linearGradient>
+        <radialGradient id="flameG"><stop offset="0" stop-color="#fff6c2"/><stop offset=".5" stop-color="#f0ce5a"/><stop offset="1" stop-color="rgba(240,206,90,0)"/></radialGradient>
+      </defs>
+      <!-- llama -->
+      <ellipse cx="100" cy="40" rx="14" ry="26" fill="url(#flameG)"/>
+      <path d="M 100 14 Q 108 30 102 50 Q 96 30 100 14 Z" fill="#fff6c2"/>
+      <!-- copa superior -->
+      <path d="M 65 70 Q 100 90 135 70 L 130 100 Q 100 108 70 100 Z" fill="url(#chalG)" stroke="#7a5e0f"/>
+      <!-- nudo -->
+      <ellipse cx="100" cy="115" rx="14" ry="6" fill="#d4af37" stroke="#7a5e0f"/>
+      <!-- pie -->
+      <path d="M 92 120 L 88 160 L 112 160 L 108 120 Z" fill="url(#chalG)" stroke="#7a5e0f"/>
+      <!-- base -->
+      <ellipse cx="100" cy="168" rx="30" ry="6" fill="#d4af37" stroke="#7a5e0f"/>
+      <!-- gema central en la copa -->
+      <polygon points="100,78 104,82 100,90 96,82" fill="#fff6c2" stroke="#7a5e0f" stroke-width=".4"/>
+      <!-- chispitas -->
+      <circle cx="80" cy="30" r="1.2" fill="#f0ce5a"/>
+      <circle cx="120" cy="26" r="1.2" fill="#f0ce5a"/>
+      <circle cx="115" cy="50" r="1" fill="#fff6c2"/>
+      <circle cx="85" cy="50" r="1" fill="#fff6c2"/>
+    </svg>`,
+
+  // Resumen — pluma de ave dorada con tintero
+  resumen: () => `
+    <svg class="chapter-symbol" viewBox="0 0 200 200" aria-hidden="true">
+      <!-- pluma -->
+      <path d="M 150 30 Q 100 60 70 130 L 60 160 L 80 150 Q 130 110 160 50 Z"
+            fill="#d4af37" stroke="#7a5e0f" stroke-width=".8"/>
+      <path d="M 150 30 Q 105 70 75 140" stroke="#7a5e0f" stroke-width=".6" fill="none"/>
+      ${Array.from({length:10}).map((_,i)=>{
+        const t = i/10;
+        const x = 150 - t*80;
+        const y = 30 + t*110;
+        return `<line x1="${x}" y1="${y}" x2="${x-8}" y2="${y+6}" stroke="#7a5e0f" stroke-width=".5"/>`;
+      }).join('')}
+      <!-- punta dorada -->
+      <polygon points="60,160 55,170 65,165" fill="#f0ce5a" stroke="#7a5e0f"/>
+      <!-- gota de tinta -->
+      <circle cx="58" cy="175" r="2" fill="#f0ce5a"/>
+      <!-- brillo -->
+      <circle cx="130" cy="50" r="2" fill="#fff6c2"/>
+    </svg>`,
+};
+
+</script>
+<script>
+/* ==== UI HELPERS: cursor, starfield, reveals, constellation, clock ==== */
+(function(){
+  const $ = (s,r=document)=>r.querySelector(s);
+  const $$ = (s,r=document)=>Array.from(r.querySelectorAll(s));
+
+  window.UI = { $, $$ };
+
+  // ---- Starfield ----
+  function starfield(){
+    const layer = $('#starfield'); if(!layer) return;
+    const count = window.innerWidth < 640 ? 80 : 160;
+    const frag = document.createDocumentFragment();
+    for(let i=0;i<count;i++){
+      const s = document.createElement('span');
+      s.className = 'star';
+      const size = Math.random() < .12 ? 3 : (Math.random() < .4 ? 2 : 1);
+      s.style.width = size+'px';
+      s.style.height = size+'px';
+      s.style.left = (Math.random()*100)+'%';
+      s.style.top = (Math.random()*100)+'%';
+      s.style.setProperty('--dur', (2 + Math.random()*5)+'s');
+      s.style.setProperty('--delay', (Math.random()*5)+'s');
+      if(Math.random() < .15){
+        s.style.background = '#ffd96a';
+        s.style.boxShadow = '0 0 6px #ffd96a';
+      }
+      frag.appendChild(s);
+    }
+    layer.appendChild(frag);
+  }
+
+  // ---- Constellation overlay (subtle dots + random lines) ----
+  function constellations(){
+    const svg = $('#constellation-overlay'); if(!svg) return;
+    const W = 1600, H = 1000;
+    const pts = [];
+    const N = 60;
+    for(let i=0;i<N;i++) pts.push({x: Math.random()*W, y: Math.random()*H});
+    let html = '';
+    // faint lines between near neighbors
+    for(let i=0;i<pts.length;i++){
+      for(let j=i+1;j<pts.length;j++){
+        const dx = pts[i].x-pts[j].x, dy = pts[i].y-pts[j].y;
+        const d = Math.sqrt(dx*dx+dy*dy);
+        if(d < 140 && Math.random() < .45){
+          html += `<line x1="${pts[i].x}" y1="${pts[i].y}" x2="${pts[j].x}" y2="${pts[j].y}" stroke="rgba(212,175,55,0.12)" stroke-width="0.5"/>`;
+        }
+      }
+    }
+    for(const p of pts){
+      const r = Math.random() < .15 ? 2 : 1;
+      html += `<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="rgba(245,236,215,0.5)"/>`;
+    }
+    svg.innerHTML = html;
+  }
+
+  // ---- Cursor (dot + ring, with lerp) ----
+  function cursor(){
+    if(matchMedia('(pointer:coarse)').matches) return;
+    const dot = $('#cursor-dot'); const ring = $('#cursor-ring');
+    if(!dot||!ring) return;
+    let mx=innerWidth/2,my=innerHeight/2,dx=mx,dy=my,rx=mx,ry=my;
+    addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    function loop(){
+      dx += (mx-dx)*.35; dy += (my-dy)*.35;
+      rx += (mx-rx)*.15; ry += (my-ry)*.15;
+      dot.style.transform = `translate(${dx}px,${dy}px) translate(-50%,-50%)`;
+      ring.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+      requestAnimationFrame(loop);
+    }
+    loop();
+    // hover states
+    const hoverSel = 'a, button, .toc-item, .rune-card, .num-cell, .btn-ritual, .btn-ghost, .score';
+    document.addEventListener('mouseover', e=>{
+      if(e.target.closest(hoverSel)){ ring.classList.add('hover'); dot.classList.add('hover'); }
+    });
+    document.addEventListener('mouseout', e=>{
+      if(e.target.closest(hoverSel)){ ring.classList.remove('hover'); dot.classList.remove('hover'); }
+    });
+  }
+
+  // ---- Reveal on scroll ----
+  function reveals(){
+    const io = new IntersectionObserver(entries=>{
+      entries.forEach(en=>{
+        if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
+      });
+    }, {threshold:.12, rootMargin:'0px 0px -60px 0px'});
+    $$('.reveal, .reveal-up, .stagger').forEach(el=>io.observe(el));
+    // char-by-char in display headings
+    $$('[data-split]').forEach(el=>{
+      const text = el.textContent;
+      el.innerHTML = '';
+      const words = text.split(/(\s+)/); // keep spaces
+      let charIdx = 0;
+      words.forEach(word=>{
+        if(/^\s+$/.test(word)){
+          el.appendChild(document.createTextNode(' '));
+          return;
+        }
+        const wrap = document.createElement('span');
+        wrap.className = 'word';
+        wrap.style.whiteSpace = 'nowrap';
+        wrap.style.display = 'inline-block';
+        [...word].forEach(c=>{
+          const span = document.createElement('span');
+          span.className = 'char';
+          span.textContent = c;
+          span.style.transitionDelay = (charIdx*0.02)+'s';
+          wrap.appendChild(span);
+          charIdx++;
+        });
+        el.appendChild(wrap);
+      });
+      const cio = new IntersectionObserver(es=>{
+        es.forEach(e=>{
+          if(e.isIntersecting){
+            $$('.char', el).forEach(c=>c.classList.add('in'));
+            cio.unobserve(el);
+          }
+        });
+      }, {threshold:.3});
+      cio.observe(el);
+    });
+  }
+
+  // ---- Scroll progress bar ----
+  function progress(){
+    const fill = $('#scroll-fill');
+    if(!fill) return;
+    addEventListener('scroll', ()=>{
+      const h = document.documentElement;
+      const p = (h.scrollTop) / (h.scrollHeight - h.clientHeight);
+      fill.style.width = (Math.max(0,Math.min(1,p))*100)+'%';
+    }, {passive:true});
+  }
+
+  // ---- Parallax (constellation + depth) ----
+  function parallax(){
+    const overlay = $('#constellation-overlay');
+    const depths1 = $$('.depth-1');
+    const depths2 = $$('.depth-2');
+    const depths3 = $$('.depth-3');
+    addEventListener('scroll', ()=>{
+      const y = window.scrollY;
+      if(overlay) overlay.style.transform = `translate3d(0, ${y*-.06}px, 0)`;
+      depths1.forEach(e=>e.style.transform = `translate3d(0,${y*-.04}px,0)`);
+      depths2.forEach(e=>e.style.transform = `translate3d(0,${y*-.12}px,0)`);
+      depths3.forEach(e=>e.style.transform = `translate3d(0,${y*-.20}px,0)`);
+    }, {passive:true});
+    // mouse parallax on constellation
+    addEventListener('mousemove', e=>{
+      if(!overlay) return;
+      const x = (e.clientX/innerWidth - .5) * 20;
+      const y = (e.clientY/innerHeight - .5) * 20;
+      overlay.style.marginLeft = x+'px';
+      overlay.style.marginTop  = y+'px';
+    });
+  }
+
+  // ---- Clock ----
+  function clock(){
+    const el = $('#clock'); if(!el) return;
+    function tick(){
+      const d = new Date();
+      const pad=n=>String(n).padStart(2,'0');
+      el.textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())} · GMT${-d.getTimezoneOffset()/60}`;
+    }
+    tick(); setInterval(tick, 1000);
+  }
+
+  window.UI.init = function(){
+    starfield(); constellations(); cursor(); reveals(); progress(); parallax(); clock();
+  };
+})();
+
+</script>
+<script>
+/* HERO — ritual welcome with natal-chart like SVG */
+window.renderHero = function(){
+  const D = window.REPORT;
+  return `
+  <section class="band hero" data-screen-label="01 Hero">
+    <div class="container hero-inner">
+      <div class="hero-left reveal-up">
+        <div class="eyebrow">Astro Dorado · Informe del Alma</div>
+
+        <h1 class="display" style="margin-top:28px">
+          <span style="display:block" data-split>La cartografía</span>
+          <span style="display:block"><em data-split>de tu destino</em></span>
+          <span style="display:block" data-split>ha sido trazada.</span>
+        </h1>
+
+        <p class="hero-description lead">
+          ${D.clientSalute}: este volumen reúne la lectura completa de tu
+          carta natal, tu numerología íntima, y los tránsitos que te acompañarán
+          en los próximos doce lunares. Léelo con pausa. Fue escrito solo para ti.
+        </p>
+
+        <div class="hero-meta">
+          <div class="hero-meta-cell"><span class="k">Emitido</span><span class="v">${D.issuedAt}</span></div>
+          <div class="hero-meta-cell"><span class="k">Folio</span><span class="v">${D.issuedCode}</span></div>
+          <div class="hero-meta-cell"><span class="k">Latitud natal</span><span class="v">${D.latitude}</span></div>
+          <div class="hero-meta-cell"><span class="k">Longitud natal</span><span class="v">${D.longitude}</span></div>
+        </div>
+
+        <div class="mono" style="color:var(--ink-mute)">↓ Desciende al mapa</div>
+      </div>
+
+      <div class="hero-right reveal">
+        ${renderNatalWheel()}
+      </div>
+    </div>
+  </section>
+  `;
+};
+
+function renderNatalWheel(){
+  const signs = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+  const names = ['Aries','Tauro','Géminis','Cáncer','Leo','Virgo','Libra','Escorpio','Sagitario','Capricornio','Acuario','Piscis'];
+  const cx=200, cy=200;
+  const rOuter = 190, rSigns = 170, rHouses = 130, rInner = 80;
+
+  let outerRing = `<circle class="wheel-ring" cx="${cx}" cy="${cy}" r="${rOuter}"/>
+                   <circle class="wheel-ring" cx="${cx}" cy="${cy}" r="${rSigns}"/>
+                   <circle class="wheel-ring" cx="${cx}" cy="${cy}" r="${rHouses}" style="stroke-dasharray:2 4"/>
+                   <circle class="wheel-ring" cx="${cx}" cy="${cy}" r="${rInner}"/>
+                   <circle class="wheel-ring" cx="${cx}" cy="${cy}" r="20"/>`;
+
+  let spokes = '';
+  let glyphs = '';
+  for(let i=0;i<12;i++){
+    const a1 = (i*30 - 90) * Math.PI/180;
+    const a2 = ((i+.5)*30 - 90) * Math.PI/180;
+    const x1 = cx + Math.cos(a1)*rInner, y1 = cy + Math.sin(a1)*rInner;
+    const x2 = cx + Math.cos(a1)*rOuter, y2 = cy + Math.sin(a1)*rOuter;
+    spokes += `<line class="wheel-spoke" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"/>`;
+    const gx = cx + Math.cos(a2)*(rSigns-18);
+    const gy = cy + Math.sin(a2)*(rSigns-18) + 8;
+    glyphs += `<text class="wheel-glyph" x="${gx}" y="${gy}" text-anchor="middle">${signs[i]}</text>`;
+  }
+
+  // planets positioned around the inner ring (decorative but deliberate)
+  const planets = [
+    {g:'☉', deg: 58, r: rHouses-14, color:'#ffd96a', label:'Sol'},
+    {g:'☽', deg: 201, r: rHouses-22, color:'#e6e6ff', label:'Luna'},
+    {g:'☿', deg: 42, r: rHouses-10, color:'#c9c9ff', label:'Mercurio'},
+    {g:'♀', deg: 88, r: rHouses-18, color:'#ffd1b0', label:'Venus'},
+    {g:'♂', deg: 145, r: rHouses-12, color:'#ff7a5a', label:'Marte'},
+    {g:'♃', deg: 273, r: rHouses-20, color:'#ffd96a', label:'Júpiter'},
+    {g:'♄', deg: 310, r: rHouses-12, color:'#bfa26a', label:'Saturno'},
+    {g:'♅', deg: 18, r: rHouses-26, color:'#9edcff', label:'Urano'},
+    {g:'♆', deg: 242, r: rHouses-8, color:'#6ea8ff', label:'Neptuno'},
+    {g:'♇', deg: 328, r: rHouses-30, color:'#c08bff', label:'Plutón'}
+  ];
+  let planetMarks = '';
+  for(const p of planets){
+    const a = (p.deg - 90) * Math.PI/180;
+    const px = cx + Math.cos(a)*p.r;
+    const py = cy + Math.sin(a)*p.r;
+    planetMarks += `
+      <g class="planet-glow" style="color:${p.color}">
+        <circle cx="${px}" cy="${py}" r="10" fill="rgba(5,5,16,.95)" stroke="${p.color}" stroke-width=".6"/>
+        <text x="${px}" y="${py+5}" text-anchor="middle" fill="${p.color}" font-family="Playfair Display" font-size="14">${p.g}</text>
+      </g>
+    `;
+  }
+
+  // aspect lines (decorative)
+  let aspects = '';
+  const aspectPairs = [[0,4],[1,5],[2,6],[3,7],[8,9]];
+  for(const [i,j] of aspectPairs){
+    const ai = (planets[i].deg - 90)*Math.PI/180;
+    const aj = (planets[j].deg - 90)*Math.PI/180;
+    const xi = cx + Math.cos(ai)*planets[i].r;
+    const yi = cy + Math.sin(ai)*planets[i].r;
+    const xj = cx + Math.cos(aj)*planets[j].r;
+    const yj = cy + Math.sin(aj)*planets[j].r;
+    aspects += `<line x1="${xi}" y1="${yi}" x2="${xj}" y2="${yj}" stroke="rgba(212,175,55,0.25)" stroke-width=".6" stroke-dasharray="3 3"/>`;
+  }
+
+  return `
+  <div class="natal-wrap">
+    <svg viewBox="0 0 400 400" class="rotate-slow" style="position:absolute;inset:0">
+      <defs>
+        <radialGradient id="coreGlow">
+          <stop offset="0" stop-color="rgba(212,175,55,.5)"/>
+          <stop offset="1" stop-color="transparent"/>
+        </radialGradient>
+      </defs>
+      ${outerRing}
+      ${spokes}
+      ${glyphs}
+    </svg>
+    <svg viewBox="0 0 400 400" style="position:absolute;inset:0">
+      <circle cx="200" cy="200" r="60" fill="url(#coreGlow)"/>
+      ${aspects}
+      ${planetMarks}
+      <text x="200" y="196" text-anchor="middle" font-family="Playfair Display" font-style="italic" font-size="22" fill="#f0ce5a">Anima</text>
+      <text x="200" y="218" text-anchor="middle" font-family="JetBrains Mono" font-size="8" letter-spacing="2" fill="#bfb39a">MAPA NATAL</text>
+    </svg>
+  </div>
+  `;
+}
+
+</script>
+<script>
+/* RESUMEN: TOC + project summary */
+window.renderResumen = function(){
+  const items = [
+    {n:'I',  t:'Carta Natal',      d:'El cielo exacto en el momento en que respiraste por primera vez.',      href:'#carta-natal'},
+    {n:'II', t:'Numerología',      d:'Los números vivos que componen tu nombre y tu fecha.',                  href:'#numerologia'},
+    {n:'III',t:'Amor',             d:'La forma de tu deseo, tu herida y tu encuentro.',                       href:'#amor'},
+    {n:'IV', t:'Dinero',           d:'Tu relación con la abundancia y el flujo material.',                    href:'#dinero'},
+    {n:'V',  t:'Negocios',         d:'El vehículo donde tu talento se convierte en obra pública.',            href:'#negocios'},
+    {n:'VI', t:'Suerte',           d:'Dónde el universo conspira a tu favor sin que lo pidas.',               href:'#suerte'},
+    {n:'VII',t:'Eventos',          d:'Fechas marcadas por los tránsitos para decidir, firmar, soltar.',       href:'#eventos'},
+    {n:'VIII',t:'Tránsitos',        d:'El calendario móvil de los planetas sobre tu carta.',                    href:'#transitos'},
+    {n:'IX', t:'Rituales',         d:'Pequeñas ceremonias para alinear cuerpo, espacio e intención.',          href:'#rituales'},
+    {n:'X',  t:'Bendición final',  d:'Un cierre — y una llave.',                                               href:'#cierre'}
+  ];
+  return `
+  <section class="band" id="resumen" data-screen-label="02 Resumen">
+    <div class="container">
+      <div class="reveal-up">
+        ${window.SYMBOLS.resumen()}
+        <div class="eyebrow">Índice del volumen</div>
+        <h2 class="section-title" style="margin-top:32px;max-width:920px">
+          Diez capítulos, <em>una sola vida</em>: la tuya,<br/>leída en la lengua de los astros.
+        </h2>
+      </div>
+
+      <div class="two-col" style="margin-top:72px">
+        <div class="read-col reveal">
+          <p class="lead dropcap">
+            Este informe no es una predicción. Es un espejo. Lo que leerás en las
+            próximas páginas es lo que ya sabes de ti — dicho en la lengua
+            antigua de los planetas, los números y las runas, que es la lengua
+            con la que el inconsciente sí se deja convencer.
+          </p>
+        </div>
+        <div class="read-col reveal">
+          <p>
+            Cada capítulo abre una puerta distinta del mismo palacio interior.
+            Ninguno es más importante que otro; léelos en el orden que el instinto
+            proponga. Marca lo que te incomode: ahí suele estar la verdad. Vuelve
+            tantas veces como necesites. El cielo no tiene prisa, y tú tampoco
+            deberías tenerla.
+          </p>
+          <p style="margin-top:1em">
+            Hemos cruzado tu fecha, hora y lugar exactos con efemérides de la NASA
+            y con la tradición numerológica pitagórica, hebrea y caldea. Lo que
+            sigue es una síntesis — escrita en prosa, no en jerga — de lo que ese
+            cruce reveló.
+          </p>
+        </div>
+      </div>
+
+      <div class="toc-grid stagger">
+        ${items.map(it=>`
+          <a href="${it.href}" class="toc-item">
+            <div class="toc-num">Cap. ${it.n}</div>
+            <div class="toc-title">${it.t}</div>
+            <div class="toc-desc">${it.d}</div>
+            <div class="toc-arrow">↗</div>
+          </a>
+        `).join('')}
+      </div>
+    </div>
+  </section>
+  `;
+};
+
+</script>
+<script>
+/* CARTA NATAL — detailed reading */
+window.renderCartaNatal = function(){
+  const D = window.REPORT;
+  return `
+  <section class="band" id="carta-natal" data-screen-label="03 Carta Natal">
+    <div class="container">
+      <div class="reveal-up">
+        ${window.SYMBOLS.cartaNatal()}
+        <div class="eyebrow">Capítulo I</div>
+        <h2 class="section-title" style="margin-top:32px">Carta <em>Natal</em></h2>
+      </div>
+
+      <div class="kv-strip reveal" style="margin-top:64px">
+        <div class="kv-cell"><div class="k">Sol</div><div class="v">${D.sun}</div></div>
+        <div class="kv-cell"><div class="k">Luna</div><div class="v">${D.moon}</div></div>
+        <div class="kv-cell"><div class="k">Ascendente</div><div class="v">${D.ascendant}</div></div>
+        <div class="kv-cell"><div class="k">Medio cielo</div><div class="v">${D.midheaven}</div></div>
+        <div class="kv-cell"><div class="k">Elemento</div><div class="v">${D.element}</div></div>
+      </div>
+
+      <div class="two-col" style="margin-top:80px">
+        <div class="read-col reveal">
+          <h4 class="sub">Sol en Tauro · La voluntad</h4>
+          <p class="dropcap">
+            Tu Sol en Tauro es la decisión silenciosa de <em>permanecer</em>. No
+            eres de los que hacen ruido antes de actuar. Eres de los que plantan
+            la semilla, esperan y luego, un día cualquiera, recogen el fruto
+            mientras todos los demás siguen discutiendo la forma de la pala.
+            Hay una terquedad hermosa en ti: la del árbol que se toma treinta
+            años para dar buena sombra.
+          </p>
+          <p>
+            Tauro te regala una relación sensual, casi carnal, con lo real: la
+            textura de una tela, el peso de una moneda, el sabor de una fruta en
+            su punto. Esa es tu manera de conocer. Desconfía de lo que no se
+            puede tocar, y en esa desconfianza hay sabiduría. Pero cuidado:
+            también la trampa de aferrarte a lo que ya no vibra solo porque es
+            conocido.
+          </p>
+
+          <h4 class="sub">Luna en Libra · La necesidad emocional</h4>
+          <p>
+            Tu Luna en Libra te vuelve un diplomático del alma. Necesitas
+            armonía para respirar; el conflicto te deshace como al azúcar en el
+            agua. Por eso tiendes a pactar antes de que la otra persona haya
+            terminado la frase. Esa es tu fortaleza cuando media entre dos
+            posturas ajenas, y tu talón de Aquiles cuando se trata de defender
+            la propia. Aprende a quedarte en la incomodidad cinco minutos más:
+            ahí está tu borde verdadero.
+          </p>
+
+          <h4 class="sub">Ascendente Escorpio · La máscara</h4>
+          <p>
+            Escorpio en tu primera casa hace que la gente te perciba intenso
+            aunque no hables. Hay algo en tu mirada que pide verdad y espanta
+            la conversación trivial. Esa intensidad no la escoges — la portas.
+            Aprende a dosificarla: ni toda puerta necesita ser forzada, ni
+            todo secreto revelado.
+          </p>
+        </div>
+
+        <div class="read-col reveal">
+          <h4 class="sub">Medio cielo Leo · La vocación pública</h4>
+          <p>
+            Tu Medio Cielo en Leo anuncia una vocación que, tarde o temprano,
+            exige escenario. No necesariamente fama — sí autoría. Lo que haces
+            debe llevar tu nombre, aunque sea en letra pequeña. Si trabajas
+            bajo anonimato prolongado, algo en ti se enferma lentamente. Busca
+            un oficio, o un rincón del oficio, donde la firma sea posible.
+          </p>
+
+          <h4 class="sub">Venus en Géminis · Cómo amas</h4>
+          <p>
+            Amas a través de la conversación. Te enamoras de quien te hace
+            pensar, y te desenamoras de quien repite. El silencio como muro te
+            lastima más que la pelea franca. Dile a quien quieras que te quiera
+            que te hable — y que te escuche leerle en voz alta.
+          </p>
+
+          <h4 class="sub">Marte en Capricornio · Cómo actúas</h4>
+          <p>
+            Marte en Capricornio te da una estrategia de largo aliento. No
+            ganas las batallas por impulso; las ganas por resistencia. Eres el
+            maratonista en un mundo obsesionado con los sprints. Confía en tu
+            calendario secreto: a los treinta y cinco, a los cuarenta, a los
+            cincuenta, llegan cosas que nadie esperaba y que eran, para ti,
+            absolutamente inevitables.
+          </p>
+
+          <h4 class="sub">Saturno en Casa X · La disciplina que forma</h4>
+          <p>
+            Saturno vigila tu vocación como un maestro severo pero justo. Nada
+            te será dado gratis en el terreno profesional — y esa es una
+            bendición disfrazada. Lo que construyes con Saturno se queda en
+            pie cuando otros proyectos brillantes se deshacen en dos años.
+            Agradece la lentitud.
+          </p>
+        </div>
+      </div>
+
+      <blockquote class="ritual reveal" style="max-width:900px;margin-left:auto;margin-right:auto">
+        Un Tauro con Ascendente Escorpio no es paciente: es <em>estratega del
+        tiempo</em>. Sabe que lo que se resiste a madurar, a su hora se desploma solo.
+      </blockquote>
+
+      <div class="two-col" style="margin-top:32px">
+        <div class="read-col reveal">
+          <h4 class="sub">Las tres heridas del mapa</h4>
+          <p>
+            Toda carta contiene, al menos, tres heridas. La tuya muestra una
+            primera en la casa IV — raíz, infancia, tierra fundacional: algo
+            allí fue más frío de lo que debió ser. La segunda aparece en la
+            cuadratura Luna-Plutón: aprender a no confundir amor con control.
+            La tercera, en el Nodo Sur en Piscis: soltar la tentación de
+            disolverte en otro para no hacerte cargo.
+          </p>
+          <p>
+            Nombrarlas no las cura — pero te devuelve la autoría. A partir de
+            aquí ya no se caen encima: tú las escoges, o las rechazas, todos
+            los días.
+          </p>
+        </div>
+        <div class="read-col reveal">
+          <h4 class="sub">Los tres dones del mapa</h4>
+          <p>
+            Tienes un Gran Trígono de tierra — Sol en Tauro, Marte en
+            Capricornio, Plutón en Virgo — que te concede una capacidad
+            sobrenatural para materializar. Lo que imaginas con detalle y
+            repites con ritmo, termina ocurriendo. No lo tomes a la ligera:
+            ese don implica responsabilidad sobre lo que sueñas.
+          </p>
+          <p>
+            Júpiter bien aspectado en Acuario te regala una red humana insólita.
+            Donde otros tardan años en tejer confianza, tú la provocas en una
+            conversación. Usa ese puente con ética: cada contacto es un mundo.
+          </p>
+        </div>
+      </div>
+
+      <div class="divider-sigil">
+        <div class="line"></div><div class="sigil">✦ ✧ ✦</div><div class="line"></div>
+      </div>
+    </div>
+  </section>
+  `;
+};
+
+</script>
+<script>
+/* NUMEROLOGÍA */
+window.renderNumerologia = function(){
+  const D = window.REPORT;
+  const nums = [
+    {big:D.lifePath,        lbl:'Sendero de vida',    desc:'El camino cifrado en tu fecha de nacimiento: la lección-arco que viniste a completar.'},
+    {big:D.soulNumber,      lbl:'Número del alma',    desc:'Lo que te mueve en silencio — aquello que deseas aun cuando no lo confiesas.'},
+    {big:D.destinyNumber,   lbl:'Número del destino', desc:'El maestro constructor: una vibración rara, enorme, exigente y luminosa.'},
+    {big:D.expressionNumber,lbl:'Expresión',          desc:'Cómo te percibe el mundo cuando hablas, escribes o firmas con tu nombre.'},
+    {big:D.birthYearVibration,lbl:'Vibración anual', desc:'La música de fondo de 2026 para ti: diplomacia, pactos, alianzas inteligentes.'}
+  ];
+  return `
+  <section class="band" id="numerologia" data-screen-label="04 Numerología">
+    <div class="container">
+      <div class="reveal-up">
+        ${window.SYMBOLS.numerologia()}
+        <div class="eyebrow">Capítulo II</div>
+        <h2 class="section-title" style="margin-top:32px">Numerología <em>íntima</em></h2>
+      </div>
+
+      <div class="read reveal" style="margin-top:56px">
+        <p class="lead">
+          Cada letra de tu nombre y cada dígito de tu fecha es una vibración
+          sonora. Lo que sigue es tu acorde — la combinación exacta de notas que
+          suena cuando alguien pronuncia tu nombre al otro lado del mundo.
+        </p>
+      </div>
+
+      <div class="numerology-grid stagger">
+        ${nums.map(n=>`
+          <div class="num-cell">
+            <div class="num-big">${n.big}</div>
+            <div class="num-label">${n.lbl}</div>
+            <div class="num-desc">${n.desc}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="two-col" style="margin-top:96px">
+        <div class="read-col reveal">
+          <h4 class="sub">Sendero 7 · El buscador</h4>
+          <p class="dropcap">
+            El 7 es el número de quien mira hacia adentro antes que hacia afuera.
+            Tu sendero te pide silencio, estudio, y una cierta soledad
+            productiva. No confundas esa soledad con tristeza: es el taller
+            donde trabaja tu parte más lúcida. La gente 7 tarde o temprano
+            termina enseñando lo que investigó en privado — aunque no haya
+            pedido el micrófono.
+          </p>
+          <p>
+            El 7 también trae la tentación del escepticismo cínico. Vigílalo.
+            Dudar está bien, pero <em>dudar de todo</em> es otra forma de
+            dogma. Tu dignidad está en la pregunta honesta, no en la negación
+            sistemática.
+          </p>
+
+          <h4 class="sub">Alma 3 · El creador</h4>
+          <p>
+            En el fondo, lo que quieres es <em>crear</em>. Hablar, pintar,
+            escribir, grabar, inventar, contar. Si tu día a día no deja espacio
+            para una forma — cualquiera — de expresión creativa, algo en ti se
+            apaga en silencio. No hace falta que sea tu profesión; basta con
+            que exista. Cuarenta minutos diarios bastan para que el 3 de tu
+            alma respire.
+          </p>
+        </div>
+
+        <div class="read-col reveal">
+          <h4 class="sub">Destino 22 · Maestro constructor</h4>
+          <p>
+            El 22 es uno de los tres números maestros. No todos los destinos
+            llevan esta vibración — tú sí. Significa que lo que construyas en
+            esta vida tiene vocación de durar más que tú. Proyectos colectivos,
+            instituciones pequeñas, métodos propios, escuelas de pensamiento,
+            incluso familias: cosas con cimientos. No te asustes de la escala.
+            Lo tuyo es construir.
+          </p>
+
+          <h4 class="sub">Expresión 9 · El humanista</h4>
+          <p>
+            Tu forma de aparecer en el mundo es la del 9: comprensivo, amplio,
+            ligeramente melancólico, capaz de ver los dos lados de cualquier
+            disputa. Eso te convierte en un mediador natural. Cuidado con un
+            patrón antiguo del 9: dar más de lo que recibes y luego resentirlo.
+            Aprende la diferencia entre generosidad y autosacrificio.
+          </p>
+
+          <h4 class="sub">Año personal 2 · Diplomacia</h4>
+          <p>
+            2026 es, para ti, un año de <em>pactos</em>. Nada se resuelve
+            unilateralmente. Todo lo importante ocurrirá en conversación: una
+            sociedad, una reconciliación, una firma conjunta, una boda quizá.
+            Es un año para escribir contratos con claridad y pactar los
+            silencios que vienen después.
+          </p>
+        </div>
+      </div>
+
+      <div class="divider-sigil">
+        <div class="line"></div><div class="sigil">✦ ✧ ✦</div><div class="line"></div>
+      </div>
+    </div>
+  </section>
+  `;
+};
+
+</script>
+<script>
+/* AMOR */
+window.renderAmor = function(){
+  return `
+  <section class="band" id="amor" data-screen-label="05 Amor">
+    <div class="container">
+      <div class="reveal-up">
+        ${window.SYMBOLS.amor()}
+        <div class="eyebrow">Capítulo III</div>
+        <h2 class="section-title" style="margin-top:32px">El <em>amor</em>, y su geografía.</h2>
+      </div>
+
+      <div class="read reveal" style="margin-top:56px">
+        <p class="lead dropcap">
+          Amas despacio, pero con raíces. No te enamoras del rostro — te
+          enamoras de la conversación que promete ese rostro. Cuando la
+          conversación cumple, te quedas. Cuando no, te vas más tarde de lo
+          necesario, porque Tauro no sabe salir de un lugar querido hasta que
+          la salida es insoportablemente obvia.
+        </p>
+      </div>
+
+      <div class="score-row stagger">
+        <div class="score"><div class="lbl">Vínculo actual</div><div class="val">74</div><div class="bar" style="--w:74%"></div><div class="note">Estable, con margen de profundización en lo íntimo.</div></div>
+        <div class="score"><div class="lbl">Atracción nueva</div><div class="val">62</div><div class="bar" style="--w:62%"></div><div class="note">Ventana abierta entre junio y septiembre.</div></div>
+        <div class="score"><div class="lbl">Compatibilidad ideal</div><div class="val">Virgo · Capricornio · Cáncer</div><div class="bar" style="--w:90%"></div><div class="note">Elementos tierra y agua: el equilibrio seguro.</div></div>
+        <div class="score"><div class="lbl">Zonas a cuidar</div><div class="val">Libra · Géminis</div><div class="bar" style="--w:40%"></div><div class="note">Encanto rápido, compromiso frágil.</div></div>
+      </div>
+
+      <div class="two-col">
+        <div class="read-col reveal">
+          <h4 class="sub">La forma de tu deseo</h4>
+          <p>
+            Tu Venus en Géminis quiere palabras; tu Marte en Capricornio quiere
+            hechos. Esa dualidad te impide conformarte con uno solo de los dos
+            modos. Quieres que te digan y que te demuestren. Cuando encuentras
+            a alguien capaz de lo uno y lo otro, te rindes. Pero rendirte no
+            significa desaparecer: aprendes aquí que una entrega adulta exige
+            seguir siendo tú.
+          </p>
+          <p>
+            El peligro en tu historia amorosa es el <em>casi</em>: la relación
+            que parece funcionar sobre el papel, donde no falta nada grave,
+            pero donde tampoco ocurre nada sagrado. Cuidado con el casi — se
+            queda años.
+          </p>
+
+          <h4 class="sub">Si estás en pareja</h4>
+          <p>
+            El tránsito de Venus por tu casa VII entre el 12 de junio y el 7 de
+            julio reabre una conversación que llevaban meses posponiendo. No
+            la eludas: ese diálogo, hecho a tiempo, blinda el vínculo tres
+            años. Hecho después — se convierte en ruptura. Depende enteramente
+            del momento.
+          </p>
+        </div>
+
+        <div class="read-col reveal">
+          <h4 class="sub">Si estás soltero/a</h4>
+          <p>
+            Entre el 8 de septiembre y el 22 de octubre, un tránsito triple
+            Venus–Júpiter–Nodo Norte abre una puerta que llevaba años cerrada.
+            Puede manifestarse como un reencuentro inesperado o como un
+            encuentro nuevo con sabor antiguo. No fuerces: preséntate. La
+            astrología empuja las ocasiones; las decisiones las tomas tú.
+          </p>
+
+          <h4 class="sub">La herida a sanar</h4>
+          <p>
+            Tu Luna cuadrada Plutón narra una historia vieja: aprendiste a
+            amar desde la vigilancia. Mirabas al otro para anticipar su humor,
+            porque el humor ajeno fue, una vez, un clima peligroso. Eso te
+            volvió hiper-perceptivo — y a veces invasivo. La sanación no es
+            dejar de percibir: es dejar de usar lo que percibes como arma.
+          </p>
+
+          <h4 class="sub">Mantra del capítulo</h4>
+          <blockquote class="ritual" style="margin:24px 0 0">
+            Amo sin vigilar. <em>Soy amado/a sin rendir cuentas.</em>
+          </blockquote>
+        </div>
+      </div>
+
+      <div class="divider-sigil">
+        <div class="line"></div><div class="sigil">❦</div><div class="line"></div>
+      </div>
+    </div>
+  </section>
+  `;
+};
+
+</script>
+<script>
+/* DINERO */
+window.renderDinero = function(){
+  return `
+  <section class="band" id="dinero" data-screen-label="06 Dinero">
+    <div class="container">
+      <div class="reveal-up">
+        ${window.SYMBOLS.dinero()}
+        <div class="eyebrow">Capítulo IV</div>
+        <h2 class="section-title" style="margin-top:32px">El <em>dinero</em> como energía en movimiento.</h2>
+      </div>
+
+      <div class="two-col" style="margin-top:64px">
+        <div class="read-col reveal">
+          <p class="lead dropcap">
+            Tu carta revela un patrimonio construido por acumulación lenta —
+            no por golpes súbitos. Eso es una bendición: lo que llega
+            despacio, se queda. Lo que llega de golpe, se va de golpe.
+          </p>
+          <p>
+            Tu Casa II en Sagitario te pide una relación expansiva con el
+            dinero: no guardarlo por miedo, sino hacerlo circular con
+            inteligencia. El dinero retenido se estanca en ti y produce
+            ansiedad; el dinero en movimiento —invertido, viajando, educando—
+            regresa multiplicado. Desconfía del impulso avaro: no es tuyo, es
+            heredado.
+          </p>
+
+          <h4 class="sub">Tu tipo financiero</h4>
+          <p>
+            Perfil <em>conservador estratégico</em>: 70% estabilidad, 30%
+            riesgo calculado. No eres especulador; eres inversor paciente.
+            Los instrumentos que te funcionan son aquellos con horizonte de
+            tres años o más. Evita las promesas de rentabilidad rápida: no
+            te van, y te generan culpa cuando fallan.
+          </p>
+        </div>
+
+        <div class="read-col reveal">
+          <h4 class="sub">Ventanas fértiles 2026</h4>
+          <ul style="font-family:var(--serif);font-size:17px;color:var(--ink-dim);line-height:1.9;list-style:none;padding:0">
+            <li>— <strong style="color:var(--gold-bright)">12 ene – 3 feb.</strong> Cierre de un ciclo financiero viejo. Liquidez disponible para reinvertir.</li>
+            <li>— <strong style="color:var(--gold-bright)">29 mar – 22 abr.</strong> Oferta laboral o ascenso: acepta con contraoferta, no con miedo.</li>
+            <li>— <strong style="color:var(--gold-bright)">8 jul – 14 ago.</strong> Venus en casa II: ingreso colateral, regalo, herencia menor.</li>
+            <li>— <strong style="color:var(--gold-bright)">3 oct – 19 nov.</strong> Firma de contrato a varios años: leer la letra pequeña dos veces.</li>
+          </ul>
+
+          <h4 class="sub">Zonas de cautela</h4>
+          <p>
+            Evita decisiones financieras importantes durante <em>Mercurio
+            retrógrado</em>: del 4 al 28 de marzo, del 18 de julio al 11 de
+            agosto, y del 9 de noviembre al 29 de noviembre. No es superstición:
+            es un tiempo estadísticamente ruidoso en tu carta. Posponer una
+            firma tres semanas nunca hizo daño; firmar apresuradamente sí.
+          </p>
+
+          <h4 class="sub">Una enseñanza</h4>
+          <p>
+            Júpiter transitará tu casa VIII entre agosto y diciembre. Esa
+            casa rige lo que compartes: impuestos, sociedades, herencias,
+            deudas. Es el momento de poner orden en todos los dineros que no
+            son estrictamente tuyos pero te atraviesan. Ahí hay fuga. Cerrarla
+            libera una cifra que hoy no ves.
+          </p>
+        </div>
+      </div>
+
+      <blockquote class="ritual reveal" style="max-width:900px;margin-left:auto;margin-right:auto">
+        El dinero no es un número: es la <em>velocidad</em> con la que te
+        atreves a convertir ideas en hechos.
+      </blockquote>
+
+      <div class="divider-sigil"><div class="line"></div><div class="sigil">◈</div><div class="line"></div></div>
+    </div>
+  </section>
+  `;
+};
+
+</script>
+<script>
+/* NEGOCIOS */
+window.renderNegocios = function(){
+  return `
+  <section class="band" id="negocios" data-screen-label="07 Negocios">
+    <div class="container">
+      <div class="reveal-up">
+        ${window.SYMBOLS.negocios()}
+        <div class="eyebrow">Capítulo V</div>
+        <h2 class="section-title" style="margin-top:32px">Negocios: <em>el oficio con firma.</em></h2>
+      </div>
+
+      <div class="read reveal" style="margin-top:56px">
+        <p class="lead">
+          Tu Medio Cielo en Leo con Saturno bien aspectado dibuja una vocación
+          de autoría. Puedes trabajar para otro — nadie lo discute — pero algo
+          en ti necesita, tarde o temprano, <em>firmar</em>. Un producto, una
+          marca, un método. Ese deseo no es ego: es fidelidad a tu carta.
+        </p>
+      </div>
+
+      <div class="rune-grid stagger" style="margin-top:72px">
+        <div class="rune-card">
+          <div class="rune-glyph">𖡡</div>
+          <div class="rune-title">Oficio propio</div>
+          <div class="rune-body">Un servicio que lleve tu nombre y una metodología reconocible. Comienza pequeño, escribe método, cobra justo. Mínimo viable: seis meses.</div>
+        </div>
+        <div class="rune-card">
+          <div class="rune-glyph">ᛟ</div>
+          <div class="rune-title">Sociedad con alguien de tierra</div>
+          <div class="rune-body">Un socio Virgo o Capricornio amplifica tu capacidad de ejecución sin contaminar tu visión. Pactos claros por escrito: tu carta lo pide.</div>
+        </div>
+        <div class="rune-card">
+          <div class="rune-glyph">ᚦ</div>
+          <div class="rune-title">Producto formativo</div>
+          <div class="rune-body">Saturno en casa X te pide enseñar. Curso, libro, taller. Lo que aprendas en los próximos dos años tiene vocación pedagógica.</div>
+        </div>
+      </div>
+
+      <div class="two-col" style="margin-top:80px">
+        <div class="read-col reveal">
+          <h4 class="sub">Fortalezas estructurales</h4>
+          <p>
+            Tienes tres palancas poco comunes: <strong>disciplina táurea</strong>
+            (puedes sostener un proyecto cinco años sin fanfarria),
+            <strong>inteligencia Libra</strong> (captas la arquitectura social
+            de un mercado antes que el mercado mismo), y <strong>visión
+            Escorpio</strong> (ves lo que la mayoría esquiva). Esa combinación
+            es rara. Defiéndela de los consejos que te piden ser más rápido,
+            más agresivo, o más superficial.
+          </p>
+
+          <h4 class="sub">Riesgos recurrentes</h4>
+          <p>
+            Tu trampa: decir que sí a colaboraciones que no te corresponden,
+            por tu Luna Libra. Aprende a declinar con elegancia. Un no a tiempo
+            protege un sí importante. Segundo riesgo: <em>pulir demasiado</em>
+            antes de mostrar. Tauro perfecciona; el mercado necesita ver.
+          </p>
+        </div>
+
+        <div class="read-col reveal">
+          <h4 class="sub">Sectores afines a tu carta</h4>
+          <p>
+            Afinidad alta con: educación, salud integrativa, finanzas con
+            propósito, oficio artesanal con distribución digital, sector
+            editorial, consultoría independiente, arquitectura suave, moda
+            atemporal, agricultura simbiótica. Afinidad baja con: logística
+            pura, retail masivo, especulación bursátil. No significa que no
+            puedas: significa que te costará más disfrutarlo.
+          </p>
+
+          <h4 class="sub">El año como mapa de negocio</h4>
+          <p>
+            <strong>Q1</strong> cimientos invisibles. <strong>Q2</strong>
+            primera muestra pública. <strong>Q3</strong> socios y escala.
+            <strong>Q4</strong> cosecha discreta y contrato a largo plazo.
+            Respeta los cuatro tiempos: saltarte uno te obliga a repetirlo en
+            2027.
+          </p>
+        </div>
+      </div>
+
+      <div class="divider-sigil"><div class="line"></div><div class="sigil">✦</div><div class="line"></div></div>
+    </div>
+  </section>
+  `;
+};
+
+</script>
+<script>
+/* SUERTE */
+window.renderSuerte = function(){
+  return `
+  <section class="band" id="suerte" data-screen-label="08 Suerte">
+    <div class="container">
+      <div class="reveal-up">
+        ${window.SYMBOLS.suerte()}
+        <div class="eyebrow">Capítulo VI</div>
+        <h2 class="section-title" style="margin-top:32px">La <em>suerte</em> es una coordenada, no un milagro.</h2>
+      </div>
+
+      <div class="read reveal" style="margin-top:56px">
+        <p class="lead dropcap">
+          La suerte, en astrología, es un lugar concreto de tu carta: la Parte
+          de la Fortuna. Es el punto donde el universo conspira a tu favor
+          sin que tú tengas que empujar. Conocer ese lugar no te hace
+          afortunado; te hace <em>puntual</em> a tu propia cita.
+        </p>
+      </div>
+
+      <div class="kv-strip reveal" style="margin-top:48px">
+        <div class="kv-cell"><div class="k">Parte de la Fortuna</div><div class="v">Sagitario · Casa II</div></div>
+        <div class="kv-cell"><div class="k">Día fuerte</div><div class="v">Viernes</div></div>
+        <div class="kv-cell"><div class="k">Hora favorable</div><div class="v">05:00 – 07:00</div></div>
+        <div class="kv-cell"><div class="k">Colores</div><div class="v">Oro · Índigo · Arena</div></div>
+        <div class="kv-cell"><div class="k">Números</div><div class="v">7 · 22 · 49</div></div>
+      </div>
+
+      <div class="two-col" style="margin-top:72px">
+        <div class="read-col reveal">
+          <h4 class="sub">Dónde buscarla</h4>
+          <p>
+            Con tu Parte de la Fortuna en Sagitario-Casa II, la suerte te
+            encuentra en <em>viajes cortos con intención</em>, en idiomas
+            aprendidos con curiosidad, en mesas de conversación con
+            extranjeros. Lo que nunca te busca: la compra impulsiva, el juego
+            de azar puro, las promesas vagas en reuniones sin acta.
+          </p>
+          <p>
+            No se trata de ser supersticioso. Se trata de que tu carta pide
+            que pongas el cuerpo en ciertos lugares, y por alguna razón
+            estadística que no sabemos explicar, ahí las cosas se acomodan.
+            Es así.
+          </p>
+        </div>
+
+        <div class="read-col reveal">
+          <h4 class="sub">Amuletos que vibran contigo</h4>
+          <p>
+            <strong>Cuarzo citrino</strong>: claridad, abundancia, voluntad
+            solar. Llévalo cerca del corazón en decisiones importantes.
+            <strong>Pirita</strong>: anclaje material, buena para escritorio
+            de trabajo. <strong>Lapislázuli</strong>: intuición fina, ideal
+            junto a la almohada tres noches antes de una decisión grande.
+          </p>
+
+          <h4 class="sub">Tu palabra-llave del año</h4>
+          <blockquote class="ritual" style="margin:16px 0 0">
+            <em>Movimiento.</em> Lo que se mueve en ti, se te abre.
+          </blockquote>
+        </div>
+      </div>
+
+      <div class="divider-sigil"><div class="line"></div><div class="sigil">✧</div><div class="line"></div></div>
+    </div>
+  </section>
+  `;
+};
+
+</script>
+<script>
+/* EVENTOS - fechas marcadas */
+window.renderEventos = function(){
+  const events = [
+    {date:'15 Enero · 2026', title:'Nueva Luna en Capricornio · Casa III', body:'Día óptimo para escribir la intención del año en un cuaderno nuevo. Lo que pongas por escrito esa noche, se ejecuta solo durante los doce meses siguientes.'},
+    {date:'29 Marzo · 2026', title:'Conjunción Sol–Venus · Casa VI', body:'Decisión laboral importante. Una propuesta llegará y pide respuesta en 72 horas. Tu instinto estará acertado — pero revisa los números con alguien de confianza antes de firmar.'},
+    {date:'12 Junio · 2026', title:'Venus entra en tu Casa VII', body:'Reapertura de una conversación pendiente con alguien cercano. Úsalo bien: lo que no se hable entre el 12 de junio y el 7 de julio, se posterga al menos un año.'},
+    {date:'08 Septiembre · 2026', title:'Triple tránsito Venus–Júpiter–Nodo Norte', body:'La ventana más fértil del año para vínculos significativos. Sal de casa. Acepta invitaciones inesperadas. Habla con desconocidos en los trenes.'},
+    {date:'03 Octubre · 2026', title:'Júpiter en trígono a tu Sol natal', body:'Oportunidad de expansión real — formativa, profesional o geográfica. No se repite hasta 2037. Dile sí a lo que te asuste un poco.'},
+    {date:'19 Noviembre · 2026', title:'Luna llena en tu Casa IV', body:'Cierre de un ciclo doméstico, familiar o de raíz. Puede manifestarse como mudanza, reconciliación o comprensión tardía. Noche para llorar si hace falta.'},
+    {date:'21 Diciembre · 2026', title:'Solsticio · portal anual', body:'Ritual final del año: agradece por escrito tres cosas por cada mes. Guarda el papel. Ábrelo en el solsticio siguiente. La diferencia te dejará sin palabras.'}
+  ];
+  return `
+  <section class="band" id="eventos" data-screen-label="09 Eventos">
+    <div class="container">
+      <div class="reveal-up">
+        ${window.SYMBOLS.eventos()}
+        <div class="eyebrow">Capítulo VII</div>
+        <h2 class="section-title" style="margin-top:32px">Tu <em>calendario</em> del alma.</h2>
+      </div>
+
+      <div class="read reveal" style="margin-top:48px">
+        <p class="lead">
+          Siete fechas — ni más, ni menos — en las que el cielo abre una ventana
+          específica sobre tu vida. Marca estas fechas. Prepárate con pausa.
+          Lo que hagas (o dejes de hacer) en esos días tiene peso desproporcionado.
+        </p>
+      </div>
+
+      <div class="timeline">
+        ${events.map(e=>`
+          <div class="tl-item reveal">
+            <div class="tl-date">${e.date}</div>
+            <div class="tl-title">${e.title}</div>
+            <div class="tl-body">${e.body}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="divider-sigil"><div class="line"></div><div class="sigil">☾ ✦ ☽</div><div class="line"></div></div>
+    </div>
+  </section>
+  `;
+};
+
+</script>
+<script>
+/* TRANSITOS - tabla planetaria */
+window.renderTransitos = function(){
+  const rows = [
+    {g:'♃', p:'Júpiter', sig:'→ Cáncer → Leo', casa:'Casa VIII → IX', periodo:'Ene – Dic 2026', efecto:'Expansión en lo compartido, luego en lo filosófico. Viajes, estudios, publicaciones.'},
+    {g:'♄', p:'Saturno', sig:'Piscis', casa:'Casa V', periodo:'Todo 2026', efecto:'Disciplina en lo creativo y en los afectos. Responsabilidad con los hijos (propios o simbólicos).'},
+    {g:'♅', p:'Urano', sig:'Géminis', casa:'Casa VIII', periodo:'Desde julio 2026', efecto:'Revolución en lo heredado y en los recursos compartidos. Sorpresas financieras.'},
+    {g:'♆', p:'Neptuno', sig:'Aries', casa:'Casa VI', periodo:'Desde marzo 2026', efecto:'Reinvención del hábito diario y de la relación con el cuerpo. Cuidado con la autoexigencia difusa.'},
+    {g:'♇', p:'Plutón', sig:'Acuario', casa:'Casa IV', periodo:'Todo 2026', efecto:'Transformación profunda en la raíz familiar. Reescritura de la historia de origen.'},
+    {g:'☊', p:'Nodo Norte', sig:'Piscis', casa:'Casa V', periodo:'Hasta ene 2027', efecto:'Tu destino te empuja hacia la creatividad no comercial, el juego, la expresión libre.'},
+    {g:'⚷', p:'Quirón', sig:'Aries', casa:'Casa VI', periodo:'Todo 2026', efecto:'Sanación del patrón "servir a otros antes que a mí". Aprendizaje desde el cuerpo.'}
+  ];
+  return `
+  <section class="band" id="transitos" data-screen-label="10 Tránsitos">
+    <div class="container">
+      <div class="reveal-up">
+        ${window.SYMBOLS.transitos()}
+        <div class="eyebrow">Capítulo VIII</div>
+        <h2 class="section-title" style="margin-top:32px">Tránsitos <em>planetarios.</em></h2>
+      </div>
+
+      <div class="read reveal" style="margin-top:48px">
+        <p class="lead">
+          Los planetas no se detienen. Cada semana caminan sobre alguna parte
+          de tu carta y activan, iluminan o presionan algo en ti. Esta tabla
+          resume los tránsitos mayores del año: los que empujan de fondo, los
+          que marcan el carácter estructural de 2026.
+        </p>
+      </div>
+
+      <div class="reveal" style="overflow-x:auto;margin-top:24px">
+      <table class="transits">
+        <thead>
+          <tr>
+            <th style="width:60px"></th>
+            <th>Planeta</th>
+            <th>Signo</th>
+            <th>Casa</th>
+            <th>Período</th>
+            <th>Efecto</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(r=>`
+            <tr>
+              <td><span class="glyph">${r.g}</span></td>
+              <td><strong style="color:var(--ink)">${r.p}</strong></td>
+              <td>${r.sig}</td>
+              <td>${r.casa}</td>
+              <td style="color:var(--gold-bright);font-family:var(--mono);font-size:13px">${r.periodo}</td>
+              <td>${r.efecto}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+      </div>
+
+      <div class="two-col" style="margin-top:80px">
+        <div class="read-col reveal">
+          <h4 class="sub">Cómo leer esta tabla</h4>
+          <p>
+            No todos los tránsitos ocurren al mismo tiempo con la misma
+            intensidad. Júpiter pasa — Plutón <em>permanece</em>. Los
+            planetas lentos (Saturno, Urano, Neptuno, Plutón) describen el
+            clima de fondo de tu año. Los rápidos (Mercurio, Venus, Marte)
+            marcan las semanas específicas. Usa esta tabla como mapa macro,
+            no como agenda semanal.
+          </p>
+        </div>
+        <div class="read-col reveal">
+          <h4 class="sub">El tránsito decisivo</h4>
+          <p>
+            Si tuvieras que elegir uno: <em>Plutón en Casa IV</em>. Este es
+            el trabajo profundo del año y del próximo. Te invita a revisar
+            tu historia familiar con honestidad adulta. No para culpar, sino
+            para entender. De esa revisión sale una libertad que vale por
+            los próximos veinte años.
+          </p>
+        </div>
+      </div>
+
+      <div class="divider-sigil"><div class="line"></div><div class="sigil">♃ ♄ ♇</div><div class="line"></div></div>
+    </div>
+  </section>
+  `;
+};
+
+</script>
+<script>
+/* RITUALES */
+window.renderRituales = function(){
+  const rituals = [
+    {g:'☾', t:'Ritual de luna nueva', b:'La noche de cada luna nueva: escribe en un papel tres intenciones claras, léelas en voz alta, quema el papel en un recipiente seguro. El humo es el mensajero. No lo digas a nadie durante 28 días.'},
+    {g:'✦', t:'Agua estelar', b:'Deja un vaso de agua limpia en la ventana durante una noche clara. Bebe la primera mitad al amanecer. La segunda, ofrécela a una planta. Gesto breve, efecto sostenido sobre la claridad mental.'},
+    {g:'❦', t:'Baño de sal gruesa', b:'Un viernes por mes: baño de agua tibia con tres puñados de sal gruesa y hojas de laurel. Sumerge la cabeza tres veces. Limpia energías cargadas; deja la piel con memoria nueva.'},
+    {g:'✧', t:'Escritura solar', b:'A las 05:30 de la mañana, durante tres días seguidos, escribe a mano tres páginas continuas, sin corregir. Úsalo para abrir un ciclo profesional. Solsticio de Marte en tu carta.'},
+    {g:'◈', t:'Oro bajo la almohada', b:'Una moneda dorada (de oro real o bronce pulido) bajo la almohada la noche antes de una decisión financiera importante. Al despertar, la primera palabra que piensas — anótala. Contiene tu respuesta.'},
+    {g:'𖡡', t:'Ofrenda a la raíz', b:'En el solsticio de invierno, deja bajo un árbol una fruta y una moneda. Gesto antiguo de devolución: recuerda al cuerpo que no todo lo recibido le pertenece.'}
+  ];
+  return `
+  <section class="band" id="rituales" data-screen-label="11 Rituales">
+    <div class="container">
+      <div class="reveal-up">
+        ${window.SYMBOLS.rituales()}
+        <div class="eyebrow">Capítulo IX</div>
+        <h2 class="section-title" style="margin-top:32px">Pequeñas <em>ceremonias</em> de alineación.</h2>
+      </div>
+
+      <div class="read reveal" style="margin-top:48px">
+        <p class="lead">
+          Un ritual no es magia: es un gesto corporal que le recuerda al
+          inconsciente que algo importa. Te proponemos seis, pensados para tu
+          carta. Hazlos, no los leas. Lo que ocurre después — ocurre.
+        </p>
+      </div>
+
+      <div class="rune-grid stagger">
+        ${rituals.map(r=>`
+          <div class="rune-card">
+            <div class="rune-glyph">${r.g}</div>
+            <div class="rune-title">${r.t}</div>
+            <div class="rune-body">${r.b}</div>
+          </div>
+        `).join('')}
+      </div>
+
+      <div class="divider-sigil"><div class="line"></div><div class="sigil">✦ ✧ ✦</div><div class="line"></div></div>
+    </div>
+  </section>
+  `;
+};
+
+</script>
+<script>
+/* CIERRE - bendición final + CTA */
+window.renderCierre = function(){
+  return `
+  <section class="band cierre" id="cierre" data-screen-label="12 Cierre">
+    <div class="container">
+      <svg class="sigil" viewBox="0 0 200 200" aria-hidden="true">
+        <defs>
+          <radialGradient id="sigGlow"><stop offset="0" stop-color="rgba(212,175,55,.5)"/><stop offset="1" stop-color="transparent"/></radialGradient>
+        </defs>
+        <circle cx="100" cy="100" r="90" fill="none" stroke="rgba(212,175,55,.4)" stroke-width=".5"/>
+        <circle cx="100" cy="100" r="70" fill="none" stroke="rgba(212,175,55,.3)" stroke-width=".5"/>
+        <circle cx="100" cy="100" r="50" fill="url(#sigGlow)"/>
+        ${Array.from({length:12}).map((_,i)=>{
+          const a=(i*30)*Math.PI/180;
+          const x1=100+Math.cos(a)*55,y1=100+Math.sin(a)*55;
+          const x2=100+Math.cos(a)*90,y2=100+Math.sin(a)*90;
+          return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="rgba(212,175,55,.5)" stroke-width=".5"/>`;
+        }).join('')}
+        <polygon points="100,40 115,95 160,95 123,125 135,175 100,145 65,175 77,125 40,95 85,95" fill="none" stroke="#f0ce5a" stroke-width=".8"/>
+        <circle cx="100" cy="100" r="4" fill="#f0ce5a"/>
+      </svg>
+
+      <div class="eyebrow no-lines reveal" style="justify-content:center;display:flex;margin-bottom:32px">Bendición final</div>
+
+      <h2 class="reveal">
+        Que lo leído aquí se vuelva <em>cuerpo</em>.<br/>
+        Que lo comprendido se vuelva <em>costumbre</em>.<br/>
+        Que lo que aún <em>no sabes</em>, llegue despacio.
+      </h2>
+
+      <div class="read reveal" style="margin-top:64px">
+        <p style="text-align:center">
+          Este informe ha sido preparado con atención y respeto por tu
+          singularidad. No somos adivinos: somos lectores de un lenguaje muy
+          antiguo. Si alguna página te incomodó, vuelve a ella en una semana.
+          Si alguna te alivió, guárdala cerca. La astrología no ordena — acompaña.
+        </p>
+      </div>
+
+      <div class="cta-area reveal">
+        <a href="https://astrodorado-app.vercel.app/" target="_blank" rel="noopener" class="btn-ritual">
+          Acceder a tu panel <span class="arrow">→</span>
+        </a>
+        <a href="https://astrodorado.vercel.app/" target="_blank" rel="noopener" class="btn-ghost">
+          Volver al portal Astro Dorado
+        </a>
+      </div>
+
+      <div class="sig-line">
+        Firmado con tinta dorada · Astro Dorado · MMXXVI
+      </div>
+    </div>
+  </section>
+  `;
+};
+
+</script>
+<script>
+/* APP: assemble + init */
+(function(){
+  const app = document.getElementById('app');
+  app.innerHTML =
+    window.renderHero() +
+    window.renderResumen() +
+    window.renderCartaNatal() +
+    window.renderNumerologia() +
+    window.renderAmor() +
+    window.renderDinero() +
+    window.renderNegocios() +
+    window.renderSuerte() +
+    window.renderEventos() +
+    window.renderTransitos() +
+    window.renderRituales() +
+    window.renderCierre();
+
+  // Init UI (cursor, starfield, reveals, parallax, clock, progress)
+  if(window.UI && window.UI.init) window.UI.init();
+})();
+
+</script>
+
+</body></html>
