@@ -61,9 +61,7 @@ export default async function InformePage({ params }: Params) {
     const dataBlock = {
       clientSalute: 'Apreciado Sergio',
       issuedAt: new Date(data.report.generated_at).toLocaleDateString('es-ES', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
+        day: 'numeric', month: 'long', year: 'numeric',
       }),
       issuedCode: 'AD' + DOT + dottedDate + ' / Vol. I ' + DOT + ' No. 01',
       delivery: 'Edicion personal - intransferible',
@@ -132,7 +130,7 @@ export default async function InformePage({ params }: Params) {
   return (
     <div style={wrapperStyle}>
       <iframe srcDoc={template} style={iframeStyle} title="Informe AstroDorado" />
-      <a href={`/informes/${id}/print`} target="_blank" rel="noopener" style={buttonStyle}>
+      <a href={`/informes/${id}/pdf`} target="_blank" rel="noopener" style={buttonStyle}>
         <span style={{ fontSize: 14, fontWeight: 900 }}>PDF</span>
         <span>Descargar</span>
       </a>
