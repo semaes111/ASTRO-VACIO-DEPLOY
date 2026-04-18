@@ -12,7 +12,9 @@ type Params = { params: Promise<{ id: string }> };
 function degreeToMinutes(deg: number): string {
   const intDeg = Math.floor(deg);
   const minutes = Math.round((deg - intDeg) * 60);
-  return `${intDeg.toString().padStart(2, '0')}°${minutes.toString().padStart(2, '0')}′`;
+  const DEG = String.fromCharCode(176);
+  const MIN = String.fromCharCode(8242);
+  return `${intDeg.toString().padStart(2, '0')}${DEG}${minutes.toString().padStart(2, '0')}${MIN}`;
 }
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -42,25 +44,40 @@ export default async function InformePage({ params }: Params) {
 
   const templatePath = path.join(process.cwd(), 'public', 'informe-template-premium.html');
   let template: string;
-  try { template = await fs.readFile(templatePath, 'utf-8'); }
-  catch { return <div style={{padding: 40, color: '#a67c2e'}}>Template no disponible</div>; }
+  try {
+    template = await fs.readFile(templatePath, 'utf-8');
+  } catch {
+    return <div style={{ padding: 40, color: '#a67c2e' }}>Template no disponible</div>;
+  }
 
   if (data.chart) {
     const c = data.chart;
+    const DOT = String.fromCharCode(183);
+    const DEG = String.fromCharCode(176);
+    const MIN = String.fromCharCode(8242);
     const dataBlock = {
       clientSalute: 'Apreciado Sergio',
-      issuedAt: new Date(data.report.generated_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }),
-      issuedCode: `AD·${new Date(data.report.generated_at).toISOString().slice(0,10).replace(/-/g, '·')} / Vol. I · No. 01`,
-      delivery: 'Edición personal — intransferible',
-      birthDate: '30 de Junio de 1973', birthTime: '12:00', birthPlace: 'Almería, España',
-      latitude: '36°50′N', longitude: '02°28′W',
-      sun: `${cap(c.sun_sign)} · ${degreeToMinutes(c.sun_degree)}`,
-      moon: `${cap(c.moon_sign)} · ${degreeToMinutes(c.moon_degree)}`,
-      ascendant: `${cap(c.rising_sign)} · ${degreeToMinutes(c.rising_degree)}`,
-      midheaven: 'Sagitario · —',
+      issuedAt: new Date(data.report.generated_at).toLocaleDateString('es-ES', {
+        day: 'numeric', month: 'long', year: 'numeric',
+      }),
+      issuedCode: `AD${DOT}${new Date(data.report.generated_at).toISOString().slice(0, 10).replace(/-/g, DOT)} / Vol. I ${DOT} No. 01`,
+      delivery: 'Edicion personal - intransferible',
+      birthDate: '30 de Junio de 1973',
+      birthTime: '12:00',
+      birthPlace: 'Almeria, Espana',
+      latitude: `36${DEG}50${MIN}N`,
+      longitude: `02${DEG}28${MIN}W`,
+      sun: `${cap(c.sun_sign)} ${DOT} ${degreeToMinutes(c.sun_degree)}`,
+      moon: `${cap(c.moon_sign)} ${DOT} ${degreeToMinutes(c.moon_degree)}`,
+      ascendant: `${cap(c.rising_sign)} ${DOT} ${degreeToMinutes(c.rising_degree)}`,
+      midheaven: `Sagitario ${DOT} -`,
       element: `${c.dominant_element ? cap(c.dominant_element) : 'Agua'} / Cardinal`,
       modality: 'Receptivo emocional',
-      lifePath: '8', soulNumber: '6', destinyNumber: '1', expressionNumber: '7', birthYearVibration: '2',
+      lifePath: '8',
+      soulNumber: '6',
+      destinyNumber: '1',
+      expressionNumber: '7',
+      birthYearVibration: '2',
     };
     template = template.replace(
       /window\.REPORT = \{[\s\S]*?\};/,
@@ -70,14 +87,11 @@ export default async function InformePage({ params }: Params) {
 
   return (
     <div style={{ margin: 0, padding: 0, height: '100vh', overflow: 'hidden', position: 'relative', background: '#050510' }}>
-      {/* Iframe con el grimorio premium */}
       <iframe
         srcDoc={template}
         style={{ width: '100vw', height: '100vh', border: 'none', display: 'block' }}
         title="Informe AstroDorado"
       />
-
-      {/* Boton flotante Descargar PDF */}
       
         href={`/informes/${id}/print`}
         target="_blank"
@@ -105,8 +119,8 @@ export default async function InformePage({ params }: Params) {
           backdropFilter: 'blur(8px)',
         }}
       >
-        <span style={{ fontSize: 16 }}>↓</span>
-        <span>Descargar PDF</span>
+        <span style={{ fontSize: 14, fontWeight: 900 }}>PDF</span>
+        <span>Descargar</span>
       </a>
     </div>
   );
@@ -115,7 +129,7 @@ export default async function InformePage({ params }: Params) {
 export async function generateMetadata({ params }: Params) {
   const { id } = await params;
   return {
-    title: 'AstroDorado · Informe Personal del Alma',
-    description: 'Tu carta natal, tu numerología, y la cartografía de tu destino.',
+    title: 'AstroDorado - Informe Personal del Alma',
+    description: 'Tu carta natal, tu numerologia, y la cartografia de tu destino.',
   };
 }

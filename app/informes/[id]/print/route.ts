@@ -1,10 +1,3 @@
-// ═══════════════════════════════════════════════════════════════════
-// Ruta: /informes/[id]/print
-// Sirve el template PREMIUM como HTML crudo con @media print forzado
-// (fondo crema, dorado oscurecido) + auto-dispara window.print() al cargar.
-// Diseñada para generar PDF en papel A4 — link directo o click del boton.
-// ═══════════════════════════════════════════════════════════════════
-
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import fs from 'node:fs/promises';
@@ -18,14 +11,16 @@ type Ctx = { params: Promise<{ id: string }> };
 function degreeToMinutes(deg: number): string {
   const intDeg = Math.floor(deg);
   const minutes = Math.round((deg - intDeg) * 60);
-  return `${intDeg.toString().padStart(2, '0')}°${minutes.toString().padStart(2, '0')}′`;
+  const DEG = String.fromCharCode(176);
+  const MIN = String.fromCharCode(8242);
+  return `${intDeg.toString().padStart(2, '0')}${DEG}${minutes.toString().padStart(2, '0')}${MIN}`;
 }
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 export async function GET(req: Request, { params }: Ctx) {
   const { id } = await params;
   const url = new URL(req.url);
-  const autoPrint = url.searchParams.get('print') !== '0';  // por defecto SI auto-imprime
+  const autoPrint = url.searchParams.get('print') !== '0';
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -48,7 +43,6 @@ export async function GET(req: Request, { params }: Ctx) {
     .eq('user_id', report.user_id)
     .single();
 
-  // Leer template premium
   const templatePath = path.join(process.cwd(), 'public', 'informe-template-premium.html');
   let template: string;
   try {
@@ -57,29 +51,33 @@ export async function GET(req: Request, { params }: Ctx) {
     return NextResponse.json({ error: 'template_missing' }, { status: 500 });
   }
 
-  // Inyectar datos del chart
   if (chart) {
-    const sunStr = `${cap(chart.sun_sign)} · ${degreeToMinutes(chart.sun_degree)}`;
-    const moonStr = `${cap(chart.moon_sign)} · ${degreeToMinutes(chart.moon_degree)}`;
-    const ascStr = `${cap(chart.rising_sign)} · ${degreeToMinutes(chart.rising_degree)}`;
-    const element = chart.dominant_element ? cap(chart.dominant_element) : 'Agua';
+    const DOT = String.fromCharCode(183);
+    const DEG = String.fromCharCode(176);
+    const MIN = String.fromCharCode(8242);
     const dataBlock = {
       clientSalute: 'Apreciado Sergio',
       issuedAt: new Date(report.generated_at).toLocaleDateString('es-ES', {
         day: 'numeric', month: 'long', year: 'numeric',
       }),
-      issuedCode: `AD·${new Date(report.generated_at).toISOString().slice(0,10).replace(/-/g, '·')} / Vol. I · No. 01`,
-      delivery: 'Edición personal — intransferible',
+      issuedCode: `AD${DOT}${new Date(report.generated_at).toISOString().slice(0, 10).replace(/-/g, DOT)} / Vol. I ${DOT} No. 01`,
+      delivery: 'Edicion personal - intransferible',
       birthDate: '30 de Junio de 1973',
       birthTime: '12:00',
-      birthPlace: 'Almería, España',
-      latitude: '36°50′N',
-      longitude: '02°28′W',
-      sun: sunStr, moon: moonStr, ascendant: ascStr,
-      midheaven: 'Sagitario · —',
-      element: `${element} / Cardinal`,
+      birthPlace: 'Almeria, Espana',
+      latitude: `36${DEG}50${MIN}N`,
+      longitude: `02${DEG}28${MIN}W`,
+      sun: `${cap(chart.sun_sign)} ${DOT} ${degreeToMinutes(chart.sun_degree)}`,
+      moon: `${cap(chart.moon_sign)} ${DOT} ${degreeToMinutes(chart.moon_degree)}`,
+      ascendant: `${cap(chart.rising_sign)} ${DOT} ${degreeToMinutes(chart.rising_degree)}`,
+      midheaven: `Sagitario ${DOT} -`,
+      element: `${chart.dominant_element ? cap(chart.dominant_element) : 'Agua'} / Cardinal`,
       modality: 'Receptivo emocional',
-      lifePath: '8', soulNumber: '6', destinyNumber: '1', expressionNumber: '7', birthYearVibration: '2',
+      lifePath: '8',
+      soulNumber: '6',
+      destinyNumber: '1',
+      expressionNumber: '7',
+      birthYearVibration: '2',
     };
     template = template.replace(
       /window\.REPORT = \{[\s\S]*?\};/,
@@ -87,24 +85,20 @@ export async function GET(req: Request, { params }: Ctx) {
     );
   }
 
-  // Forzar modo print al cargar (version LIGHT para PDF imprimible)
   if (autoPrint) {
     const autoPrintScript = `
 <script>
-// Esperar a que el renderizado dinamico termine y disparar window.print()
 (function(){
   let printed = false;
   function tryPrint() {
     if (printed) return;
-    // Esperar a que los renderers hayan pintado el main
     const main = document.getElementById('app');
     if (!main || main.children.length < 3) {
       setTimeout(tryPrint, 200);
       return;
     }
     printed = true;
-    // Pequeño delay para dejar que fuentes carguen
-    setTimeout(() => {
+    setTimeout(function() {
       try { window.print(); } catch(e) { console.error('print failed', e); }
     }, 1500);
   }
@@ -121,7 +115,6 @@ export async function GET(req: Request, { params }: Ctx) {
     headers: {
       'Content-Type': 'text/html; charset=utf-8',
       'Cache-Control': 'private, max-age=0',
-      'Content-Security-Policy': "frame-ancestors 'self' *.vercel.app",
     },
   });
 }
