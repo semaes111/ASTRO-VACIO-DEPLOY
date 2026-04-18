@@ -14,8 +14,9 @@ function degreeToMinutes(deg: number): string {
   const minutes = Math.round((deg - intDeg) * 60);
   const DEG = String.fromCharCode(176);
   const MIN = String.fromCharCode(8242);
-  return `${intDeg.toString().padStart(2, '0')}${DEG}${minutes.toString().padStart(2, '0')}${MIN}`;
+  return intDeg.toString().padStart(2, '0') + DEG + minutes.toString().padStart(2, '0') + MIN;
 }
+
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 async function getData(id: string) {
@@ -55,23 +56,27 @@ export default async function InformePage({ params }: Params) {
     const DOT = String.fromCharCode(183);
     const DEG = String.fromCharCode(176);
     const MIN = String.fromCharCode(8242);
+    const isoDate = new Date(data.report.generated_at).toISOString().slice(0, 10);
+    const dottedDate = isoDate.split('-').join(DOT);
     const dataBlock = {
       clientSalute: 'Apreciado Sergio',
       issuedAt: new Date(data.report.generated_at).toLocaleDateString('es-ES', {
-        day: 'numeric', month: 'long', year: 'numeric',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
       }),
-      issuedCode: `AD${DOT}${new Date(data.report.generated_at).toISOString().slice(0, 10).replace(/-/g, DOT)} / Vol. I ${DOT} No. 01`,
+      issuedCode: 'AD' + DOT + dottedDate + ' / Vol. I ' + DOT + ' No. 01',
       delivery: 'Edicion personal - intransferible',
       birthDate: '30 de Junio de 1973',
       birthTime: '12:00',
       birthPlace: 'Almeria, Espana',
-      latitude: `36${DEG}50${MIN}N`,
-      longitude: `02${DEG}28${MIN}W`,
-      sun: `${cap(c.sun_sign)} ${DOT} ${degreeToMinutes(c.sun_degree)}`,
-      moon: `${cap(c.moon_sign)} ${DOT} ${degreeToMinutes(c.moon_degree)}`,
-      ascendant: `${cap(c.rising_sign)} ${DOT} ${degreeToMinutes(c.rising_degree)}`,
-      midheaven: `Sagitario ${DOT} -`,
-      element: `${c.dominant_element ? cap(c.dominant_element) : 'Agua'} / Cardinal`,
+      latitude: '36' + DEG + '50' + MIN + 'N',
+      longitude: '02' + DEG + '28' + MIN + 'W',
+      sun: cap(c.sun_sign) + ' ' + DOT + ' ' + degreeToMinutes(c.sun_degree),
+      moon: cap(c.moon_sign) + ' ' + DOT + ' ' + degreeToMinutes(c.moon_degree),
+      ascendant: cap(c.rising_sign) + ' ' + DOT + ' ' + degreeToMinutes(c.rising_degree),
+      midheaven: 'Sagitario ' + DOT + ' -',
+      element: (c.dominant_element ? cap(c.dominant_element) : 'Agua') + ' / Cardinal',
       modality: 'Receptivo emocional',
       lifePath: '8',
       soulNumber: '6',
@@ -81,44 +86,53 @@ export default async function InformePage({ params }: Params) {
     };
     template = template.replace(
       /window\.REPORT = \{[\s\S]*?\};/,
-      `window.REPORT = ${JSON.stringify(dataBlock, null, 2)};`
+      'window.REPORT = ' + JSON.stringify(dataBlock, null, 2) + ';'
     );
   }
 
+  const buttonStyle = {
+    position: 'fixed' as const,
+    bottom: 24,
+    right: 24,
+    padding: '14px 22px',
+    background: 'linear-gradient(135deg, #f0ce5a 0%, #d4af37 50%, #9c7e1f 100%)',
+    color: '#050510',
+    textDecoration: 'none',
+    borderRadius: 8,
+    fontSize: 11,
+    fontWeight: 700,
+    letterSpacing: 3,
+    textTransform: 'uppercase' as const,
+    fontFamily: "'JetBrains Mono', ui-monospace, monospace",
+    boxShadow: '0 8px 32px rgba(212,175,55,0.35), 0 0 0 1px rgba(212,175,55,0.4) inset',
+    zIndex: 9999,
+    display: 'inline-flex' as const,
+    alignItems: 'center' as const,
+    gap: 8,
+    cursor: 'pointer' as const,
+    backdropFilter: 'blur(8px)',
+  };
+
+  const iframeStyle = {
+    width: '100vw',
+    height: '100vh',
+    border: 'none',
+    display: 'block' as const,
+  };
+
+  const wrapperStyle = {
+    margin: 0,
+    padding: 0,
+    height: '100vh',
+    overflow: 'hidden' as const,
+    position: 'relative' as const,
+    background: '#050510',
+  };
+
   return (
-    <div style={{ margin: 0, padding: 0, height: '100vh', overflow: 'hidden', position: 'relative', background: '#050510' }}>
-      <iframe
-        srcDoc={template}
-        style={{ width: '100vw', height: '100vh', border: 'none', display: 'block' }}
-        title="Informe AstroDorado"
-      />
-      
-        href={`/informes/${id}/print`}
-        target="_blank"
-        rel="noopener"
-        style={{
-          position: 'fixed',
-          bottom: 24,
-          right: 24,
-          padding: '14px 22px',
-          background: 'linear-gradient(135deg, #f0ce5a 0%, #d4af37 50%, #9c7e1f 100%)',
-          color: '#050510',
-          textDecoration: 'none',
-          borderRadius: 8,
-          fontSize: 11,
-          fontWeight: 700,
-          letterSpacing: 3,
-          textTransform: 'uppercase',
-          fontFamily: "'JetBrains Mono', ui-monospace, monospace",
-          boxShadow: '0 8px 32px rgba(212,175,55,0.35), 0 0 0 1px rgba(212,175,55,0.4) inset',
-          zIndex: 9999,
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 8,
-          cursor: 'pointer',
-          backdropFilter: 'blur(8px)',
-        }}
-      >
+    <div style={wrapperStyle}>
+      <iframe srcDoc={template} style={iframeStyle} title="Informe AstroDorado" />
+      <a href={`/informes/${id}/print`} target="_blank" rel="noopener" style={buttonStyle}>
         <span style={{ fontSize: 14, fontWeight: 900 }}>PDF</span>
         <span>Descargar</span>
       </a>
@@ -133,5 +147,3 @@ export async function generateMetadata({ params }: Params) {
     description: 'Tu carta natal, tu numerologia, y la cartografia de tu destino.',
   };
 }
-
-// Build: 2026-04-18T18:17:51Z
