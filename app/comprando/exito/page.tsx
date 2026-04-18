@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function ExitoPage() {
+function ExitoContent() {
   const params = useSearchParams();
   const reportId = params.get('report_id');
   const [status, setStatus] = useState<'waiting' | 'ready' | 'error'>('waiting');
@@ -59,5 +59,30 @@ export default function ExitoPage() {
         )}
       </div>
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div style={{
+      minHeight: '100vh', background: '#050510', color: '#f0e5cc',
+      padding: 80, textAlign: 'center',
+    }}>
+      <div style={{ maxWidth: 560, margin: '0 auto' }}>
+        <div style={{ fontSize: 64, marginBottom: 24, color: '#d4af37' }}>O</div>
+        <h1 style={{
+          fontFamily: 'Playfair Display, Georgia, serif',
+          fontSize: 40, color: '#d4af37', fontWeight: 400, margin: 0,
+        }}>Cargando...</h1>
+      </div>
+    </div>
+  );
+}
+
+export default function ExitoPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <ExitoContent />
+    </Suspense>
   );
 }
