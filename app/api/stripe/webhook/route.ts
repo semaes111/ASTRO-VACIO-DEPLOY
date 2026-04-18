@@ -32,7 +32,7 @@ export async function POST(req: Request) {
     .insert({
       stripe_event_id: event.id,
       stripe_event_type: event.type,
-      payload: event.data.object as Record<string, unknown>,
+      payload: JSON.parse(JSON.stringify(event.data.object)),
       processed_at: new Date().toISOString(),
     });
 
