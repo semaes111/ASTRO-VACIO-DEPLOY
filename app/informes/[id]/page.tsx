@@ -1,147 +1,216 @@
-// Ruta /informes/[id] - wrapper con iframe (vista premium) + boton PDF fuera
+// =====================================================
+// /informes/[id] - Orchestrator multi-tipo
+// =====================================================
+// Rutea por status -> UI apropiada
+// Si status=ready, rutea por report_slug -> componente especifico
+// Soporta: carta-natal (template premium legacy) + cualquier otro con output_html
+// =====================================================
+
 import { createClient } from '@supabase/supabase-js';
 import { notFound } from 'next/navigation';
-import fs from 'node:fs/promises';
-import path from 'node:path';
+
+import EstadoGenerando from './EstadoGenerando';
+import EstadoEspera from './EstadoEspera';
+import EstadoError from './EstadoError';
+import InformeCartaNatalPremium from './InformeCartaNatalPremium';
+import InformeGenerico from './InformeGenerico';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 type Params = { params: Promise<{ id: string }> };
 
-function degreeToMinutes(deg: number): string {
-  const intDeg = Math.floor(deg);
-  const minutes = Math.round((deg - intDeg) * 60);
-  const DEG = String.fromCharCode(176);
-  const MIN = String.fromCharCode(8242);
-  return intDeg.toString().padStart(2, '0') + DEG + minutes.toString().padStart(2, '0') + MIN;
+interface UserReport {
+  id: string;
+  user_id: string;
+  report_slug: string;
+  status: 'pending_payment' | 'paid' | 'generating' | 'ready' | 'error' | 'expired' | 'refunded';
+  input_data: Record<string, unknown> | null;
+  output_html: string | null;
+  life_cycles_snapshot: Record<string, unknown> | null;
+  generation_started_at: string | null;
+  generated_at: string | null;
+  error_message: string | null;
+  tokens_used: number | null;
+  actual_cost_usd: number | null;
 }
 
-const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+interface NatalChart {
+  sun_sign: string;
+  sun_degree: number | null;
+  moon_sign: string;
+  moon_degree: number | null;
+  rising_sign: string | null;
+  rising_degree: number | null;
+  dominant_element: string | null;
+}
 
-async function getData(id: string) {
+interface ReportMeta {
+  slug: string;
+  name_es: string;
+  category: string;
+  product_type: string | null;
+  tagline: string | null;
+  theme_slug: string | null;
+  primary_color: string | null;
+  accent_color: string | null;
+  hero_icon: string | null;
+  estimated_minutes: number | null;
+}
+
+async function getReport(id: string): Promise<{
+  report: UserReport | null;
+  chart: NatalChart | null;
+  meta: ReportMeta | null;
+}> {
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false, autoRefreshToken: false } }
   );
+
   const { data: report } = await supabase
     .from('astrodorado_user_reports')
-    .select('id, user_id, status, generated_at, output_html')
+    .select(
+      'id, user_id, report_slug, status, input_data, output_html, life_cycles_snapshot, generation_started_at, generated_at, error_message, tokens_used, actual_cost_usd'
+    )
     .eq('id', id)
     .single();
-  if (!report || report.status !== 'ready') return null;
-  const { data: chart } = await supabase
-    .from('astrodorado_natal_charts')
-    .select('sun_sign, sun_degree, moon_sign, moon_degree, rising_sign, rising_degree, dominant_element')
-    .eq('user_id', report.user_id)
+
+  if (!report) return { report: null, chart: null, meta: null };
+
+  // Metadata del producto para estilos
+  const { data: meta } = await supabase
+    .from('astrodorado_reports')
+    .select(
+      'slug, name_es, category, product_type, tagline, theme_slug, primary_color, accent_color, hero_icon, estimated_minutes'
+    )
+    .eq('slug', report.report_slug)
     .single();
-  return { report, chart };
+
+  // Solo cargamos natal_chart si es carta-natal (los demas no lo necesitan)
+  let chart: NatalChart | null = null;
+  if (report.report_slug === 'carta-natal') {
+    const { data } = await supabase
+      .from('astrodorado_natal_charts')
+      .select('sun_sign, sun_degree, moon_sign, moon_degree, rising_sign, rising_degree, dominant_element')
+      .eq('user_id', report.user_id)
+      .maybeSingle();
+    chart = data as NatalChart | null;
+  }
+
+  return {
+    report: report as UserReport,
+    chart,
+    meta: meta as ReportMeta | null,
+  };
 }
 
 export default async function InformePage({ params }: Params) {
   const { id } = await params;
-  const data = await getData(id);
-  if (!data) notFound();
+  const { report, chart, meta } = await getReport(id);
 
-  const templatePath = path.join(process.cwd(), 'public', 'informe-template-premium.html');
-  let template: string;
-  try {
-    template = await fs.readFile(templatePath, 'utf-8');
-  } catch {
-    return <div style={{ padding: 40, color: '#a67c2e' }}>Template no disponible</div>;
+  if (!report) notFound();
+
+  // ============ ROUTING POR STATUS ============
+  switch (report.status) {
+    case 'pending_payment':
+      return (
+        <EstadoEspera
+          variant="pending_payment"
+          reportId={report.id}
+          productName={meta?.name_es ?? 'Tu informe'}
+        />
+      );
+
+    case 'paid':
+      return (
+        <EstadoEspera
+          variant="paid"
+          reportId={report.id}
+          productName={meta?.name_es ?? 'Tu informe'}
+          estimatedMinutes={meta?.estimated_minutes ?? 6}
+        />
+      );
+
+    case 'generating':
+      return (
+        <EstadoGenerando
+          reportId={report.id}
+          startedAt={report.generation_started_at}
+          productName={meta?.name_es ?? 'Tu informe'}
+          estimatedMinutes={meta?.estimated_minutes ?? 6}
+        />
+      );
+
+    case 'error':
+      return (
+        <EstadoError
+          reportId={report.id}
+          errorMessage={report.error_message}
+          productName={meta?.name_es ?? 'Tu informe'}
+        />
+      );
+
+    case 'expired':
+    case 'refunded':
+      return (
+        <EstadoError
+          reportId={report.id}
+          errorMessage={
+            report.status === 'expired'
+              ? 'Este informe ha expirado.'
+              : 'Este informe ha sido reembolsado.'
+          }
+          productName={meta?.name_es ?? 'Tu informe'}
+        />
+      );
+
+    case 'ready':
+      break; // sigue abajo
+
+    default:
+      notFound();
   }
 
-  if (data.chart) {
-    const c = data.chart;
-    const DOT = String.fromCharCode(183);
-    const DEG = String.fromCharCode(176);
-    const MIN = String.fromCharCode(8242);
-    const isoDate = new Date(data.report.generated_at).toISOString().slice(0, 10);
-    const dottedDate = isoDate.split('-').join(DOT);
-    const dataBlock = {
-      clientSalute: 'Apreciado Sergio',
-      issuedAt: new Date(data.report.generated_at).toLocaleDateString('es-ES', {
-        day: 'numeric', month: 'long', year: 'numeric',
-      }),
-      issuedCode: 'AD' + DOT + dottedDate + ' / Vol. I ' + DOT + ' No. 01',
-      delivery: 'Edicion personal - intransferible',
-      birthDate: '30 de Junio de 1973',
-      birthTime: '12:00',
-      birthPlace: 'Almeria, Espana',
-      latitude: '36' + DEG + '50' + MIN + 'N',
-      longitude: '02' + DEG + '28' + MIN + 'W',
-      sun: cap(c.sun_sign) + ' ' + DOT + ' ' + degreeToMinutes(c.sun_degree),
-      moon: cap(c.moon_sign) + ' ' + DOT + ' ' + degreeToMinutes(c.moon_degree),
-      ascendant: cap(c.rising_sign) + ' ' + DOT + ' ' + degreeToMinutes(c.rising_degree),
-      midheaven: 'Sagitario ' + DOT + ' -',
-      element: (c.dominant_element ? cap(c.dominant_element) : 'Agua') + ' / Cardinal',
-      modality: 'Receptivo emocional',
-      lifePath: '8',
-      soulNumber: '6',
-      destinyNumber: '1',
-      expressionNumber: '7',
-      birthYearVibration: '2',
-    };
-    template = template.replace(
-      /window\.REPORT = \{[\s\S]*?\};/,
-      'window.REPORT = ' + JSON.stringify(dataBlock, null, 2) + ';'
+  // ============ ROUTING POR TIPO DE INFORME (status=ready) ============
+
+  // Carta natal mantiene el template premium legacy (design ornado Sergio)
+  if (report.report_slug === 'carta-natal' && chart) {
+    return <InformeCartaNatalPremium report={report} chart={chart} />;
+  }
+
+  // Todos los demas (ayurveda, numerologia, iching, kabbalah, horoscopo-chino,
+  // revolucion-solar, oraculo-360, y los 30 productos del catalogo) usan el
+  // componente generico que renderiza output_html con el design system base.
+  if (!report.output_html) {
+    return (
+      <EstadoError
+        reportId={report.id}
+        errorMessage="El informe esta marcado como listo pero no tiene contenido generado. Contacta con soporte."
+        productName={meta?.name_es ?? 'Tu informe'}
+      />
     );
   }
 
-  const buttonStyle = {
-    position: 'fixed' as const,
-    bottom: 24,
-    right: 24,
-    padding: '14px 22px',
-    background: 'linear-gradient(135deg, #f0ce5a 0%, #d4af37 50%, #9c7e1f 100%)',
-    color: '#050510',
-    textDecoration: 'none',
-    borderRadius: 8,
-    fontSize: 11,
-    fontWeight: 700,
-    letterSpacing: 3,
-    textTransform: 'uppercase' as const,
-    fontFamily: "'JetBrains Mono', ui-monospace, monospace",
-    boxShadow: '0 8px 32px rgba(212,175,55,0.35), 0 0 0 1px rgba(212,175,55,0.4) inset',
-    zIndex: 9999,
-    display: 'inline-flex' as const,
-    alignItems: 'center' as const,
-    gap: 8,
-    cursor: 'pointer' as const,
-    backdropFilter: 'blur(8px)',
-  };
-
-  const iframeStyle = {
-    width: '100vw',
-    height: '100vh',
-    border: 'none',
-    display: 'block' as const,
-  };
-
-  const wrapperStyle = {
-    margin: 0,
-    padding: 0,
-    height: '100vh',
-    overflow: 'hidden' as const,
-    position: 'relative' as const,
-    background: '#050510',
-  };
-
-  return (
-    <div style={wrapperStyle}>
-      <iframe srcDoc={template} style={iframeStyle} title="Informe AstroDorado" />
-      <a href={`/informes/${id}/pdf`} target="_blank" rel="noopener" style={buttonStyle}>
-        <span style={{ fontSize: 14, fontWeight: 900 }}>PDF</span>
-        <span>Descargar</span>
-      </a>
-    </div>
-  );
+  return <InformeGenerico report={report} meta={meta} />;
 }
 
 export async function generateMetadata({ params }: Params) {
   const { id } = await params;
+  const { report, meta } = await getReport(id);
+
+  if (!report) {
+    return { title: 'Informe no encontrado | AstroDorado' };
+  }
+
+  const title = meta?.name_es
+    ? `${meta.name_es} | AstroDorado`
+    : 'Tu informe | AstroDorado';
+
   return {
-    title: 'AstroDorado - Informe Personal del Alma',
-    description: 'Tu carta natal, tu numerologia, y la cartografia de tu destino.',
+    title,
+    description: meta?.tagline ?? 'Tu carta personalizada con astrologia de precision.',
+    robots: { index: false, follow: false },
   };
 }
