@@ -63,6 +63,6 @@ export const config = {
      * - /catalogo (publico)
      * - / (homepage publica)
      */
-    '/((?!_next/static|_next/image|favicon.ico|informes|api|catalogo|$|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|informes|ver|api|catalogo|$|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico)$).*)',
   ],
 };
