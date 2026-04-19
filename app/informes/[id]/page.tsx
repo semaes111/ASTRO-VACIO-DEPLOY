@@ -1,216 +1,112 @@
 // =====================================================
-// /informes/[id] - Orchestrator multi-tipo
-// =====================================================
-// Rutea por status -> UI apropiada
-// Si status=ready, rutea por report_slug -> componente especifico
-// Soporta: carta-natal (template premium legacy) + cualquier otro con output_html
+// /informes/[id] - VERSION MINIMA DE DIAGNOSTICO
+// Sin subcomponentes, sin imports externos. Solo lee
+// output_html de Supabase y lo renderiza.
 // =====================================================
 
 import { createClient } from '@supabase/supabase-js';
 import { notFound } from 'next/navigation';
-
-import EstadoGenerando from './EstadoGenerando';
-import EstadoEspera from './EstadoEspera';
-import EstadoError from './EstadoError';
-import InformeCartaNatalPremium from './InformeCartaNatalPremium';
-import InformeGenerico from './InformeGenerico';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 type Params = { params: Promise<{ id: string }> };
 
-interface UserReport {
-  id: string;
-  user_id: string;
-  report_slug: string;
-  status: 'pending_payment' | 'paid' | 'generating' | 'ready' | 'error' | 'expired' | 'refunded';
-  input_data: Record<string, unknown> | null;
-  output_html: string | null;
-  life_cycles_snapshot: Record<string, unknown> | null;
-  generation_started_at: string | null;
-  generated_at: string | null;
-  error_message: string | null;
-  tokens_used: number | null;
-  actual_cost_usd: number | null;
-}
+async function getReport(id: string) {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    throw new Error('Missing Supabase env vars: NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
+  }
+  const supabase = createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
 
-interface NatalChart {
-  sun_sign: string;
-  sun_degree: number | null;
-  moon_sign: string;
-  moon_degree: number | null;
-  rising_sign: string | null;
-  rising_degree: number | null;
-  dominant_element: string | null;
-}
-
-interface ReportMeta {
-  slug: string;
-  name_es: string;
-  category: string;
-  product_type: string | null;
-  tagline: string | null;
-  theme_slug: string | null;
-  primary_color: string | null;
-  accent_color: string | null;
-  hero_icon: string | null;
-  estimated_minutes: number | null;
-}
-
-async function getReport(id: string): Promise<{
-  report: UserReport | null;
-  chart: NatalChart | null;
-  meta: ReportMeta | null;
-}> {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { persistSession: false, autoRefreshToken: false } }
-  );
-
-  const { data: report } = await supabase
+  const { data, error } = await supabase
     .from('astrodorado_user_reports')
-    .select(
-      'id, user_id, report_slug, status, input_data, output_html, life_cycles_snapshot, generation_started_at, generated_at, error_message, tokens_used, actual_cost_usd'
-    )
+    .select('id, status, output_html, report_slug, generated_at, error_message')
     .eq('id', id)
-    .single();
+    .maybeSingle();
 
-  if (!report) return { report: null, chart: null, meta: null };
-
-  // Metadata del producto para estilos
-  const { data: meta } = await supabase
-    .from('astrodorado_reports')
-    .select(
-      'slug, name_es, category, product_type, tagline, theme_slug, primary_color, accent_color, hero_icon, estimated_minutes'
-    )
-    .eq('slug', report.report_slug)
-    .single();
-
-  // Solo cargamos natal_chart si es carta-natal (los demas no lo necesitan)
-  let chart: NatalChart | null = null;
-  if (report.report_slug === 'carta-natal') {
-    const { data } = await supabase
-      .from('astrodorado_natal_charts')
-      .select('sun_sign, sun_degree, moon_sign, moon_degree, rising_sign, rising_degree, dominant_element')
-      .eq('user_id', report.user_id)
-      .maybeSingle();
-    chart = data as NatalChart | null;
+  if (error) {
+    console.error('[informes/page] supabase error:', error);
+    throw new Error('db_error: ' + error.message);
   }
 
-  return {
-    report: report as UserReport,
-    chart,
-    meta: meta as ReportMeta | null,
-  };
+  return data;
 }
 
 export default async function InformePage({ params }: Params) {
   const { id } = await params;
-  const { report, chart, meta } = await getReport(id);
+  const report = await getReport(id);
 
   if (!report) notFound();
 
-  // ============ ROUTING POR STATUS ============
-  switch (report.status) {
-    case 'pending_payment':
-      return (
-        <EstadoEspera
-          variant="pending_payment"
-          reportId={report.id}
-          productName={meta?.name_es ?? 'Tu informe'}
-        />
-      );
-
-    case 'paid':
-      return (
-        <EstadoEspera
-          variant="paid"
-          reportId={report.id}
-          productName={meta?.name_es ?? 'Tu informe'}
-          estimatedMinutes={meta?.estimated_minutes ?? 6}
-        />
-      );
-
-    case 'generating':
-      return (
-        <EstadoGenerando
-          reportId={report.id}
-          startedAt={report.generation_started_at}
-          productName={meta?.name_es ?? 'Tu informe'}
-          estimatedMinutes={meta?.estimated_minutes ?? 6}
-        />
-      );
-
-    case 'error':
-      return (
-        <EstadoError
-          reportId={report.id}
-          errorMessage={report.error_message}
-          productName={meta?.name_es ?? 'Tu informe'}
-        />
-      );
-
-    case 'expired':
-    case 'refunded':
-      return (
-        <EstadoError
-          reportId={report.id}
-          errorMessage={
-            report.status === 'expired'
-              ? 'Este informe ha expirado.'
-              : 'Este informe ha sido reembolsado.'
-          }
-          productName={meta?.name_es ?? 'Tu informe'}
-        />
-      );
-
-    case 'ready':
-      break; // sigue abajo
-
-    default:
-      notFound();
-  }
-
-  // ============ ROUTING POR TIPO DE INFORME (status=ready) ============
-
-  // Carta natal mantiene el template premium legacy (design ornado Sergio)
-  if (report.report_slug === 'carta-natal' && chart) {
-    return <InformeCartaNatalPremium report={report} chart={chart} />;
-  }
-
-  // Todos los demas (ayurveda, numerologia, iching, kabbalah, horoscopo-chino,
-  // revolucion-solar, oraculo-360, y los 30 productos del catalogo) usan el
-  // componente generico que renderiza output_html con el design system base.
-  if (!report.output_html) {
+  // Render simple, sin subcomponentes
+  if (report.status !== 'ready') {
     return (
-      <EstadoError
-        reportId={report.id}
-        errorMessage="El informe esta marcado como listo pero no tiene contenido generado. Contacta con soporte."
-        productName={meta?.name_es ?? 'Tu informe'}
-      />
+      <div style={{ padding: 40, background: '#050510', color: '#f0e5cc', minHeight: '100vh', fontFamily: 'system-ui, sans-serif' }}>
+        <h1 style={{ color: '#f0ce5a' }}>Informe en estado: {report.status}</h1>
+        <p>ID: {id}</p>
+        {report.error_message && (
+          <pre style={{ background: 'rgba(255,0,0,0.1)', padding: 16, borderRadius: 4, marginTop: 16 }}>
+            {report.error_message}
+          </pre>
+        )}
+        <p style={{ marginTop: 24, fontSize: 12, color: 'rgba(240,229,204,0.5)' }}>
+          (Recarga esta pagina en unos segundos si tu informe aun se esta generando)
+        </p>
+      </div>
     );
   }
 
-  return <InformeGenerico report={report} meta={meta} />;
+  if (!report.output_html) {
+    return (
+      <div style={{ padding: 40, background: '#050510', color: '#f0e5cc', minHeight: '100vh' }}>
+        <h1>Informe vacio</h1>
+        <p>Status=ready pero output_html es null</p>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ background: '#050510', color: '#f0e5cc', minHeight: '100vh', padding: 24 }}>
+      <header style={{ maxWidth: 780, margin: '0 auto 32px', paddingBottom: 16, borderBottom: '1px solid rgba(212,175,55,0.3)' }}>
+        <h1 style={{ fontSize: 24, color: '#f0ce5a', margin: 0, fontFamily: 'serif' }}>
+          {report.report_slug === 'ayurveda' ? 'Carta Ayurvedica' : 'Informe'}
+        </h1>
+        <p style={{ fontSize: 12, color: 'rgba(240,229,204,0.5)', margin: '8px 0 0' }}>
+          ID: {id.slice(0, 8)}...
+        </p>
+      </header>
+      <main
+        style={{
+          maxWidth: 780,
+          margin: '0 auto',
+          fontFamily: 'Georgia, serif',
+          lineHeight: 1.8,
+          color: 'rgba(240,229,204,0.88)',
+        }}
+        dangerouslySetInnerHTML={{ __html: report.output_html }}
+      />
+      <style dangerouslySetInnerHTML={{ __html: `
+        main h1, main h2, main h3 { color: #f0ce5a; font-family: serif; }
+        main strong { color: #f0ce5a; }
+        main em { color: rgba(240,206,90,0.9); }
+        main p { margin: 0 0 20px; }
+        main ul, main ol { padding-left: 24px; }
+        main table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+        main th, main td { padding: 8px 12px; border: 1px solid rgba(212,175,55,0.2); text-align: left; }
+        main th { background: rgba(212,175,55,0.08); color: #f0ce5a; }
+      `}} />
+    </div>
+  );
 }
 
 export async function generateMetadata({ params }: Params) {
   const { id } = await params;
-  const { report, meta } = await getReport(id);
-
-  if (!report) {
-    return { title: 'Informe no encontrado | AstroDorado' };
-  }
-
-  const title = meta?.name_es
-    ? `${meta.name_es} | AstroDorado`
-    : 'Tu informe | AstroDorado';
-
   return {
-    title,
-    description: meta?.tagline ?? 'Tu carta personalizada con astrologia de precision.',
+    title: 'Informe ' + id.slice(0, 8) + ' | AstroDorado',
     robots: { index: false, follow: false },
   };
 }
