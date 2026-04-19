@@ -6,6 +6,9 @@ type CookieToSet = { name: string; value: string; options?: CookieOptions };
 /**
  * Middleware que refresca el token de Supabase en cada request.
  * Ref: https://supabase.com/docs/guides/auth/server-side/nextjs
+ *
+ * IMPORTANTE: /informes/* y /api/* se EXCLUYEN en el matcher para evitar
+ * que el auth.getUser() bloquee paginas publicas que no requieren sesion.
  */
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -51,6 +54,15 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico)$).*)',
+    /*
+     * Excluimos:
+     * - _next/static, _next/image (assets)
+     * - favicon, imagenes publicas
+     * - /informes/* (paginas publicas de resultado - no requieren auth)
+     * - /api/* (API routes se gestionan su propia auth)
+     * - /catalogo (publico)
+     * - / (homepage publica)
+     */
+    '/((?!_next/static|_next/image|favicon.ico|informes|api|catalogo|$|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico)$).*)',
   ],
 };
