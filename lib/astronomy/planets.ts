@@ -100,8 +100,9 @@ export function ayanamsaLahiri(date: Date): number {
 export function longitudeToZodiac(lon: number): { sign: ZodiacSlug; degree: number } {
   const n = normalizeAngle(lon);
   const index = Math.floor(n / 30);
+  // normalizeAngle garantiza 0 <= n < 360, por tanto 0 <= index <= 11
   return {
-    sign: ZODIAC_ORDER[index],
+    sign: ZODIAC_ORDER[index]!,
     degree: n - index * 30,
   };
 }
@@ -118,12 +119,13 @@ export function longitudeToNakshatra(longitudeSidereal: number): NakshatraPositi
   const index = Math.floor(n / nakSize);
   const within = n - index * nakSize;
   const pada = (Math.floor(within / padaSize) + 1) as 1 | 2 | 3 | 4;
+  // normalizeAngle garantiza 0 <= n < 360, por tanto 0 <= index <= 26
   return {
     index,
-    name: NAKSHATRA_NAMES[index],
+    name: NAKSHATRA_NAMES[index]!,
     pada,
     degree_within: within,
-    dasha_lord: NAKSHATRA_DASHA_LORDS[index],
+    dasha_lord: NAKSHATRA_DASHA_LORDS[index]!,
     degree_in_dasha_lord: within,
   };
 }
