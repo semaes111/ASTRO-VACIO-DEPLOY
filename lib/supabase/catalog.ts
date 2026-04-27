@@ -119,7 +119,10 @@ export async function getCatalogFromDB(
         throw new Error(`getCatalogFromDB: ${error.message}`);
       }
 
-      const products = (data ?? []).map(rowToProduct);
+      // Tras chequear `error`, `data` es seguro pero TS no lo infiere porque
+      // COLUMNS es una variable string (no literal). Cast explícito.
+      const rows = (data ?? []) as unknown as Record<string, unknown>[];
+      const products = rows.map(rowToProduct);
       listCache = {
         value: products,
         expiresAt: Date.now() + TTL_MS,
