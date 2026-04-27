@@ -75,7 +75,9 @@ export async function POST(req: Request) {
     .insert({
       user_id: userId,
       report_slug: product.slug,
-      product_type: product.product_type,
+      // product_type NO existe como columna en astrodorado.user_reports.
+      // Se infiere del report_slug via JOIN con astrodorado.reports cuando
+      // hace falta. Se mantiene en metadata de Stripe Checkout (línea ~106).
       status: 'pending_payment',
       input_data: data_inputs,
       amount_paid_eur: product.price_eur,
