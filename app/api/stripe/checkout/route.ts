@@ -78,7 +78,6 @@ export async function POST(req: Request) {
       product_type: product.product_type,
       status: 'pending_payment',
       input_data: data_inputs,
-      data_inputs: data_inputs,
       amount_paid_eur: product.price_eur,
     })
     .select('id')
