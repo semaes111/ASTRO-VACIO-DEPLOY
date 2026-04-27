@@ -20,18 +20,20 @@
  *   - vehicle_type (select):             coche | moto | barco | otro
  *   - purchase_date_target (date):       fecha objetivo de compra
  *
- * Estructura del informe (5 secciones HTML):
+ * Estructura del informe (6 secciones HTML):
  *   S1. Tu carta del viajero — temperamento del titular respecto al movimiento
  *   S2. La ventana del cielo — análisis de tránsitos a la fecha objetivo
  *   S3. El vehículo y tú — compatibilidad simbólica con tu Marte/Mercurio/Sol
  *   S4. Señales y precauciones — qué observar el día de la firma
  *   S5. Ritual del primer viaje — cómo iniciar la relación con el vehículo
+ *   S6. Calendario alternativo — días óptimos en ±90 días si la fecha pudiera moverse
  *
  * Tono: pragmático, evita esoterismo vacío. Cada afirmación se ancla en
  * un dato concreto del chart o del tránsito.
  */
 
 import type { NatalChart } from '@/lib/astronomy/planets';
+import type { OptimalDay } from '@/lib/generators/_shared/optimal-days';
 
 export interface EventoVehiculoPromptInput {
   /** Nombre del titular */
@@ -52,6 +54,17 @@ export interface EventoVehiculoPromptInput {
   transitChart: NatalChart;
   /** Día de la semana de la fecha de compra (en español) */
   purchaseDayOfWeek: string;
+  /**
+   * Cinco mejores días alternativos en una ventana ±90 días, calculados
+   * por `findOptimalDays`. Si está vacío, S6 advierte que la ventana es
+   * estable (sin picos claros) en lugar de listar alternativas.
+   */
+  alternativeDays: OptimalDay[];
+  /**
+   * Tres peores días en la misma ventana, para que el cliente los conozca
+   * y los evite si tiene flexibilidad logística. Puede estar vacío.
+   */
+  daysToAvoid: OptimalDay[];
   /** Color primario del template (para coherencia visual) */
   primaryColor: string;
   /** Color de acento del template */
@@ -101,10 +114,17 @@ REGLAS DE FORMATO HTML:
 - Párrafos <p> sin clases adicionales.
 - Listas <ul> / <ol> cuando enumeres precauciones o pasos.
 - <em> para términos astrológicos técnicos (tránsito, retrógrado), <strong> para alertas o conclusiones clave.
-- Una tabla <table class="ev-table"> en la sección 2 con las posiciones planetarias del día objetivo. Máximo una tabla por informe.
+- Hasta dos tablas <table class="ev-table"> en el informe: una en S2 con las posiciones planetarias del día objetivo, y una en S6 con los días alternativos. No abuses de las tablas — son para datos comparativos.
 - No uses <div> anidados ni estilos inline. La paleta del informe la aplicará el wrapper externo.
 
-LONGITUD OBJETIVO: 5500 palabras totales, repartidas aproximadamente: S1=900, S2=1400, S3=1200, S4=1100, S5=900.`;
+LONGITUD OBJETIVO: 6000 palabras totales, repartidas aproximadamente: S1=900, S2=1400, S3=1200, S4=1100, S5=900, S6=500.
+
+REGLAS DE LA SECCIÓN 6 (CALENDARIO ALTERNATIVO):
+- La S6 es una sección breve dedicada a alternativas de fecha. Aparece al final del informe, después del ritual de primer viaje.
+- Si el día objetivo del cliente es razonable, NUNCA presiones para que cambie. Enmarca la sección como "por si la logística (concesionario, financiación, vacaciones) te obliga a moverla".
+- Si el día objetivo es desfavorable (lo determinaste en S2), sí adviertes claramente y enmarcas las alternativas como recomendación más fuerte.
+- Las alternativas vienen pre-calculadas en el bloque DÍAS ALTERNATIVOS del user prompt. NO inventes días — usa SOLO los listados.
+- Cada alternativa debe acompañarse de su justificación astrológica concreta basada en las razones del scoring.`;
 
 // ============================================================
 // USER PROMPT BUILDER
@@ -217,13 +237,57 @@ function vehicleSpecificGuidance(vehicleType: string): string {
   }
 }
 
+
+/**
+ * Formatea los días alternativos y a evitar para incluirlos en el user prompt.
+ * Idéntico al helper de evento-mudanza — duplicado deliberadamente para no
+ * crear acoplamiento entre workers. Si en el futuro hay 5+ workers usando
+ * este patrón, mover a `lib/generators/_shared/prompt-blocks.ts`.
+ */
+function formatOptimalDaysBlock(
+  favorable: OptimalDay[],
+  unfavorable: OptimalDay[],
+): string {
+  const lines: string[] = [];
+
+  if (favorable.length === 0 && unfavorable.length === 0) {
+    return '  (Ventana sin días favorables ni desfavorables destacados — ' +
+      'omite la sección 6 o explícale al cliente que el período es estable.)';
+  }
+
+  if (favorable.length > 0) {
+    lines.push(`  TOP ${favorable.length} DÍAS FAVORABLES (orden decreciente de score):`);
+    for (const d of favorable) {
+      lines.push(`  · ${d.date} (${d.day_of_week}) — score ${d.score.toFixed(1)}`);
+      for (const r of d.reasons) {
+        lines.push(`      · ${r}`);
+      }
+    }
+  }
+
+  if (unfavorable.length > 0) {
+    lines.push('');
+    lines.push(`  TOP ${unfavorable.length} DÍAS A EVITAR (orden creciente de score):`);
+    for (const d of unfavorable) {
+      lines.push(`  · ${d.date} (${d.day_of_week}) — score ${d.score.toFixed(1)}`);
+      for (const r of d.reasons) {
+        lines.push(`      · ${r}`);
+      }
+    }
+  }
+
+  return lines.join('\n');
+}
+
 export function buildEventoVehiculoPrompt(
   input: EventoVehiculoPromptInput,
 ): EventoVehiculoPrompt {
   const {
     userName, birthDate, birthTime, birthPlace,
     chart, vehicleType, purchaseDateTarget, transitChart,
-    purchaseDayOfWeek, primaryColor, accentColor, templateHtml,
+    purchaseDayOfWeek,
+    alternativeDays, daysToAvoid,
+    primaryColor, accentColor, templateHtml,
   } = input;
 
   const natalBlock = formatChartBlock(chart, 'CARTA NATAL');
@@ -271,6 +335,10 @@ ASPECTOS MAYORES (tránsito → natal, orbe < 6°)
 ==============================================
 ${aspectsBlock}
 
+DÍAS ALTERNATIVOS (pre-calculados — usar SOLO estos en S6)
+==========================================================
+${formatOptimalDaysBlock(alternativeDays, daysToAvoid)}
+
 PALETA VISUAL DEL TEMPLATE
 ==========================
 Color primario: ${primaryColor}
@@ -287,12 +355,13 @@ ${templateExcerpt}
 
 INSTRUCCIONES FINALES
 =====================
-1. Genera las 5 secciones según la estructura del system prompt (S1–S5).
+1. Genera las 6 secciones según la estructura del system prompt (S1–S6).
 2. Empieza directamente con <section class="ev-section" id="seccion-1">…
 3. NO incluyas <html>, <head>, <body>, <doctype>, ni texto fuera de las <section>.
 4. Devuelve SOLO el HTML del cuerpo del informe.
 5. Sé específico: usa las posiciones reales del bloque de "POSICIONES PLANETARIAS" como anclas. No digas "tu Marte" sin decir en qué signo y grado está.
-6. Si los aspectos mayores indican un día desfavorable, dilo en S2 con claridad y sugiere 2-3 ventanas alternativas concretas (ej: "esperar al sábado siguiente", "elegir la franja matinal del lunes").
+6. Si los aspectos mayores indican un día desfavorable, dilo en S2 con claridad.
+7. En S6, usa SOLO los días del bloque "DÍAS ALTERNATIVOS" (no inventes). Estructura: introducción breve (1-2 párrafos), tabla <table class="ev-table"> con los días favorables (#, fecha, día semana, hora aproximada óptima si es deducible, justificación), una segunda tabla (o lista) con los días a evitar, y cierre con una recomendación honesta.
 
 Comienza ahora con la sección 1.`;
 

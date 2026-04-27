@@ -26,10 +26,13 @@
  *   S2. La ventana del cielo — análisis de tránsitos a la fecha objetivo
  *   S3. Cerrando el hogar anterior — el ritual de despedida y los hilos kármicos del lugar
  *   S4. Abriendo la casa nueva — primera entrada, primera noche, los días siguientes
- *   S5. Calendario de transición — los 30 días alrededor del traslado
+ *   S5. Calendario de transición:
+ *        5.1 — Los 30 días alrededor de la fecha objetivo
+ *        5.2 — Días alternativos óptimos + días a evitar en los 90 días siguientes
  */
 
 import type { NatalChart } from '@/lib/astronomy/planets';
+import type { OptimalDay } from '@/lib/generators/_shared/optimal-days';
 
 export interface EventoMudanzaPromptInput {
   /** Nombre del titular */
@@ -52,6 +55,17 @@ export interface EventoMudanzaPromptInput {
   transitChart: NatalChart;
   /** Día de la semana de la fecha de mudanza (en español) */
   moveDayOfWeek: string;
+  /**
+   * Cinco mejores días alternativos en una ventana ±90 días, calculados
+   * por `findOptimalDays`. Si está vacío, el prompt omite la sección 5.2
+   * de alternativas (caso edge: ventana sin días favorables claros).
+   */
+  alternativeDays: OptimalDay[];
+  /**
+   * Tres peores días en la misma ventana, para que el cliente los conozca
+   * y los evite si tiene flexibilidad logística. Puede estar vacío.
+   */
+  daysToAvoid: OptimalDay[];
   /** Color primario del template */
   primaryColor: string;
   /** Color de acento del template */
@@ -92,6 +106,14 @@ REGLAS ESPECÍFICAS DE MUDANZA:
 - "Primera noche durmiendo en la casa nueva" es astrológicamente más significativa que "el día del camión". El hogar se establece cuando la cabeza del titular toca la almohada por primera vez allí.
 - Si hay tiempo entre cierre y apertura (ej: vacaciones intermedias, hotel), lo mencionas como "tiempo de umbral" — un período liminal con sus propias necesidades simbólicas.
 
+REGLAS DE LA SECCIÓN 5 (CALENDARIO):
+- La S5 tiene DOS sub-secciones obligatorias:
+  · 5.1 — Los 30 días alrededor de la fecha objetivo del cliente (calendario inmediato).
+  · 5.2 — Si necesita reconsiderar: los mejores días alternativos en los próximos 90 días + los días a evitar.
+- En 5.2 NUNCA presionas al cliente para que cambie su fecha si el día objetivo es razonable. La sub-sección se presenta como "por si la logística externa te obliga a moverla". Si la fecha objetivo es desfavorable, sí adviertes claramente y enmarcas las alternativas como recomendación más fuerte.
+- Las alternativas vienen pre-calculadas en el bloque DÍAS ALTERNATIVOS del user prompt — NO inventes días tú. Usa solo los listados.
+- Cada alternativa debe ir acompañada de su justificación astrológica (las razones del scoring) traducidas a lenguaje claro y útil para el cliente.
+
 REGLAS DE SEGURIDAD:
 - Nunca afirmas "vas a tener accidentes en la mudanza" ni nada similar. Hablas de tendencias y precauciones.
 - No das consejo legal sobre contratos de alquiler o compraventa.
@@ -108,7 +130,7 @@ REGLAS DE FORMATO HTML:
 - Una tabla <table class="emz-table"> en la sección 5 con el calendario de los 30 días alrededor del traslado. Máximo una tabla por informe.
 - No uses <div> anidados ni estilos inline.
 
-LONGITUD OBJETIVO: 5500 palabras totales, repartidas: S1=900, S2=1300, S3=1100, S4=1100, S5=1100.`;
+LONGITUD OBJETIVO: 5800 palabras totales, repartidas: S1=900, S2=1300, S3=1100, S4=1100, S5=1400 (5.1=900 + 5.2=500).`;
 
 // ============================================================
 // USER PROMPT BUILDER
@@ -202,13 +224,57 @@ function findMajorTransits(natal: NatalChart, transit: NatalChart): string[] {
   return out;
 }
 
+
+/**
+ * Formatea los días alternativos y a evitar para incluirlos en el user prompt.
+ * Cada día se serializa con su fecha, día de la semana, score y razones —
+ * el LLM tiene así material concreto para redactar la justificación al
+ * cliente sin inventar nada.
+ */
+function formatOptimalDaysBlock(
+  favorable: OptimalDay[],
+  unfavorable: OptimalDay[],
+): string {
+  const lines: string[] = [];
+
+  if (favorable.length === 0 && unfavorable.length === 0) {
+    return '  (Ventana sin días favorables ni desfavorables destacados — ' +
+      'omite la sección 5.2 o explícale al cliente que el período es estable.)';
+  }
+
+  if (favorable.length > 0) {
+    lines.push(`  TOP ${favorable.length} DÍAS FAVORABLES (orden decreciente de score):`);
+    for (const d of favorable) {
+      lines.push(`  · ${d.date} (${d.day_of_week}) — score ${d.score.toFixed(1)}`);
+      for (const r of d.reasons) {
+        lines.push(`      · ${r}`);
+      }
+    }
+  }
+
+  if (unfavorable.length > 0) {
+    lines.push('');
+    lines.push(`  TOP ${unfavorable.length} DÍAS A EVITAR (orden creciente de score):`);
+    for (const d of unfavorable) {
+      lines.push(`  · ${d.date} (${d.day_of_week}) — score ${d.score.toFixed(1)}`);
+      for (const r of d.reasons) {
+        lines.push(`      · ${r}`);
+      }
+    }
+  }
+
+  return lines.join('\n');
+}
+
 export function buildEventoMudanzaPrompt(
   input: EventoMudanzaPromptInput,
 ): EventoMudanzaPrompt {
   const {
     userName, birthDate, birthTime, birthPlace,
     chart, currentAddress, newAddress, moveDateTarget,
-    transitChart, moveDayOfWeek, primaryColor, accentColor, templateHtml,
+    transitChart, moveDayOfWeek,
+    alternativeDays, daysToAvoid,
+    primaryColor, accentColor, templateHtml,
   } = input;
 
   const natalBlock = formatChartBlock(chart, 'CARTA NATAL');
@@ -246,6 +312,10 @@ ${transitBlock}
 ASPECTOS MAYORES (tránsito → natal, orbe < 6°)
 ==============================================
 ${aspectsBlock}
+
+DÍAS ALTERNATIVOS (pre-calculados — usar SOLO estos en S5.2)
+============================================================
+${formatOptimalDaysBlock(alternativeDays, daysToAvoid)}
 
 PALETA VISUAL DEL TEMPLATE
 ==========================

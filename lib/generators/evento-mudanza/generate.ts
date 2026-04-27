@@ -11,14 +11,15 @@
  * Si encuentras divergencias arquitectónicas con vehiculo, son bugs:
  * el patrón debe replicarse 1:1 para que el scaffolder funcione.
  *
- * Flujo (idéntico a vehiculo):
+ * Flujo:
  *   1. Lee user_report y valida slug
  *   2. validateInputs específicos
  *   3. resolveBirthData con fallback al user logueado
  *   4. loadTemplate (cache LRU + TTL)
- *   5. computeNatalChart natal + tránsitos
+ *   5. computeNatalChart natal + tránsitos al día objetivo
+ *   5b.findOptimalDays sobre ventana ±90d (~2.7s, calcula 90 charts)
  *   6. markGenerationStarted
- *   7. buildEventoMudanzaPrompt + generateWithSonnet
+ *   7. buildEventoMudanzaPrompt + generateWithSonnet (incluye S5.2)
  *   8. sanitizeGeneratedHtml + assertValidReportHtml
  *   9. wrapInHtmlDocument + markGenerationReady
  *  10. Catch general → markGenerationError + relanza
@@ -28,6 +29,10 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { generateWithSonnet } from '@/lib/ai/sonnet';
 import { computeNatalChart } from '@/lib/astronomy/planets';
 import { loadTemplate } from '@/lib/generators/_shared/template-loader';
+import {
+  findOptimalDays,
+  buildWindowAroundTarget,
+} from '@/lib/generators/_shared/optimal-days';
 import {
   resolveBirthData,
   countWords,
@@ -52,8 +57,13 @@ const SLUG = 'evento-mudanza';
 const PRIMARY_COLOR = '#B45309';
 const ACCENT_COLOR = '#FDBA74';
 const MIN_OUTPUT_WORDS = 800;
-const MAX_TOKENS = 12000;
+const MAX_TOKENS = 14000;       // S5.2 añade ~500 palabras
 const TEMPERATURE = 0.65;
+
+// Configuración del calendario alternativo (S5.2)
+const OPTIMAL_DAYS_TOP_N = 5;          // mejores días alternativos
+const OPTIMAL_DAYS_TOP_N_AVOID = 3;    // peores días a evitar
+const OPTIMAL_DAYS_EXTEND_AFTER = 60;  // días después de la fecha objetivo en la ventana
 
 // ---------------------------------------------------------------------------
 // Tipos
@@ -281,6 +291,27 @@ export async function generateEventoMudanza(
   );
 
   // ───────────────────────────────────────────────────────────
+  // 5b. Evaluar la ventana de días alternativos (S5.2 del informe)
+  // ───────────────────────────────────────────────────────────
+  // Calcula los topN mejores y peores días en una ventana razonable
+  // alrededor de la fecha objetivo. Coste: ~30ms/día × ~90 días = ~2.7s.
+  // Excluye explícitamente la fecha objetivo (ya está en S5.1).
+  const window = buildWindowAroundTarget(moveDateTarget, {
+    extendDaysAfter: OPTIMAL_DAYS_EXTEND_AFTER,
+  });
+  const optimal = findOptimalDays(natalChart, {
+    start: window.start,
+    end: window.end,
+    topN: OPTIMAL_DAYS_TOP_N,
+    topNAvoid: OPTIMAL_DAYS_TOP_N_AVOID,
+    excludeDate: moveDateTarget,
+    hourLocal: 12,
+    tzOffsetHours: resolvedBirth.coords.tz_offset_hours,
+    latitude: resolvedBirth.coords.lat,
+    longitude: resolvedBirth.coords.lng,
+  });
+
+  // ───────────────────────────────────────────────────────────
   // 6. Marcar generating
   // ───────────────────────────────────────────────────────────
   await markGenerationStarted(userReportId);
@@ -300,6 +331,8 @@ export async function generateEventoMudanza(
       moveDateTarget,
       transitChart,
       moveDayOfWeek,
+      alternativeDays: optimal.topFavorable,
+      daysToAvoid: optimal.topUnfavorable,
       primaryColor: PRIMARY_COLOR,
       accentColor: ACCENT_COLOR,
       templateHtml: template.html_template,

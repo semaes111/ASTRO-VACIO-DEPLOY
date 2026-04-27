@@ -21,7 +21,8 @@
  *   3. Carga template activo de DB (cached)
  *   4. Calcula natal chart del titular
  *   5. Calcula transit chart en purchase_date_target
- *   6. Construye prompt con template + datos
+ *   5b.findOptimalDays sobre ventana ±90d (~2.7s, calcula 90 charts) → S6
+ *   6. Construye prompt con template + datos + alternativas
  *   7. mark generating → call Sonnet → sanitize → mark ready
  *   8. Si algo falla en cualquier paso post-mark-generating, mark error
  */
@@ -30,6 +31,10 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { generateWithSonnet } from '@/lib/ai/sonnet';
 import { computeNatalChart } from '@/lib/astronomy/planets';
 import { loadTemplate } from '@/lib/generators/_shared/template-loader';
+import {
+  findOptimalDays,
+  buildWindowAroundTarget,
+} from '@/lib/generators/_shared/optimal-days';
 import {
   resolveBirthData,
   countWords,
@@ -53,9 +58,14 @@ import { buildEventoVehiculoPrompt } from './prompt';
 const SLUG = 'evento-vehiculo';
 const PRIMARY_COLOR = '#92400E';
 const ACCENT_COLOR = '#FED7AA';
-const MIN_OUTPUT_WORDS = 800; // umbral mínimo razonable; el target son 5500
-const MAX_TOKENS = 12000;
-const TEMPERATURE = 0.65; // ligeramente menor que Ayurveda (más preciso)
+const MIN_OUTPUT_WORDS = 800; // umbral mínimo razonable; el target son 6000
+const MAX_TOKENS = 14000;     // S6 añade ~500 palabras
+const TEMPERATURE = 0.65;     // ligeramente menor que Ayurveda (más preciso)
+
+// Configuración del calendario alternativo (S6)
+const OPTIMAL_DAYS_TOP_N = 5;
+const OPTIMAL_DAYS_TOP_N_AVOID = 3;
+const OPTIMAL_DAYS_EXTEND_AFTER = 60;
 
 // ---------------------------------------------------------------------------
 // Tipos
@@ -306,6 +316,24 @@ export async function generateEventoVehiculo(
   );
 
   // ───────────────────────────────────────────────────────────
+  // 5b. Evaluar ventana de días alternativos (S6 del informe)
+  // ───────────────────────────────────────────────────────────
+  const window = buildWindowAroundTarget(purchaseDateTarget, {
+    extendDaysAfter: OPTIMAL_DAYS_EXTEND_AFTER,
+  });
+  const optimal = findOptimalDays(natalChart, {
+    start: window.start,
+    end: window.end,
+    topN: OPTIMAL_DAYS_TOP_N,
+    topNAvoid: OPTIMAL_DAYS_TOP_N_AVOID,
+    excludeDate: purchaseDateTarget,
+    hourLocal: 12,
+    tzOffsetHours: resolvedBirth.coords.tz_offset_hours,
+    latitude: resolvedBirth.coords.lat,
+    longitude: resolvedBirth.coords.lng,
+  });
+
+  // ───────────────────────────────────────────────────────────
   // 6. Marcar generating ANTES de la llamada cara a Claude
   // ───────────────────────────────────────────────────────────
   // A partir de aquí, cualquier error se persiste como status='error'.
@@ -325,6 +353,8 @@ export async function generateEventoVehiculo(
       purchaseDateTarget,
       transitChart,
       purchaseDayOfWeek,
+      alternativeDays: optimal.topFavorable,
+      daysToAvoid: optimal.topUnfavorable,
       primaryColor: PRIMARY_COLOR,
       accentColor: ACCENT_COLOR,
       templateHtml: template.html_template,
