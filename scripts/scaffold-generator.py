@@ -308,6 +308,7 @@ def emit_prompt_ts(slug: str, product: dict[str, Any]) -> str:
  */
 
 import type {{ NatalChart }} from '@/lib/astronomy/planets';
+import type {{ OptimalDay }} from '@/lib/generators/_shared/optimal-days';
 
 export interface {pascal}PromptInput {{
   userName: string;
@@ -319,6 +320,10 @@ export interface {pascal}PromptInput {{
   transitChart: NatalChart;
   /** Día de la semana del evento (en español) */
   eventDayOfWeek: string;
+  /** Top-N días alternativos pre-calculados por findOptimalDays */
+  alternativeDays: OptimalDay[];
+  /** Top-N días desfavorables a evitar */
+  daysToAvoid: OptimalDay[];
   primaryColor: string;
   accentColor: string;
   templateHtml: string;
@@ -350,6 +355,12 @@ REGLAS DE FORMATO HTML:
 - Una tabla <table class="{short}-table"> máximo.
 
 LONGITUD OBJETIVO: {product['word_count_target']} palabras.
+
+REGLAS DE LA SECCIÓN DE CALENDARIO ALTERNATIVO:
+- Tu informe DEBE tener una sección final dedicada a alternativas de fecha.
+- Si el día objetivo es razonable, NO presiones al cliente para que cambie.
+- Las alternativas vienen pre-calculadas en el bloque DÍAS ALTERNATIVOS — usa SOLO esos días.
+- Cada alternativa debe acompañarse de su justificación astrológica concreta.
 
 TODO: añadir reglas específicas de {product['name_es']} aquí.`;
 
@@ -429,10 +440,38 @@ function findMajorTransits(natal: NatalChart, transit: NatalChart): string[] {{
   return out;
 }}
 
+
+function formatOptimalDaysBlock(
+  favorable: OptimalDay[],
+  unfavorable: OptimalDay[],
+): string {{
+  const lines: string[] = [];
+  if (favorable.length === 0 && unfavorable.length === 0) {{
+    return '  (Ventana sin días favorables ni desfavorables destacados.)';
+  }}
+  if (favorable.length > 0) {{
+    lines.push(`  TOP ${{favorable.length}} DÍAS FAVORABLES:`);
+    for (const d of favorable) {{
+      lines.push(`  · ${{d.date}} (${{d.day_of_week}}) — score ${{d.score.toFixed(1)}}`);
+      for (const r of d.reasons) lines.push(`      · ${{r}}`);
+    }}
+  }}
+  if (unfavorable.length > 0) {{
+    lines.push('');
+    lines.push(`  TOP ${{unfavorable.length}} DÍAS A EVITAR:`);
+    for (const d of unfavorable) {{
+      lines.push(`  · ${{d.date}} (${{d.day_of_week}}) — score ${{d.score.toFixed(1)}}`);
+      for (const r of d.reasons) lines.push(`      · ${{r}}`);
+    }}
+  }}
+  return lines.join('\n');
+}}
+
 export function build{pascal}Prompt(input: {pascal}PromptInput): {pascal}Prompt {{
   const {{
     userName, birthDate, birthTime, birthPlace,
     chart, transitChart, eventDayOfWeek,
+    alternativeDays, daysToAvoid,
     primaryColor, accentColor, templateHtml,
   }} = input;
 
@@ -465,6 +504,10 @@ ${{transitBlock}}
 ASPECTOS MAYORES (tránsito → natal, orbe < 6°)
 ==============================================
 ${{aspectsBlock}}
+
+DÍAS ALTERNATIVOS (pre-calculados — usar SOLO estos en la sección de calendario)
+================================================================================
+${{formatOptimalDaysBlock(alternativeDays, daysToAvoid)}}
 
 PALETA VISUAL: primario ${{primaryColor}}, acento ${{accentColor}} (no usar en HTML que devuelves).
 
@@ -513,6 +556,10 @@ import {{ generateWithSonnet }} from '@/lib/ai/sonnet';
 import {{ computeNatalChart }} from '@/lib/astronomy/planets';
 import {{ loadTemplate }} from '@/lib/generators/_shared/template-loader';
 import {{
+  findOptimalDays,
+  buildWindowAroundTarget,
+}} from '@/lib/generators/_shared/optimal-days';
+import {{
   resolveBirthData,
   countWords,
   escapeHtml,
@@ -532,8 +579,13 @@ const SLUG = '{slug}';
 const PRIMARY_COLOR = '{primary}';
 const ACCENT_COLOR = '{accent}';
 const MIN_OUTPUT_WORDS = 800;
-const MAX_TOKENS = 12000;
+const MAX_TOKENS = 14000;
 const TEMPERATURE = 0.65;
+
+// Configuración del calendario alternativo
+const OPTIMAL_DAYS_TOP_N = 5;
+const OPTIMAL_DAYS_TOP_N_AVOID = 3;
+const OPTIMAL_DAYS_EXTEND_AFTER = 60;
 
 export interface Generate{pascal}Result {{
   html: string;
@@ -665,6 +717,23 @@ export async function generate{pascal}(userReportId: string): Promise<Generate{p
     resolvedBirth.coords.lng,
   );
 
+  // Calendario alternativo
+  const window = buildWindowAroundTarget(
+    validated.eventDateUTC.toISOString().slice(0, 10),
+    {{ extendDaysAfter: OPTIMAL_DAYS_EXTEND_AFTER }},
+  );
+  const optimal = findOptimalDays(natalChart, {{
+    start: window.start,
+    end: window.end,
+    topN: OPTIMAL_DAYS_TOP_N,
+    topNAvoid: OPTIMAL_DAYS_TOP_N_AVOID,
+    excludeDate: validated.eventDateUTC.toISOString().slice(0, 10),
+    hourLocal: 12,
+    tzOffsetHours: resolvedBirth.coords.tz_offset_hours,
+    latitude: resolvedBirth.coords.lat,
+    longitude: resolvedBirth.coords.lng,
+  }});
+
   await markGenerationStarted(userReportId);
 
   try {{
@@ -676,6 +745,8 @@ export async function generate{pascal}(userReportId: string): Promise<Generate{p
       chart: natalChart,
       transitChart,
       eventDayOfWeek: validated.eventDayOfWeek,
+      alternativeDays: optimal.topFavorable,
+      daysToAvoid: optimal.topUnfavorable,
       primaryColor: PRIMARY_COLOR,
       accentColor: ACCENT_COLOR,
       templateHtml: template.html_template,

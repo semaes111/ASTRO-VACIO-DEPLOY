@@ -1,7 +1,7 @@
 # ADR-002 · Patrón canónico de workers de generación de informes
 
 **Estado:** Aceptado
-**Fecha:** 2026-04-22
+**Fecha:** 2026-04-22 (rev. 2026-04-28: añadido calendario alternativo S5.2/S6)
 **Contexto:** PR #1 (Turnos 2-6) del Roadmap del ADR-001
 **Supersede:** parcialmente el patrón legacy de `lib/generators/ayurveda/`
 
@@ -122,6 +122,31 @@ Envuelve el HTML que devuelve Claude con un `<article class="<short>-report">` q
 - `eb` → evento-boda
 - `ay` → ayurveda (legacy)
 
+### 2.7. Calendario alternativo (S5.2 / S6 según producto)
+
+A partir de la versión actual del PR, todo worker que siga el patrón canónico **debe incluir un bloque de calendario alternativo**: una sección dedicada a listar los mejores días alternativos en una ventana de ±90 días alrededor de la fecha objetivo, junto con los peores días a evitar. Esto permite al cliente decidir si mantiene su fecha o la mueve, sin que el sistema le presione.
+
+Implementación: el orchestrator llama a `findOptimalDays(natalChart, window)` (de `lib/generators/_shared/optimal-days.ts`) antes de construir el prompt, y pasa el resultado al builder como `alternativeDays: OptimalDay[]` y `daysToAvoid: OptimalDay[]`. El user prompt incluye un bloque pre-formateado con esos datos para que el LLM los use sin inventar.
+
+Ubicación dentro del informe:
+
+| Producto | Estructura previa | Dónde va el calendario |
+|---|---|---|
+| `evento-mudanza` | S5 = Calendario | S5 se subdivide en 5.1 (alrededor del día objetivo) y 5.2 (alternativas) |
+| `evento-vehiculo` | S5 = Ritual del primer viaje (no era calendario) | Se añade **S6** nueva al final, dedicada al calendario alternativo |
+| Workers nuevos scaffoldeados | sin estructura previa | Sección final dedicada (genéricamente "Calendario alternativo") |
+
+Reglas del prompt para esta sección:
+
+1. Si el día objetivo es **razonable**, NO presionar al cliente para que cambie. Enmarca la sección como _"por si la logística externa te obliga a moverla"_.
+2. Si el día objetivo es **desfavorable** (lo determinaste en la sección de análisis del día), sí adviértelo claramente y enmarca las alternativas como recomendación más fuerte.
+3. **NO inventes días**. Usa SOLO los listados en el bloque `DÍAS ALTERNATIVOS` del user prompt. El scoring que ahí aparece es trazable y auditable; los días inventados rompen ese contrato.
+4. Cada alternativa debe acompañarse de su justificación astrológica concreta basada en las razones del scoring.
+
+Coste de cómputo: `findOptimalDays` ejecuta ~30ms × N días en la ventana. Para 90 días, ~2.7s. El call site del worker debe estar consciente de este coste; si el worker corre en un Route Handler con timeout, debe estar dentro del límite (Vercel default = 10s/serverless).
+
+Ver §6 para la API completa de `findOptimalDays`.
+
 ---
 
 ## 3. Cuándo aplica este patrón
@@ -203,6 +228,7 @@ npx tsx scripts/test-generator.ts --slug=evento-viaje
 | `template-loader.ts` | `loadTemplate(slug)` con cache LRU + TTL |
 | `html-sanitizer.ts` | `sanitizeGeneratedHtml`, `assertValidReportHtml` |
 | `report-updater.ts` | `markGenerationStarted`, `markGenerationReady`, `markGenerationError` |
+| `optimal-days.ts` | `findOptimalDays(natal, window)`, `buildWindowAroundTarget(target, opts)`, tipos `OptimalDay` y `OptimalDaysResult` |
 
 Todos usan `createAdminClient` (service_role). Ningún helper depende de cookies de Next, así que funcionan en Route Handlers, scripts CLI, cron jobs, y Edge Functions.
 
@@ -248,6 +274,8 @@ Esto permite calcular en SQL:
 
 ## 9. Roadmap de implementación
 
+> **Update 2026-04-28:** los Sprints 2-5 ahora heredan automáticamente el patrón de calendario alternativo (§2.7). El scaffolder genera el código necesario sin intervención manual. La única tarea adicional es validar visualmente que la nueva sección renderiza correctamente con la paleta del producto.
+
 | Sprint | Workers a entregar | Test E2E |
 |---|---|---|
 | ✅ Sprint 1 (este PR) | evento-vehiculo, evento-mudanza | `test-generator.ts` |
@@ -268,7 +296,8 @@ Cada sprint requiere:
 
 - ADR-001: Roadmap de los 30 productos del catálogo (no incluido en este PR)
 - PATCH-ingest-html-templates.md: detalle del fix de la migración del Turno 1
-- `lib/generators/evento-vehiculo/`: implementación de referencia
-- `lib/generators/evento-mudanza/`: segunda implementación, valida que el patrón es replicable
-- `scripts/scaffold-generator.py`: clonador programático
+- `lib/generators/evento-vehiculo/`: implementación de referencia (con S6 calendario alt)
+- `lib/generators/evento-mudanza/`: segunda implementación (con S5.2 calendario alt)
+- `lib/generators/_shared/optimal-days.ts`: scoring auditable de electional astrology
+- `scripts/scaffold-generator.py`: clonador programático (incluye patrón S6 alt)
 - `scripts/test-generator.ts`: test runner genérico parametrizable
