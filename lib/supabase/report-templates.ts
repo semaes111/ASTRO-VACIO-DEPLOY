@@ -11,13 +11,14 @@
  *   Las llamadas `.schema('astrodorado').from('report_templates')` fallan
  *   con "Invalid schema". La view en public es el contrato limpio.
  *
- * Seguridad: la view ya filtra `is_active = true`, y la tabla base tiene RLS
- * para que `anon` y `authenticated` no puedan ver metadatos sensibles (notes,
- * byte_size si fuese sensible). El `service_role` sí puede todo.
+ * Cliente: usa service_role (createAdminClient de @/lib/supabase/admin) porque
+ * estos helpers se invocan desde workers que pueden correr fuera de un
+ * Route Handler (cron jobs, scripts CLI, Edge Functions). El cliente con
+ * cookies de @/lib/supabase/server NO sirve en esos contextos.
  *
  * Errores: propagación explícita vía `throw new Error(...)`. Nunca swallow.
  */
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import type {
   ReportTemplateRow,
   ReportTemplateSummary,
@@ -48,7 +49,7 @@ export async function getActiveTemplate(
     throw new Error('getActiveTemplate: slug requerido');
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from('astrodorado_report_templates')
     .select(FULL_COLUMNS)
@@ -85,7 +86,7 @@ export async function listActiveTemplates(params?: {
   const limit = Math.min(params?.limit ?? 50, 200);
   const offset = params?.offset ?? 0;
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { data, error } = await supabase
     .from('astrodorado_report_templates')
     .select(SUMMARY_COLUMNS)
@@ -104,7 +105,7 @@ export async function listActiveTemplates(params?: {
  * a que el worker falle por "template no encontrado").
  */
 export async function hasActiveTemplate(slug: string): Promise<boolean> {
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { count, error } = await supabase
     .from('astrodorado_report_templates')
     .select('slug', { count: 'exact', head: true })

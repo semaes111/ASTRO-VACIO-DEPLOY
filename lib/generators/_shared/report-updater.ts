@@ -9,13 +9,14 @@
  *                        \→ error (con error_count++)
  *
  * Reglas:
- *   - SOLO el service_role puede modificar user_reports. NUNCA llames a
- *     estos helpers desde un Client Component.
+ *   - Usa service_role (createAdminClient) porque user_reports tiene RLS
+ *     que impide que anon/authenticated escriban. NUNCA llames a estos
+ *     helpers desde un Client Component.
  *   - La view `public.astrodorado_user_reports` ya expone la tabla base.
  *   - `error_count` se incrementa a nivel de DB cuando hay error.
  *   - Los timestamps se rellenan aquí; el worker no debe setearlos a mano.
  */
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 const COLS_WRITABLE =
   'id, status, output_html, error_message, error_count, ' +
@@ -29,7 +30,7 @@ const COLS_WRITABLE =
 export async function markGenerationStarted(reportId: string): Promise<void> {
   if (!reportId) throw new Error('markGenerationStarted: reportId requerido');
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { error } = await supabase
     .from('astrodorado_user_reports')
     .update({
@@ -65,7 +66,7 @@ export async function markGenerationReady(
     throw new Error('markGenerationReady: output_html vacío');
   }
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
   const { error } = await supabase
     .from('astrodorado_user_reports')
     .update({
@@ -99,7 +100,7 @@ export async function markGenerationError(
 ): Promise<void> {
   if (!reportId) throw new Error('markGenerationError: reportId requerido');
 
-  const supabase = await createClient();
+  const supabase = createAdminClient();
 
   // 1) Leer error_count actual
   const { data: current, error: readError } = await supabase
