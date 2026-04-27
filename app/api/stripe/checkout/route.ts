@@ -29,6 +29,15 @@ export async function POST(req: Request) {
   if (!product) {
     return NextResponse.json({ error: 'product_not_found' }, { status: 404 });
   }
+  // Guard de seguridad: rechazar productos del nuevo patrón sin template ingestado.
+  // is_active=false significa que el worker fallaría porque report_templates está vacío
+  // para ese slug. Mejor devolver 410 ahora que cobrar y refundear después.
+  if (!product.is_active) {
+    return NextResponse.json(
+      { error: 'product_inactive', detail: 'Este producto aún no está disponible' },
+      { status: 410 },
+    );
+  }
 
   const supabase = createAdminClient();
 

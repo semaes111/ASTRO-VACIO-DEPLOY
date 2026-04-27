@@ -9,7 +9,8 @@ export const metadata = {
 export const dynamic = 'force-static';
 
 export default function PricingPage() {
-  const individuales = CATALOG.filter((p) => p.product_type !== 'oraculo_360');
+  // is_active filter — ver app/catalogo/page.tsx para rationale.
+  const individuales = CATALOG.filter((p) => p.is_active && p.product_type !== 'oraculo_360');
   const oraculo = CATALOG.find((p) => p.product_type === 'oraculo_360')!;
 
   return (

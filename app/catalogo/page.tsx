@@ -9,7 +9,10 @@ export const metadata = {
 export const dynamic = 'force-static';
 
 export default function CatalogoPage() {
-  const individuales = CATALOG.filter((p) => p.product_type !== 'oraculo_360');
+  // Filtrado por is_active: oculta los 22 productos del nuevo patrón hasta que
+  // se ingeste su template (el trigger DB activa is_active=true automáticamente,
+  // pero esta página es force-static y consume CATALOG hardcoded en build time).
+  const individuales = CATALOG.filter((p) => p.is_active && p.product_type !== 'oraculo_360');
   const oraculo = CATALOG.find((p) => p.product_type === 'oraculo_360')!;
 
   return (
