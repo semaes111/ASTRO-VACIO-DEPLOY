@@ -60,7 +60,7 @@ export async function POST(req: Request) {
       .eq('id', userReportId);
 
     // Disparar generacion async (no bloqueante)
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://astrodorado-app.vercel.app';
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.astrodorado.com';
     fetch(`${appUrl}/api/generate/${productType}`, {
       method: 'POST',
       headers: {

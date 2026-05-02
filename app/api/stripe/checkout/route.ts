@@ -91,7 +91,7 @@ export async function POST(req: Request) {
 
   // Crear Stripe Checkout Session
   // Nota: en produccion usar stripe_price_id de BD. Aqui usamos price_data dinamico.
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://astrodorado-app.vercel.app';
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://app.astrodorado.com';
 
   try {
     const session = await stripe.checkout.sessions.create({

@@ -259,7 +259,7 @@ export default function AstroDoradoClient({ horoscopes, pricing, telegramBot, ta
     <>
             {/* Nav superior: volver a landing */}
       <nav className="app-nav">
-        <a href="https://astrodorado.vercel.app" className="back-link">← AstroDorado</a>
+        <a href="https://astrodorado.com" className="back-link">← AstroDorado</a>
         <span className="nav-brand">El oraculo dorado</span>
         <span style={{ width: 80 }} />
       </nav>
@@ -582,7 +582,7 @@ export default function AstroDoradoClient({ horoscopes, pricing, telegramBot, ta
       {/* ═══════════ FOOTER ═══════════ */}
       <footer>
         <div className="ft1">ASTRODORADO</div>
-        <div className="ft2">Powered by NextHorizont AI · <a href="https://astrodorado.vercel.app" className="ft-link">Primera vez? Conocenos</a></div>
+        <div className="ft2">Powered by NextHorizont AI · <a href="https://astrodorado.com" className="ft-link">Primera vez? Conocenos</a></div>
         {telegramBot?.url && (
           <div style={{ marginTop: 10, fontSize: 11, color: 'rgba(232,224,208,.3)' }}>
             <a href={telegramBot.url} target="_blank" rel="noreferrer" style={{ color: '#d4a853' }}>
