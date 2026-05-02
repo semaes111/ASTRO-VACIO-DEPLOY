@@ -119,7 +119,7 @@ function parseArgs(): CliArgs {
 }
 
 // =====================================================
-// UNZIP (usa unzip system binary, idempotente)
+// UNZIP (cross-platform: unzip en Linux/Mac, tar -xf en Windows 10+, idempotente)
 // =====================================================
 
 function unzipToDir(zipPath: string, targetDir: string): void {
@@ -134,7 +134,14 @@ function unzipToDir(zipPath: string, targetDir: string): void {
   mkdirSync(targetDir, { recursive: true });
 
   try {
-    execSync(`unzip -q -o "${zipPath}" -d "${targetDir}"`, { stdio: 'pipe' });
+    if (process.platform === 'win32') {
+      // Windows 10+ trae tar.exe (bsdtar) nativo que descomprime zips.
+      // Más fiable que Expand-Archive con caracteres especiales (ñ, Á, espacios).
+      execSync(`tar -xf "${zipPath}" -C "${targetDir}"`, { stdio: 'pipe' });
+    } else {
+      // Linux/Mac: usar unzip system binary
+      execSync(`unzip -q -o "${zipPath}" -d "${targetDir}"`, { stdio: 'pipe' });
+    }
   } catch (err) {
     throw new Error(`Fallo al descomprimir ${basename(zipPath)}: ${(err as Error).message}`);
   }
