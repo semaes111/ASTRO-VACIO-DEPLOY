@@ -126,11 +126,13 @@ export function assertValidReportHtml(html: string): void {
       `HTML generado demasiado corto (${html?.length ?? 0} bytes). Claude falló.`,
     );
   }
-  if (!/<html[\s>]/i.test(html) || !/<\/html>/i.test(html)) {
-    throw new Error('HTML generado no contiene <html>…</html>. Claude falló.');
-  }
-  if (!/<body[\s>]/i.test(html) || !/<\/body>/i.test(html)) {
-    throw new Error('HTML generado no contiene <body>…</body>. Claude falló.');
+  // El output de los workers se inyecta vía dangerouslySetInnerHTML dentro
+  // de una página Next.js que ya tiene <html><body> en app/layout.tsx.
+  // Por tanto el wrapper de los workers (wrapInHtmlDocument) produce un
+  // <article>…</article> con header + footer, NO un documento completo.
+  // Esta validación verifica el wrapper que sí existe.
+  if (!/<article[\s>]/i.test(html) || !/<\/article>/i.test(html)) {
+    throw new Error('HTML generado no contiene <article>…</article>. Claude falló o el wrapper falla.');
   }
   // Heurística: si el output contiene literal "undefined" o "null" más de
   // 3 veces, es muy probable que Claude haya fallado interpolando datos.
