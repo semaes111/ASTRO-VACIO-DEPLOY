@@ -2,7 +2,7 @@
   "name": "astrodorado-v3",
   "version": "0.1.0",
   "private": true,
-  "description": "AstroDorado — Horóscopo diario + astrología de precisión (NextHorizont AI)",
+  "description": "AstroDorado \u2014 Hor\u00f3scopo diario + astrolog\u00eda de precisi\u00f3n (NextHorizont AI)",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -22,6 +22,7 @@
     "next": "^15.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "resend": "^4.0.0",
     "stripe": "^22.0.2",
     "tailwind-merge": "^2.5.5",
     "zod": "^3.23.8"
