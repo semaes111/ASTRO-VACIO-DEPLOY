@@ -22,6 +22,7 @@
  */
 
 import type { NatalChart } from '@/lib/astro/types';
+import type { OptimalDay } from '@/lib/generators/_shared/optimal-days';
 
 // ============================================================
 // TIPOS PÚBLICOS
@@ -37,17 +38,8 @@ export interface EventoVehiculoPromptInput {
   purchaseDateTarget: string;
   transitChart: NatalChart;
   purchaseDayOfWeek: string;
-  alternativeDays: Array<{
-    iso_date: string;
-    day_of_week: string;
-    score: number;
-    reasons: string[];
-  }>;
-  daysToAvoid: Array<{
-    iso_date: string;
-    day_of_week: string;
-    reasons: string[];
-  }>;
+  alternativeDays: OptimalDay[];
+  daysToAvoid: OptimalDay[];
   primaryColor: string;
   accentColor: string;
   templateHtml: string;
@@ -188,13 +180,13 @@ function formatOptimalDaysBlock(
     ? ['  (Sin alternativas mejores en ±90 días — el día objetivo es de los más favorables)']
     : alternativeDays.slice(0, 8).map((d, i) => {
         const reasons = d.reasons.slice(0, 3).join('; ');
-        return `  ${(i + 1).toString().padStart(2)}. ${d.iso_date} (${d.day_of_week}) — score ${d.score.toFixed(2)} — ${reasons}`;
+        return `  ${(i + 1).toString().padStart(2)}. ${d.date} (${d.day_of_week}) — score ${d.score.toFixed(2)} — ${reasons}`;
       });
   const avoidLines = daysToAvoid.length === 0
     ? ['  (Sin días claramente prohibidos en la ventana — usar el juicio del astrólogo)']
     : daysToAvoid.slice(0, 5).map((d, i) => {
         const reasons = d.reasons.slice(0, 2).join('; ');
-        return `  ${(i + 1).toString().padStart(2)}. ${d.iso_date} (${d.day_of_week}) — ${reasons}`;
+        return `  ${(i + 1).toString().padStart(2)}. ${d.date} (${d.day_of_week}) — ${reasons}`;
       });
   return `DÍAS FAVORABLES (alternativas):\n${altLines.join('\n')}\n\nDÍAS A EVITAR:\n${avoidLines.join('\n')}`;
 }
