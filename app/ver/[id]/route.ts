@@ -555,10 +555,6 @@ interface ProgressFromDb {
   last_update_at?: string;
 }
 
-interface ReportForProgress extends UserReport {
-  progress?: ProgressFromDb | null;
-}
-
 const SECTION_TITLES_VEHICULO: Record<string, string> = {
   s1: 'Tu carta del viajero',
   s2: 'La ventana del cielo',
@@ -569,7 +565,7 @@ const SECTION_TITLES_VEHICULO: Record<string, string> = {
 };
 
 function renderProgressPage(
-  report: ReportForProgress,
+  report: UserReport,
   meta: ReportMeta,
   reportId: string,
 ): NextResponse {
@@ -587,7 +583,9 @@ function renderProgressPage(
       ? 'Ha habido un problema generando tu informe.'
       : 'Estado actual: ' + status;
 
-  const progress = report.progress ?? null;
+  // report.progress tiene tipo Record<string, unknown> | null en UserReport.
+  // Casteamos a ProgressFromDb (estructura conocida del jsonb que escribe el worker chunked).
+  const progress = (report.progress as ProgressFromDb | null) ?? null;
   const total = progress?.total_sections ?? 6;
   const completed = new Set(progress?.completed_sections ?? []);
   const inProgress = new Set(progress?.in_progress_sections ?? []);
