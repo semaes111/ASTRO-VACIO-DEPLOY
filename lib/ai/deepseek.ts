@@ -39,6 +39,21 @@ import type {
   ChatCompletionChunk,
 } from 'openai/resources/chat/completions';
 
+/**
+ * DeepSeek extiende el shape estándar OpenAI CompletionUsage con dos
+ * campos específicos para tracking de cache automático.
+ *
+ * Usamos OpenAI.CompletionUsage del namespace top-level del SDK (v4)
+ * en vez de import named, porque la ruta de la subcarpeta cambia entre
+ * versiones del SDK y romper builds.
+ *
+ * Ref: https://api-docs.deepseek.com/guides/kv_cache
+ */
+type DeepSeekUsage = OpenAI.CompletionUsage & {
+  prompt_cache_hit_tokens?: number;
+  prompt_cache_miss_tokens?: number;
+};
+
 // ---------- TYPES (misma firma que sonnet.ts) ----------
 
 export interface GenerationRequest {
@@ -173,7 +188,7 @@ export async function generateWithDeepSeekStream(
   // Acumular content y capturar el último chunk con usage
   let fullContent = '';
   let stopReason: string | null = null;
-  let finalUsage: ChatCompletionChunk['usage'] = undefined;
+  let finalUsage: DeepSeekUsage | undefined = undefined;
 
   for await (const chunk of stream) {
     const delta = chunk.choices[0]?.delta;
@@ -188,7 +203,7 @@ export async function generateWithDeepSeekStream(
     // Solo el último chunk (con choices vacío y stream_options.include_usage)
     // tiene usage poblado.
     if (chunk.usage) {
-      finalUsage = chunk.usage;
+      finalUsage = chunk.usage as DeepSeekUsage;
     }
   }
 
@@ -201,7 +216,7 @@ export async function generateWithDeepSeekStream(
       prompt_tokens: 0,
       completion_tokens: 0,
       total_tokens: 0,
-    };
+    } as DeepSeekUsage;
   }
 
   return buildResultFromUsage(start, fullContent, finalUsage, stopReason);
@@ -225,20 +240,15 @@ function buildResultFromCompletion(
 function buildResultFromUsage(
   start: number,
   content: string,
-  usage:
-    | { prompt_tokens?: number; completion_tokens?: number; [k: string]: unknown }
-    | null
-    | undefined,
+  usage: DeepSeekUsage | null | undefined,
   stopReason: string | null,
 ): GenerationResult {
-  const promptTokens = (usage?.prompt_tokens as number | undefined) ?? 0;
-  const completionTokens =
-    (usage?.completion_tokens as number | undefined) ?? 0;
-  // Campos específicos DeepSeek (no en spec OpenAI estándar)
-  const cacheHit =
-    (usage?.prompt_cache_hit_tokens as number | undefined) ?? 0;
-  const cacheMiss =
-    (usage?.prompt_cache_miss_tokens as number | undefined) ?? 0;
+  const promptTokens = usage?.prompt_tokens ?? 0;
+  const completionTokens = usage?.completion_tokens ?? 0;
+  // Campos específicos DeepSeek (no en spec OpenAI estándar pero sí en
+  // DeepSeekUsage extension)
+  const cacheHit = usage?.prompt_cache_hit_tokens ?? 0;
+  const cacheMiss = usage?.prompt_cache_miss_tokens ?? 0;
 
   // Si DeepSeek no devuelve los campos cache_*, todos los tokens van
   // como miss (sin caching). En la práctica, V4 Flash siempre los
