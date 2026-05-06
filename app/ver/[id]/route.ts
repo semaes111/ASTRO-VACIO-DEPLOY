@@ -26,6 +26,7 @@ interface UserReport {
   generated_at: string | null;
   input_data: Record<string, unknown> | null;
   error_message: string | null;
+  progress: Record<string, unknown> | null;
   astrodorado_reports: ReportMeta | ReportMeta[] | null;
 }
 
@@ -545,6 +546,259 @@ function firstName(input: Record<string, unknown> | null, fallback = 'Tu informe
   return (nombre || fullName || fallback).toUpperCase();
 }
 
+interface ProgressFromDb {
+  total_sections?: number;
+  completed_sections?: string[];
+  in_progress_sections?: string[];
+  failed_sections?: string[];
+  started_at?: string;
+  last_update_at?: string;
+}
+
+interface ReportForProgress extends UserReport {
+  progress?: ProgressFromDb | null;
+}
+
+const SECTION_TITLES_VEHICULO: Record<string, string> = {
+  s1: 'Tu carta del viajero',
+  s2: 'La ventana del cielo',
+  s3: 'El vehículo y tú',
+  s4: 'Señales y precauciones',
+  s5: 'Ritual del primer viaje',
+  s6: 'Calendario alternativo',
+};
+
+function renderProgressPage(
+  report: ReportForProgress,
+  meta: ReportMeta,
+  reportId: string,
+): NextResponse {
+  const productName = meta.name_es || 'Tu informe';
+  const status = report.status;
+
+  const mensaje =
+    status === 'generating'
+      ? 'Estamos preparando tu informe en segundo plano.'
+      : status === 'paid'
+      ? 'Pago confirmado. El informe comenzará en breve.'
+      : status === 'pending_payment'
+      ? 'Pendiente de confirmación de pago.'
+      : status === 'error'
+      ? 'Ha habido un problema generando tu informe.'
+      : 'Estado actual: ' + status;
+
+  const progress = report.progress ?? null;
+  const total = progress?.total_sections ?? 6;
+  const completed = new Set(progress?.completed_sections ?? []);
+  const inProgress = new Set(progress?.in_progress_sections ?? []);
+  const failed = new Set(progress?.failed_sections ?? []);
+
+  const completedCount = completed.size;
+  const percent = Math.min(
+    100,
+    Math.round(((completedCount + inProgress.size * 0.5) / total) * 100),
+  );
+
+  // Lista de secciones (S1..S6 si chunked, vacío si legacy/sync)
+  const sectionRows = progress
+    ? (['s1', 's2', 's3', 's4', 's5', 's6'] as const)
+        .map((id) => {
+          const title = SECTION_TITLES_VEHICULO[id] ?? id.toUpperCase();
+          let glyph: string;
+          let glyphClass: string;
+          if (completed.has(id)) {
+            glyph = '\u2713';
+            glyphClass = 'progress-section-done';
+          } else if (failed.has(id)) {
+            glyph = '\u2717';
+            glyphClass = 'progress-section-failed';
+          } else if (inProgress.has(id)) {
+            glyph = '\u25CF';
+            glyphClass = 'progress-section-active';
+          } else {
+            glyph = '\u00B7';
+            glyphClass = 'progress-section-pending';
+          }
+          return `<li class="progress-section ${glyphClass}">
+            <span class="progress-section-glyph">${glyph}</span>
+            <span class="progress-section-label">${escapeHtml(title)}</span>
+          </li>`;
+        })
+        .join('\n')
+    : '';
+
+  const errBlock = report.error_message && status === 'error'
+    ? `<p class="progress-error">${escapeHtml(report.error_message)}</p>`
+    : '';
+
+  // Auto-refresh: solo si status es no-terminal. Polea cada 5s.
+  // Cuando detecta status terminal (ready/error), recarga la página completa
+  // para que se renderice el informe (o la página de error final).
+  const isTerminal = status === 'ready' || status === 'error';
+  const pollScript = isTerminal
+    ? ''
+    : `<script>
+(function() {
+  var POLL_INTERVAL_MS = 5000;
+  var startTime = Date.now();
+  var MAX_POLL_MS = 10 * 60 * 1000; // 10 min de polling máximo
+
+  function tick() {
+    if (Date.now() - startTime > MAX_POLL_MS) {
+      // Timeout duro: dejar de polear, mensaje de fallback
+      var hint = document.getElementById('poll-hint');
+      if (hint) hint.textContent = 'La generación está tardando más de lo esperado. Recarga manualmente para reintentar.';
+      return;
+    }
+    fetch('/api/informe-status?report_id=' + ${JSON.stringify(reportId)}, { cache: 'no-store' })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.terminal) {
+          // status final: recargar página para renderizar informe (o error)
+          window.location.reload();
+          return;
+        }
+        // Actualizar barra y secciones in-place
+        if (typeof data.percent === 'number') {
+          var bar = document.getElementById('progress-bar-fill');
+          var pct = document.getElementById('progress-percent');
+          if (bar) bar.style.width = data.percent + '%';
+          if (pct) pct.textContent = data.percent + '%';
+        }
+        if (data.progress && data.progress.completed_sections) {
+          var done = new Set(data.progress.completed_sections);
+          var inProg = new Set(data.progress.in_progress_sections || []);
+          var failed = new Set(data.progress.failed_sections || []);
+          ['s1','s2','s3','s4','s5','s6'].forEach(function(sid) {
+            var el = document.getElementById('section-' + sid);
+            if (!el) return;
+            var glyph = el.querySelector('.progress-section-glyph');
+            if (done.has(sid)) {
+              el.className = 'progress-section progress-section-done';
+              if (glyph) glyph.textContent = '\u2713';
+            } else if (failed.has(sid)) {
+              el.className = 'progress-section progress-section-failed';
+              if (glyph) glyph.textContent = '\u2717';
+            } else if (inProg.has(sid)) {
+              el.className = 'progress-section progress-section-active';
+              if (glyph) glyph.textContent = '\u25CF';
+            }
+          });
+        }
+        setTimeout(tick, POLL_INTERVAL_MS);
+      })
+      .catch(function() {
+        // Error de red: reintentar tras backoff
+        setTimeout(tick, POLL_INTERVAL_MS * 2);
+      });
+  }
+  setTimeout(tick, POLL_INTERVAL_MS);
+})();
+</script>`;
+
+  const progressBar = !isTerminal
+    ? `<div class="progress-wrap">
+        <div class="progress-bar"><div class="progress-bar-fill" id="progress-bar-fill" style="width:${percent}%"></div></div>
+        <div class="progress-percent" id="progress-percent">${percent}%</div>
+       </div>`
+    : '';
+
+  const sectionsBlock = progress && !isTerminal
+    ? `<ul class="progress-sections" id="progress-sections">${sectionRows.replace(/<li class="progress-section ([^"]+)">/g, (_m, cls) => {
+        // Añadir id al li para que el polling pueda actualizarlo
+        const sidMatch = sectionRows.match(/SECTION_TITLES_VEHICULO/); // dummy
+        return `<li class="progress-section ${cls}">`;
+      })}</ul>`
+    : '';
+
+  // Para que el JS de polling pueda actualizar in-place, necesitamos
+  // ids estables en cada <li>. Reescribimos con la inyección de id:
+  const sectionRowsWithIds = progress
+    ? (['s1', 's2', 's3', 's4', 's5', 's6'] as const)
+        .map((id) => {
+          const title = SECTION_TITLES_VEHICULO[id] ?? id.toUpperCase();
+          let glyph: string;
+          let glyphClass: string;
+          if (completed.has(id)) {
+            glyph = '\u2713';
+            glyphClass = 'progress-section-done';
+          } else if (failed.has(id)) {
+            glyph = '\u2717';
+            glyphClass = 'progress-section-failed';
+          } else if (inProgress.has(id)) {
+            glyph = '\u25CF';
+            glyphClass = 'progress-section-active';
+          } else {
+            glyph = '\u00B7';
+            glyphClass = 'progress-section-pending';
+          }
+          return `<li id="section-${id}" class="progress-section ${glyphClass}">
+            <span class="progress-section-glyph">${glyph}</span>
+            <span class="progress-section-label">${escapeHtml(title)}</span>
+          </li>`;
+        })
+        .join('\n')
+    : '';
+
+  const sectionsBlockWithIds = progress && !isTerminal
+    ? `<ul class="progress-sections">${sectionRowsWithIds}</ul>`
+    : '';
+
+  const html = `<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>${escapeHtml(productName)} · Generando | AstroDorado</title>
+${FONTS_LINKS}
+<style>${INFORME_CSS}
+.progress-wrap { max-width: 480px; margin: 32px auto; }
+.progress-bar { background: var(--bg-card); border: 1px solid var(--divider); border-radius: 999px; height: 8px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold-300), var(--gold-100)); transition: width 0.6s ease-out; box-shadow: 0 0 12px var(--gold-glow); }
+.progress-percent { font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.2em; color: var(--gold-200); margin-top: 12px; text-align: center; }
+.progress-sections { list-style: none; padding: 0; margin: 32px auto 0; max-width: 360px; text-align: left; }
+.progress-section { display: flex; align-items: center; gap: 14px; padding: 10px 16px; border-radius: 6px; margin-bottom: 6px; font-family: 'Cormorant Garamond', serif; font-size: 16px; transition: background 0.3s, color 0.3s; }
+.progress-section-glyph { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 600; }
+.progress-section-pending { color: var(--cream-40); }
+.progress-section-pending .progress-section-glyph { color: var(--cream-25); }
+.progress-section-active { color: var(--gold-100); background: rgba(212, 175, 55, 0.06); }
+.progress-section-active .progress-section-glyph { color: var(--gold-100); animation: pulse-glyph 1.5s ease-in-out infinite; }
+@keyframes pulse-glyph { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.85); } }
+.progress-section-done { color: var(--cream-100); }
+.progress-section-done .progress-section-glyph { color: var(--gold-200); }
+.progress-section-failed { color: #ff9999; }
+.progress-section-failed .progress-section-glyph { color: #ff6b6b; }
+.progress-error { background: rgba(255, 0, 0, 0.06); border: 1px solid rgba(255, 100, 100, 0.3); color: #ff9999; padding: 16px 20px; border-radius: 8px; font-family: 'DM Mono', monospace; font-size: 13px; text-align: left; white-space: pre-wrap; margin: 32px auto; max-width: 520px; }
+</style>
+</head>
+<body>
+<div class="page">
+<div class="estado-box">
+<h1>${escapeHtml(productName)}</h1>
+<p>${escapeHtml(mensaje)}</p>
+${progressBar}
+${sectionsBlockWithIds}
+${errBlock}
+<p class="small" id="poll-hint">${
+    isTerminal
+      ? ''
+      : 'La página se actualizará sola cuando esté listo · puedes cerrar esta pestaña, te enviaremos un email'
+  }</p>
+</div>
+</div>
+${pollScript}
+</body>
+</html>`;
+  return new NextResponse(html, {
+    status: 200,
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'no-store, must-revalidate',
+    },
+  });
+}
+
 function renderStatusPage(title: string, body: string, status = 200): NextResponse {
   const html = `<!DOCTYPE html>
 <html lang="es">
@@ -603,7 +857,7 @@ export async function GET(_req: Request, ctx: Ctx) {
     .from('astrodorado_user_reports')
     .select(`
       id, status, output_html, report_slug, generated_at,
-      input_data, error_message,
+      input_data, error_message, progress,
       astrodorado_reports!inner(name_es, tagline, hero_icon, category)
     `)
     .eq('id', id)
@@ -634,29 +888,7 @@ export async function GET(_req: Request, ctx: Ctx) {
 
   // Estados previos a ready
   if (report.status !== 'ready' || !report.output_html) {
-    const mensaje =
-      report.status === 'generating'
-        ? 'Tu informe se esta generando. Suele tardar entre 3 y 6 minutos.'
-        : report.status === 'paid'
-        ? 'Pago confirmado. El informe comenzara a generarse en breve.'
-        : report.status === 'pending_payment'
-        ? 'Pendiente de confirmacion de pago.'
-        : report.status === 'error'
-        ? 'Ha habido un problema generando tu informe.'
-        : 'Estado actual: ' + report.status;
-
-    const errBlock = report.error_message
-      ? `<p class="small" style="color:#ff9999;background:rgba(255,0,0,0.08);padding:12px;border-radius:4px;font-family:ui-monospace,monospace;text-align:left;white-space:pre-wrap;margin-top:24px">${escapeHtml(report.error_message)}</p>`
-      : '';
-    const reloadHint = report.status === 'generating'
-      ? `<p class="small">Recarga esta pagina en unos minutos.</p>`
-      : '';
-
-    return renderStatusPage(
-      (meta.name_es || 'Tu informe') + ' | AstroDorado',
-      `<h1>${escapeHtml(meta.name_es || 'AstroDorado')}</h1><p>${escapeHtml(mensaje)}</p>${reloadHint}${errBlock}`,
-      200
-    );
+    return renderProgressPage(report, meta, id);
   }
 
   // READY: renderizado completo
