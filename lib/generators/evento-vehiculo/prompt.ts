@@ -21,7 +21,7 @@
  *   1 llamada que pide las 6 secciones de golpe. Lento y frágil.
  */
 
-import type { NatalChart } from '@/lib/astro/types';
+import type { NatalChart } from '@/lib/astronomy/planets';
 import type { OptimalDay } from '@/lib/generators/_shared/optimal-days';
 
 // ============================================================
@@ -108,59 +108,85 @@ CRÍTICO:
 // ============================================================
 
 function formatChartBlock(chart: NatalChart, label: string): string {
+  // Lista de planetas con su nombre legible. NatalChart no usa array
+  // sino propiedades nombradas (sun, moon, mercury, ...).
+  const planets = [
+    ['Sol',      chart.sun],
+    ['Luna',     chart.moon],
+    ['Mercurio', chart.mercury],
+    ['Venus',    chart.venus],
+    ['Marte',    chart.mars],
+    ['Júpiter',  chart.jupiter],
+    ['Saturno',  chart.saturn],
+    ['Rahu',     chart.rahu],
+    ['Ketu',     chart.ketu],
+  ] as const;
+
   const lines: string[] = [`${label}:`];
-  for (const p of chart.planets) {
-    const retro = p.retrograde ? ' Rx' : '';
-    const houseStr = p.house ? ` · casa ${p.house}` : '';
+  for (const [name, p] of planets) {
     lines.push(
-      `  ${p.name.padEnd(10)} ${p.sign.padEnd(11)} ${p.degree.toFixed(2).padStart(6)}°${retro}${houseStr}`,
+      `  ${name.padEnd(10)} ${p.sign_tropical.padEnd(12)} ` +
+      `${p.degree_in_sign_tropical.toFixed(2).padStart(6)}° (trop) | ` +
+      `${p.sign_sidereal.padEnd(12)} ${p.degree_in_sign_sidereal.toFixed(2).padStart(6)}° (sid)`,
     );
   }
-  if (chart.ascendant !== null && chart.ascendant !== undefined) {
-    lines.push(`  Ascendente ${chart.ascendantSign ?? ''} ${chart.ascendant.toFixed(2)}°`);
+  if (chart.ascendant) {
+    lines.push(
+      `  ${'Ascend.'.padEnd(10)} ${chart.ascendant.sign_tropical.padEnd(12)} ` +
+      `${chart.ascendant.degree_in_sign_tropical.toFixed(2).padStart(6)}° (trop)`,
+    );
+  } else {
+    lines.push('  Ascendente: no calculable (falta hora de nacimiento)');
   }
   return lines.join('\n');
 }
 
-const ORB_TIGHT = 6;
-
 function findMajorTransits(natal: NatalChart, transit: NatalChart): string[] {
-  const aspectTypes = [
-    { name: 'conjunción', deg: 0 },
-    { name: 'oposición', deg: 180 },
-    { name: 'cuadratura', deg: 90 },
-    { name: 'trígono', deg: 120 },
-    { name: 'sextil', deg: 60 },
+  const ASPECTS: Array<[number, string]> = [
+    [0,   'conjunción'],
+    [60,  'sextil'],
+    [90,  'cuadratura'],
+    [120, 'trígono'],
+    [180, 'oposición'],
   ];
-  const result: string[] = [];
-  for (const tp of transit.planets) {
-    for (const np of natal.planets) {
-      const tLong = signToAbsolute(tp.sign, tp.degree);
-      const nLong = signToAbsolute(np.sign, np.degree);
-      let diff = Math.abs(tLong - nLong);
+  const ORB = 6; // grados
+
+  const natalPlanets: Array<[string, number]> = [
+    ['Sol',      natal.sun.longitude_tropical],
+    ['Luna',     natal.moon.longitude_tropical],
+    ['Mercurio', natal.mercury.longitude_tropical],
+    ['Venus',    natal.venus.longitude_tropical],
+    ['Marte',    natal.mars.longitude_tropical],
+    ['Júpiter',  natal.jupiter.longitude_tropical],
+    ['Saturno',  natal.saturn.longitude_tropical],
+  ];
+  const transitPlanets: Array<[string, number]> = [
+    ['Sol-tr',      transit.sun.longitude_tropical],
+    ['Luna-tr',     transit.moon.longitude_tropical],
+    ['Mercurio-tr', transit.mercury.longitude_tropical],
+    ['Venus-tr',    transit.venus.longitude_tropical],
+    ['Marte-tr',    transit.mars.longitude_tropical],
+    ['Júpiter-tr',  transit.jupiter.longitude_tropical],
+    ['Saturno-tr',  transit.saturn.longitude_tropical],
+  ];
+
+  const out: string[] = [];
+  for (const [tName, tLon] of transitPlanets) {
+    for (const [nName, nLon] of natalPlanets) {
+      let diff = Math.abs(tLon - nLon) % 360;
       if (diff > 180) diff = 360 - diff;
-      for (const at of aspectTypes) {
-        const orb = Math.abs(diff - at.deg);
-        if (orb < ORB_TIGHT) {
-          const valencia = ['cuadratura', 'oposición'].includes(at.name)
-            ? 'tensión'
-            : ['trígono', 'sextil'].includes(at.name)
-              ? 'apoyo'
-              : 'mezcla';
-          result.push(`${tp.name} en tránsito ${at.name} (orbe ${orb.toFixed(1)}°) a tu ${np.name} natal — ${valencia}`);
+      for (const [angle, aspectName] of ASPECTS) {
+        const orb = Math.abs(diff - angle);
+        if (orb < ORB) {
+          const sign = orb < 1 ? '⚠️' : orb < 3 ? '◉' : '◯';
+          out.push(
+            `${sign} ${tName} ${aspectName} ${nName} (orbe ${orb.toFixed(1)}°)`,
+          );
         }
       }
     }
   }
-  return result;
-}
-
-const SIGN_ORDER = [
-  'Aries','Tauro','Géminis','Cáncer','Leo','Virgo','Libra','Escorpio','Sagitario','Capricornio','Acuario','Piscis',
-];
-function signToAbsolute(sign: string, degree: number): number {
-  const idx = SIGN_ORDER.indexOf(sign);
-  return idx * 30 + degree;
+  return out;
 }
 
 function vehicleSpecificGuidance(vehicleType: string): string {
