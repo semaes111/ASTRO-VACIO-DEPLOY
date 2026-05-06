@@ -626,12 +626,16 @@ function buildReportUrl(reportId: string): string {
 
 function formatDateEs(iso: string): string {
   // 2026-06-15 → 15 jun 2026
+  // noUncheckedIndexedAccess hace que m[1], m[2], m[3] sean string|undefined
+  // aunque la regex garantiza captura. Defaults en destructuring resuelven.
   const months = [
     'ene', 'feb', 'mar', 'abr', 'may', 'jun',
     'jul', 'ago', 'sep', 'oct', 'nov', 'dic',
   ];
   const m = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!m) return iso;
-  const [, y, mm, dd] = m;
-  return `${parseInt(dd, 10)} ${months[parseInt(mm, 10) - 1]} ${y}`;
+  const [, y = '', mm = '01', dd = '01'] = m;
+  const monthIdx = parseInt(mm, 10) - 1;
+  const monthLabel = months[monthIdx] ?? '?';
+  return `${parseInt(dd, 10)} ${monthLabel} ${y}`;
 }
