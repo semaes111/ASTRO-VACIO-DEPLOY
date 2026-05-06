@@ -169,7 +169,9 @@ function validateInputs(inputData: Record<string, unknown>): EventoVehiculoInput
     );
   }
 
-  const purchaseDayOfWeek = DAY_OF_WEEK_ES[purchaseDateUTC.getUTCDay()];
+  // getUTCDay() devuelve 0..6 garantizado por ECMA spec, pero noUncheckedIndexedAccess
+  // exige guardia contra undefined. El '?? domingo' es runtime-imposible.
+  const purchaseDayOfWeek = DAY_OF_WEEK_ES[purchaseDateUTC.getUTCDay()] ?? 'domingo';
 
   return { vehicleType, purchaseDateTarget, purchaseDayOfWeek, purchaseDateUTC };
 }
