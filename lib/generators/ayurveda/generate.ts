@@ -14,7 +14,7 @@
  */
 
 import { createAdminClient } from '@/lib/supabase/admin';
-import { generateWithSonnet } from '@/lib/ai/sonnet';
+import { generateForTask } from '@/lib/ai/router';
 import { computeNatalChart } from '@/lib/astronomy/planets';
 import { calculatePrakriti } from '@/lib/ayurveda/doshas';
 import { calculateDashas } from '@/lib/ayurveda/dashas';
@@ -196,7 +196,8 @@ export async function generateAyurveda(userReportId: string): Promise<GenerateAy
     cycles,
   });
 
-  const ai = await generateWithSonnet({
+  const ai = await generateForTask({
+    task: 'narrative',
     system,
     user: userPrompt,
     max_tokens: 16000,
