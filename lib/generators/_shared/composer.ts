@@ -4,13 +4,13 @@
 // Cuando un generador chunked produce 6 secciones en paralelo
 // (cada una un <section id="seccion-N">), el composer las une en un
 // único <article> con header + body + footer, listo para ser
-// pasado por sanitizeReportHtml + assertValidReportHtml.
+// pasado por sanitizeGeneratedHtml + assertValidReportHtml.
 //
 // El composer es agnóstico al producto (no conoce las semánticas de
 // vehiculo/mudanza/ayurveda). Recibe metadata como argumento.
 // ============================================================
 
-import { sanitizeReportHtml } from './html-sanitizer';
+import { sanitizeGeneratedHtml } from './html-sanitizer';
 
 /**
  * Una sección generada. Si failed=true, html debe ser un placeholder
@@ -43,7 +43,7 @@ const DEFAULT_FOOTER = `Este informe es una herramienta orientativa basada en as
  * Garantías:
  *   - Las secciones se concatenan en el orden s1..s6 (no por argumento)
  *   - Si falta alguna sección, se inserta un placeholder visual
- *   - El HTML resultante pasa sanitizeReportHtml para limpiar atributos
+ *   - El HTML resultante pasa sanitizeGeneratedHtml para limpiar atributos
  *     React/inline scripts si Claude añadió alguno por accidente
  *
  * NO maneja errores fatales: si todas las secciones fallaron, el caller
@@ -81,7 +81,12 @@ ${sectionsHtml}
 </footer>
 </article>`;
 
-  return sanitizeReportHtml(articleHtml);
+  // sanitizeGeneratedHtml devuelve { html, removed } - solo nos interesa .html
+  // (cada sección ya pasó por sanitize upstream en generateSectionWithRetry,
+  //  pero pasamos otra vez como defensa en profundidad por si futuros workers
+  //  no respetan el contrato. El coste es mínimo: 2-3 ms por informe).
+  const sanitized = sanitizeGeneratedHtml(articleHtml);
+  return sanitized.html;
 }
 
 function idToNumber(id: string): string {
