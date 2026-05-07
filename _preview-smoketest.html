@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Informe Ayurveda — Test DeepSeek V4 Flash</title>
+<style>
+  :root {
+    --gold: #c9a961;
+    --gold-dark: #8a6b2a;
+    --gold-light: #e8d28a;
+    --bg: #0d0a14;
+    --bg-card: #1a1428;
+    --bg-section: #12102099;
+    --text: #f0e8d8;
+    --text-muted: #b8a888;
+    --accent: #d4af37;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: linear-gradient(180deg, #0a0613 0%, #1a0f24 50%, #0d0a14 100%);
+    color: var(--text);
+    font-family: 'Cormorant Garamond', 'Georgia', serif;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  .test-banner {
+    background: linear-gradient(90deg, #1e3a8a 0%, #6b21a8 100%);
+    color: #fff;
+    padding: 16px 32px;
+    text-align: center;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 14px;
+    border-bottom: 1px solid var(--gold);
+  }
+  .test-banner strong { color: var(--gold-light); }
+  .test-banner .stats {
+    display: inline-flex; gap: 24px; margin-top: 4px;
+    font-size: 13px; opacity: 0.9;
+  }
+  .test-banner .stats span { color: var(--gold-light); }
+
+  .container {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 48px 32px;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 32px 0 48px;
+    border-bottom: 1px solid var(--gold-dark);
+    margin-bottom: 32px;
+  }
+  .hero h1 {
+    font-family: 'Cinzel', serif;
+    font-size: 42px;
+    letter-spacing: 4px;
+    margin: 0 0 12px;
+    color: var(--gold);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .hero .subtitle {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 18px;
+    letter-spacing: 1px;
+  }
+  .hero .meta {
+    color: var(--gold-light);
+    font-size: 14px;
+    margin-top: 16px;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  .ayu-section {
+    background: var(--bg-section);
+    border: 1px solid #2a1f3a;
+    border-left: 3px solid var(--gold);
+    border-radius: 4px;
+    padding: 32px 36px;
+    margin: 24px 0;
+  }
+  .ayu-section h2 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold);
+    font-size: 28px;
+    letter-spacing: 1.5px;
+    border-bottom: 1px solid var(--gold-dark);
+    padding-bottom: 12px;
+    margin: 0 0 20px;
+    font-weight: 600;
+  }
+  .ayu-section h3 {
+    font-family: 'Cinzel', serif;
+    color: var(--gold-light);
+    font-size: 19px;
+    letter-spacing: 1px;
+    margin: 28px 0 12px;
+    font-weight: 500;
+  }
+  .ayu-section p {
+    margin: 0 0 16px;
+    font-size: 17px;
+    color: var(--text);
+  }
+  .ayu-section em {
+    color: var(--gold-light);
+    font-style: italic;
+  }
+  .ayu-section strong {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .ayu-section ul, .ayu-section ol {
+    margin: 12px 0 18px 8px;
+    padding-left: 24px;
+  }
+  .ayu-section li {
+    margin: 6px 0;
+  }
+  .ayu-section .ayu-table, .ayu-section table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 18px 0;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--gold-dark);
+  }
+  .ayu-section table th, .ayu-section table td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid #2a1f3a;
+  }
+  .ayu-section table th {
+    background: rgba(201, 169, 97, 0.1);
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .ayu-section table tbody tr:hover {
+    background: rgba(201, 169, 97, 0.05);
+  }
+
+  .footer {
+    text-align: center;
+    padding: 32px 0;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-family: 'Inter', system-ui, sans-serif;
+    border-top: 1px solid #2a1f3a;
+    margin-top: 32px;
+  }
+  .footer a { color: var(--gold-light); }
+
+  @media print {
+    .test-banner { display: none; }
+    body { background: white; color: #222; }
+    .ayu-section { background: #faf8f3; border-color: #c9a961; }
+    .ayu-section h2, .ayu-section h3 { color: #8a6b2a; }
+  }
+
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap');
+</style>
+</head>
+<body>
+
+<div class="test-banner">
+  <strong>SMOKE TEST DEEPSEEK V4 FLASH</strong> — Informe completo generado en producción real<br>
+  <div class="stats">
+    <span>Modelo: <strong>deepseek-v4-flash</strong></span>
+    <span>Coste real: <strong>$0.003872</strong></span>
+    <span>Palabras: <strong>5,824</strong></span>
+    <span>Tokens: <strong>15,249</strong></span>
+    <span>Latencia: <strong>177s</strong></span>
+    <span>Ahorro vs Sonnet: <strong>98.8%</strong></span>
+  </div>
+</div>
+
+<div class="container">
+  <header class="hero">
+    <h1>Carta Ayurvédica</h1>
+    <div class="subtitle">El mapa de tu constitución según el Jyotish</div>
+    <div class="meta">Para Alma · Madrid, 15 de marzo de 1985</div>
+  </header>
+
+  <section class="ayu-section" id="seccion-1">
+  <h2>1. Tu Nakshatra Natal: Purva Ashadha</h2>
+  <p>Alma, tu estrella de nacimiento es <strong>Purva Ashadha</strong>, el decimonoveno Nakshatra del zodíaco lunar, que se extiende desde los 13°20’ hasta los 26°40’ de Sagitario. Tú llegaste a este mundo cuando la Luna ocupaba <strong>19,88°</strong> de ese signo, en el <em>pada</em> (cuarta parte) número 2, lo que imprime en tu ser una vibración muy concreta, como la cuerda de un instrumento que vibra a una frecuencia única.</p>
+
+  <p>El símbolo de Purva Ashadha es doble: un <em>abanico (vishakha)</em> y un <em>colmillo de elefante</em>. El abanico representa la capacidad de airear, de refrescar, de separar lo útil de lo inútil; también es emblema de realeza y dignidad. El colmillo de elefante evoca la fuerza serena, la capacidad de abrirse paso entre la maleza sin violencia, con una presencia tranquila pero imparable. Juntos te hablan de una persona que sabe <strong>imponer suavemente su autoridad</strong>, que tiene la habilidad de crear orden y belleza donde hay caos. No necesitas levantar la voz para ser escuchada: tu presencia ya organiza el espacio.</p>
+
+  <p>La deidad regente de este Nakshatra son <strong>Apas</strong>, las diosas del agua. Apas no son una única diosa, sino un conjunto de energías femeninas que representan las aguas primordiales, la fluidez, la purificación, la fertilidad y la conexión emocional profunda. Agua que limpia, que disuelve, que nutre y que también puede ser torrente cuando se desborda. Tienes, por tanto, una <strong>naturaleza emocional muy potente</strong>, con una intuición que a menudo te sorprende a ti misma. Percibes corrientes subterráneas que otros no ven, y tu sensibilidad es tu brújula, aunque a veces te cueste confiar en ella porque la razón te pide mapas más sólidos.</p>
+
+  <p>Tu <strong>animal sagrado (yoni)</strong> es el <em>mono (markata)</em>. El mono arquetípico es inteligente, juguetón, social, curioso, pero también puede ser inquieto, disperso y propenso a la ansiedad si no encuentra un propósito que canalice su energía. Esta energía simiesca se refleja en tu mente rápida, tu capacidad para aprender imitando y adaptándote, tu sentido del humor y tu necesidad de estímulos variados. Donde otros ven una rutina, tú ves un escenario para la improvisación. Eso te hace magnética y divertida, pero también vulnerable a la fatiga mental si no pones límites a la estimulación externa.</p>
+
+  <p>Perteneces al <strong>gana (clase) Manushya</strong>, es decir, <em>humana</em>. Esto significa que tu camino espiritual no pasa por el aislamiento ni por la renuncia radical, sino por la inmersión en las relaciones, los afectos, los desafíos cotidianos y las responsabilidades mundanas. No eres un alma que deba escapar del mundo; al contrario, el mundo es tu taller de evolución. Cada vínculo, cada desencuentro, cada alegría compartida es una lección directa para tu alma. Tu <strong>guna (cualidad)</strong> es <em>Rajas</em>, la energía de la actividad, el movimiento, la pasión y el impulso. Esto te da un dinamismo natural: no eres de las que esperan a que la vida pase, sino que sales a buscarla. El riesgo del rajas alto es el desgaste por exceso de hacer, pero cuando lo equilibras con momentos de quietud (sattva), te conviertes en una líder inspiradora, capaz de movilizar a otros con tu entusiasmo.</p>
+
+  <p>Tu <strong>dosha del nakshatra</strong> es <em>Pitta</em>, lo cual refuerza tu naturaleza ígnea y transformadora. Pitta en un Nakshatra de agua crea una combinación fascinante: vapor, energía que se eleva. Eres como una olla a presión: cuando la tapa está bien puesta, cocinas proyectos maravillosos; cuando la presión se acumula sin salida, puedes estallar. De ahí que la <strong>gestión emocional</strong> sea uno de los grandes temas de tu vida. Purva Ashadha es un Nakshatra de naturaleza <em>ugra</em> (intensa, feroz), lo que significa que no haces las cosas a medias. Cuando amas, amas con todo; cuando trabajas, te entregas; cuando te enfadas, el termómetro sube rápido. Aprender a dosificar esa intensidad es parte de tu sabiduría en desarrollo.</p>
+
+  <p>La dirección de esta estrella es <strong>este</strong>, el punto por donde nace el sol, la dirección del inicio, de la aurora. Esto te convierte en una <strong>iniciadora natural</strong>. Tu vida está marcada por ciclos de comenzar cosas: proyectos, relaciones, mudanzas, estudios. Y aunque a veces te canse ser siempre la que da el primer paso, el universo te ha puesto en esa posición porque tienes la energía justa para romper el hielo y la sensibilidad para saber cuándo es el momento adecuado.</p>
+
+  <p>Tu <strong>pada 2</strong> cae en el signo de Sagitario, regido por Júpiter, lo que añade una capa de idealismo, búsqueda de sentido y amor por el conocimiento. En este pada, la energía del agua de Apas se mezcla con el fuego expansivo de Sagitario: eres una soñadora práctica, una filósofa que baja sus ideas a la tierra. Tu fe es tu ancla, aunque pases por temporadas de duda. Purva Ashadha significa literalmente "la victoria temprana" o "la invencible". Tú, Alma, llevas en tu estrella la semilla de una fortaleza que no tiene que demostrar nada a nadie, pero que se activa cuando decides alinearte con tu propósito más auténtico. Esto no es una abstracción: es la huella con la que llegaste al mundo. Tu vida entera es el lienzo donde ese símbolo se despliega.</p>
+</section>
+
+<section class="ayu-section" id="seccion-2">
+  <h2>2. Tu Prakriti: constitución Pitta-Vata</h2>
+  <p>En Ayurveda, la <strong>Prakriti</strong> es tu constitución única, el equilibrio de energías con el que naciste. Se calcula a partir de la posición de los astros en el momento de tu nacimiento y de las características físicas y mentales que te acompañan desde la infancia. No es algo que cambie: es tu naturaleza más profunda, tu "código fuente" biopsíquico. Conocerla es como recibir el manual de instrucciones de tu propio cuerpo y mente. En tu caso, Alma, la proporción es: <strong>Vata 25% - Pitta 50% - Kapha 25%</strong>. Pitta domina claramente, y Vata te acompaña como energía secundaria. Eres, por tanto, una constitución <strong>Pitta-Vata</strong>.</p>
+
+  <h3>¿Qué significa ser Pitta-Vata?</h3>
+  <p>Pitta es el elemento <strong>fuego y agua</strong>: calor, transformación, digestión, metabolismo, inteligencia, determinación, ambición. Cuando Pitta está equilibrada, eres una mujer brillante, decidida, con una capacidad de concentración envidiable y un fuego digestivo (<em>agni</em>) que procesa los alimentos y las ideas con eficacia. Vata, por su parte, es el elemento <strong>aire y éter</strong>: movimiento, ligereza, creatividad, comunicación, rapidez mental, entusiasmo, pero también tendencia a la ansiedad, al insomnio y a la irregularidad. La combinación Pitta-Vata te da una personalidad vibrante, dinámica, con una mente rápida y un fuerte impulso de logro, pero te expone a un desgaste si no gestionas tu energía con cuidado.</p>
+
+  <h3>En tu cuerpo físico</h3>
+  <p>Tienes una contextura <strong>media o delgada</strong>, con tendencia a perder peso fácilmente cuando estás estresada (Vata), pero con una musculatura definida si te ejercitas regularmente (Pitta). Tu piel es sensible, con tendencia a la sensibilidad al calor, a las rojeces y a las erupciones cuando Pitta se desequilibra; también puede volverse seca (Vata) en climas fríos o si descuidas la hidratación. Tu cabello suele ser fino, ligeramente graso en la raíz y seco en las puntas, con tendencia a encanecer prematuramente (Pitta). Tus ojos son penetrantes, a menudo con un brillo intenso que delata tu inteligencia y tu capacidad de observación.</p>
+
+  <p>Tu <strong>digestión (<em>agni</em>)</strong> es fuerte y rápida: sientes hambre con facilidad y te irritas si pasas muchas horas sin comer. Sin embargo, cuando Vata se desequilibra, esa digestión puede volverse irregular: unos días con mucho apetito, otros sin ganas de comer, y propensión a gases e hinchazón. Tu temperatura corporal tiende a ser cálida; sudas con facilidad y prefieres ambientes frescos. El sueño suele ser ligero y a veces interrumpido, sobre todo si tu mente está activa (Vata). Te cuesta "apagar el cerebro" por la noche.</p>
+
+  <h3>En tu mente y emociones</h3>
+  <p>Mentalmente eres <strong>rápida, lógica y competitiva</strong>. Analizas las situaciones con claridad y tomas decisiones con seguridad, a veces incluso con impaciencia. La indecisión te frustra. Tienas una vena perfeccionista y crítica, tanto contigo misma como con los demás (Pitta). Tu creatividad (Vata) es fértil, pero necesitas canalizarla en proyectos concretos; si no, se dispersa en mil ideas sin materializar. Emocionalmente, eres intensa: sientes con profundidad y pasión, pero también puedes tener arrebatos de ira o frustración que luego lamentas. Tu tendencia natural es <strong>liderar, organizar y tomar el control</strong>, aunque a veces te cansas de cargar con todo.</p>
+
+  <table class="ayu-table">
+    <caption>Pitta equilibrada vs. Pitta desequilibrada</caption>
+    <thead>
+      <tr>
+        <th>Tendencia equilibrada</th>
+        <th>Tendencia desequilibrada</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Digestión fuerte y regular</td>
+        <td>Acidez, ardor, inflamación</td>
+      </tr>
+      <tr>
+        <td>Piel clara y luminosa</td>
+        <td>Erupciones, rosácea, enrojecimiento</td>
+      </tr>
+      <tr>
+        <td>Concentración y determinación</td>
+        <td>Irritabilidad, impaciencia, exigencia</td>
+      </tr>
+      <tr>
+        <td>Sueño reparador, aunque ligero</td>
+        <td>Insomnio por calor o por ideas</td>
+      </tr>
+      <tr>
+        <td>Liderazgo inspirador</td>
+        <td>Control excesivo, crítica severa</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Señales de que tu dosha está desequilibrado</h3>
+  <p>Cuando <strong>Pitta</strong> se dispara (por exceso de calor, estrés, comidas picantes, frustración), puedes notar: acidez estomacal, erupciones cutáneas, enfados repentinos, impaciencia, perfeccionismo paralizante, insomnio por calor, conjuntivitis o sensibilidad a la luz. Cuando <strong>Vata</strong> se desequilibra (por falta de rutina, exceso de viajes, viento, frío, preocupación), aparecen: ansiedad, sequedad en piel y mucosas, estreñimiento, insomnio por pensamientos, irregularidad digestiva, dolor articular, sensación de agotamiento mental. Ambos doshas pueden desequilibrarse juntos, y entonces vives una montaña rusa: días de gran energía seguidos de agotamiento, arrebatos emocionales y digestiones impredecibles.</p>
+
+  <p>El camino del equilibrio para ti, Alma, consiste en <strong>enfriar y calmar Pitta</strong> (evitar el exceso de fuego) y <strong>estabilizar y nutrir Vata</strong> (crear rutina, calidez, hidratación). Si persisten molestias, consulta con un profesional de la salud, pero estas pautas te darán una brújula cotidiana.</p>
+</section>
+
+<section class="ayu-section" id="seccion-3">
+  <h2>3. Tu Dasha Activo: estás en Venus mahadasha</h2>
+  <p>El sistema <strong>Vimshottari Dasha</strong> es uno de los métodos predictivos más precisos del Jyotish. Se basa en el ciclo de 120 años de los planetas, gobernado por la posición de la Luna en el Nakshatra de nacimiento. Cada planeta rige un período (mahadasha) de años fijos, y dentro de cada uno hay subperíodos (antardasha) que matizan la experiencia. Este sistema refleja el karma que has venido a trabajar en esta vida, como capítulos de un libro que se abren en el momento justo.</p>
+
+  <p>Alma, naciste con la Luna en Purva Ashadha, cuyo señor es <strong>Venus</strong>. Por eso tu vida comenzó directamente con el mahadasha de Venus, del cual ya habías consumido 12,5 años al nacer. En este momento (mayo de 2026), te encuentras en la parte media de ese mismo gran período: <strong>llevas 33 años aproximadamente en el mahadasha de Venus, y te quedan otros 13 años</strong> hasta que finalice. Venus no es un planeta cualquiera para ti: es el señor de tu Nakshatra lunar, el que marca tu pulso kármico principal.</p>
+
+  <h3>El Mahadasha de Venus: la danza del amor y la materia</h3>
+  <p>Venus (<em>Shukra</em> en sánscrito) es el planeta del amor, la belleza, las relaciones, el arte, la prosperidad material, los placeres sensoriales y la armonía. También rige la fertilidad, la creatividad y la capacidad de disfrutar la vida. Durante estos 20 años (desde tu nacimiento hasta los 32,5 años), has estado aprendiendo a <strong>materializar tus deseos</strong> y a relacionarte con el mundo desde el corazón y desde los sentidos.</p>
+
+  <p>La <strong>luz de Venus</strong> te ha dado: encanto personal, capacidad de atraer personas y recursos, sensibilidad estética, facilidad para crear ambientes agradables, una fuerte conexión con el placer y la belleza. Has tenido oportunidades de crecimiento a través del amor, las amistades femeninas, el arte o las finanzas. Tu vida amorosa ha sido intensa y formativa: cada relación te ha enseñado algo sobre ti misma y sobre lo que realmente valoras.</p>
+
+  <p>La <strong>sombra de Venus</strong> se manifiesta cuando el deseo se convierte en apego, cuando buscas la felicidad en el exterior y te olvidas de tu fuente interior, cuando la comodidad material te atrapa o cuando pones las relaciones en un pedestal. Venus en exceso puede hacerte dependiente de la aprobación ajena, indulgente con los placeres o temerosa de la soledad. Tu lección en este mahadasha es <strong>disfrutar sin aferrarte, amar sin perderte, crear sin desgastarte</strong>.</p>
+
+  <h3>El antardasha de Saturno: el maestro severo visita tu casa del amor</h3>
+  <p>Dentro del mahadasha de Venus, desde hace unos meses estás transitando el subperíodo de <strong>Saturno</strong>, que comenzó hace aproximadamente 480 días y aún le quedan otros 480 días (algo más de un año). Saturno (<em>Shani</em>) es el planeta de la disciplina, la responsabilidad, el karma maduro, las pruebas, la paciencia y la estructura. Cuando Saturno visita el período de Venus, se produce una <strong>tensión creativa</strong> entre el deseo (Venus) y la obligación (Saturno).</p>
+
+  <p>Saturno te pide que <strong>pongas orden en tu vida afectiva y material</strong>. No es un tiempo para dejarse llevar por impulsos románticos ni para gastar sin control. Es un período para evaluar qué relaciones son sólidas y cuáles son lastre, para asumir responsabilidades que has estado posponiendo, para construir bases financieras estables aunque sea con esfuerzo. Puede sentir que la vida se vuelve más seria, que el juego se acaba y toca trabajar. Pero Saturno no es tu enemigo: es el arquitecto que te ayuda a construir algo que dure. Si cooperas con él, saldrás de este antardasha con una estructura interna mucho más fuerte.</p>
+
+  <p>Las dificultades de esta fase pueden ser: sensación de soledad o frialdad en las relaciones, restricciones económicas, retrasos en proyectos creativos, encuentro con figuras de autoridad que te desafían. Lo que Saturno te pide es <strong>paciencia, compromiso y realismo</strong>. No es momento de lanzarse a una nueva relación impulsiva, sino de profundizar la que tienes o de sanar heridas del pasado si estás sola. Tampoco es buen momento para grandes inversiones arriesgadas, sino para ahorrar, pagar deudas y crear un colchón.</p>
+
+  <h3>La luz al final del túnel: el próximo tramo</h3>
+  <p>Cuando finalice el mahadasha de Venus (dentro de 13 años), entrarás en el <strong>mahadasha del Sol</strong>, que dura 6 años. El Sol (<em>Surya</em>) representa el alma, la autoridad, la vitalidad, la autoexpresión, el liderazgo. Ese período te traerá una energía mucho más individual y centrada en tu propósito espiritual y profesional. Pero eso está aún lejano. Ahora, tu foco inmediato es navegar los próximos 12-18 meses del antardasha de Saturno con conciencia, y luego abrirte a la siguiente fase dentro del mismo Venus: el antardasha de Mercurio, que traerá más comunicación, comercio, estudios y agilidad mental. Cada subperíodo es una capa nueva dentro de la gran enseñanza venusina de tu vida.</p>
+
+  <p>Recuerda: los dashas no son "buenos" o "malos" en sí mismos; son <strong>ventanas de aprendizaje</strong>. Venus te dice: "Ama, crea, disfruta". Saturno añade: "Pero con responsabilidad, paciencia y estructura". Tu sabiduría está en escuchar a ambos y encontrar el equilibrio entre el corazón que sueña y la mano que construye.</p>
+</section>
+
+<section class="ayu-section" id="seccion-4">
+  <h2>4. Dinacharya: tu rutina diaria óptima</h2>
+  <p>En Ayurveda, la <strong>Dinacharya</strong> es la rutina diaria que alinea tu cuerpo y mente con los ritmos naturales del sol y la luna. Para una constitución Pitta-Vata como la tuya, la rutina es especialmente importante porque Vata (aire) tiende a la irregularidad, y Pitta (fuego) necesita horarios regulares para no inflamarse. La disciplina no es enemiga de tu espontaneidad; al contrario, te da un esqueleto sobre el que tu creatividad puede moverse libremente.</p>
+
+  <h3>Horarios ideales para tu constitución</h3>
+  <p><strong>Despertar:</strong> entre las <strong>6:00 y las 6:30</strong>, antes de que el sol caliente demasiado. La hora de Vata (2:00-6:00) te da ligereza, y si te levantas en ese período, aprovechas la energía sutil del amanecer. Evita despertarte después de las 7:00, porque entras en hora Kapha (6:00-10:00) y sentirás pereza y pesadez.</p>
+
+  <p><strong>Meditación y silencio:</strong> de <strong>6:30 a 7:00</strong>. Tu mente rápida (Vata) necesita un ancla. 10-15 minutos de meditación, respiración consciente o simplemente observar la luz del alba. Esto calma Pitta (reduce la reactividad) y estabiliza Vata.</p>
+
+  <p><strong>Ejercicio:</strong> de <strong>7:00 a 8:00</strong>. Para Pitta-Vata, el ejercicio debe ser <strong>refrescante y no competitivo</strong>. Evita los entrenamientos intensos que te sobrecalienten (CrossFit, carreras largas bajo el sol). Opta por: yoga suave (series de Surya Namaskar lentos), natación, caminata rápida en la mañana fresca, ciclismo moderado, pilates. La clave es mover el cuerpo sin agotarlo. Si sudas en exceso, enfríate después con una ducha tibia (no fría, porque Vata reacciona al frío).</p>
+
+  <p><strong>Comida principal (almuerzo):</strong> entre las <strong>12:00 y las 13:00</strong>, cuando el fuego digestivo (agni) está en su punto máximo. Tu comida más abundante debe ser al mediodía. Incluye granos integrales, verduras cocidas, legumbres suaves, proteína moderada. Evita alimentos fritos, picantes o muy ácidos que aviven Pitta.</p>
+
+  <p><strong>Cena:</strong> entre las <strong>18:30 y las 19:30</strong>, ligera y temprano. Una sopa de verduras, quinoa con verduras al vapor, o una ensalada tibia. Cena al menos 3 horas antes de dormir para que la digestión no interfiera con el sueño. Si cenas tarde, Pitta se altera y Vata te mantendrá despierta.</p>
+
+  <p><strong>Dormir:</strong> entre las <strong>22:00 y las 22:30</strong> a más tardar. La hora Kapha de la noche (18:00-22:00) es ideal para ir a la cama; si te acuestas después de las 23:00, entras en hora Pitta (22:00-2:00) y tu mente se activa, el cuerpo se calienta y cuesta conciliar el sueño. Antes de dormir, una rutina de relajación: infusión de manzanilla o tila, lectura ligera, masaje en pies con aceite de sésamo (abhyanga en pies calma Vata).</p>
+
+  <h3>Rutina matinal de 15 minutos para empezar la semana</h3>
+  <p>Aquí tienes una secuencia sencilla que puedes incorporar desde mañana mismo:</p>
+  <ol>
+    <li><strong>Al despertar (2 min):</strong> Bebe un vaso de agua tibia con limón y una pizca de jengibre rallado. No café ni té aún. Esto activa el agni y elimina toxinas (ama).</li>
+    <li><strong>Limpieza facial y nasal (2 min):</strong> Lávate la cara con agua fría (Pitta) y realiza una breve limpieza nasal con agua salina (jala neti) o simplemente masajea los senos nasales con aceite de sésamo (Vata).</li>
+    <li><strong>Auto-masaje en seco (5 min):</strong> Con un cepillo de cerdas naturales o con las manos, da golpecitos secos en todo el cuerpo (evitando el rostro) desde los pies hacia el corazón. Esto estimula la circulación, moviliza la linfa y calma Vata. Luego dúchate.</li>
+    <li><strong>Respiración y mantra (3 min):</strong> Siéntate en silencio. Inhala 4 segundos, retén 4, exhala 6. Repite 5 veces. Luego recita en voz baja o mental: <em>"Om Shukraya Namaha"</em> (saludo a Venus) o <em>"Om Apas"</em> (invocación a las diosas del agua).</li>
+    <li><strong>Intención del día (1 min):</strong> Frente a un espejo, di en voz alta una intención breve: "Hoy elijo la calma sobre la reacción" o "Hoy nutro mi cuerpo con alimentos frescos".</li>
+  </ol>
+  <p>Esta rutina te llevará menos de 15 minutos y marcará una diferencia profunda en tu estabilidad energética. Si un día no puedes hacerla completa, prioriza el agua tibia y la intención. La constancia importa más que la perfección.</p>
+</section>
+
+<section class="ayu-section" id="seccion-5">
+  <h2>5. Tu alimentación según el Prakriti</h2>
+  <p>El Ayurveda clasifica los alimentos en seis sabores (<em>rasa</em>): <strong>dulce, agrio, salado, picante, amargo y astringente</strong>. Cada sabor tiene un efecto específico sobre los doshas. Para ti, Alma, que eres Pitta-Vata, la clave está en <strong>enfriar Pitta y estabilizar Vata</strong> a través de los sabores y las cualidades de los alimentos.</p>
+
+  <p>Los sabores que <strong>paciguan Pitta</strong> son: <em>dulce</em> (fresco, nutritivo), <em>amargo</em> (desintoxicante, refrescante) y <em>astringente</em> (secante, refrescante). Los que <strong>agravan Pitta</strong> son: <em>picante</em> (calienta demasiado), <em>agrio</em> (ácido, fermenta) y <em>salado</em> (retiene agua, calienta). Para <strong>paciguan Vata</strong>, los sabores beneficiosos son: <em>dulce</em> (nutritivo, pesado), <em>agrio</em> (en pequeñas cantidades, estimula la digestión) y <em>salado</em> (en moderación, retiene humedad). Los que agravan Vata son: <em>picante</em> (exacerba la sequedad), <em>amargo</em> (en exceso) y <em>astringente</em> (muy secante).</p>
+
+  <p>¿Cómo se conjuga esto para ti? Tu estrategia es <strong>priorizar el dulce, el amargo y el astringente para enfriar Pitta y nutrir Vata</strong>; usar el agrio y el salado con moderación, y limitar el picante intenso. Además, la textura de los alimentos importa: prefiere comidas <strong>cocidas, tibias, aceitosas y húmedas</strong> para calmar Vata, y evita lo crudo, seco y frío en exceso.</p>
+
+  <h3>Alimentos recomendados para ti</h3>
+  <ul>
+    <li><strong>Arroz basmati y quinoa:</strong> Dulces, ligeros, nutritivos. El arroz con leche (kheer) es ideal como postre refrescante para Pitta.</li>
+    <li><strong>Verduras de hoja verde cocidas:</strong> Espinacas, acelgas, lechuga romana. Amargas y refrescantes, ideales para enfriar Pitta.</li>
+    <li><strong>Calabacín, calabaza, pepino:</strong> Dulces y acuosos, refrescan y nutren sin sobrecargar.</li>
+    <li><strong>Legumbres suaves:</strong> Lentejas rojas, garbanzos (bien cocidos), frijol mungo. Astringentes y nutritivos, fáciles de digerir si se cocinan con especias suaves.</li>
+    <li><strong>Leche de cabra o de almendras:</strong> Dulce, nutritiva, refrescante. Mejor tibia que fría. Evita la leche de vaca en exceso si te produce mucosidad.</li>
+    <li><strong>Mango maduro, pera, granada, uvas:</strong> Frutas dulces y astringentes. Evita las frutas ácidas como naranja, piña o kiwi en ayunas.</li>
+    <li><strong>Coco fresco y aceite de coco:</strong> Refrescante para Pitta, hidratante para Vata. Úsalo en ensaladas o para cocinar a baja temperatura.</li>
+    <li><strong>Almendras remojadas y nueces:</strong> Dulces y nutritivas, pero en pequeñas cantidades por su calor. Actívalas remojándolas 12 horas.</li>
+  </ul>
+
+  <h3>Alimentos a moderar o evitar</h3>
+  <ul>
+    <li><strong>Picantes fuertes:</strong> Chile, cayena, pimienta negra en exceso, salsas picantes. Calientan Pitta y secan Vata.</li>
+    <li><strong>Alimentos fritos y grasos:</strong> Papas fritas, comidas muy aceitosas. Sobrecargan la digestión y generan ama (toxinas).</li>
+    <li><strong>Alcohol y café:</strong> El alcohol (especialmente vino tinto) calienta Pitta; el café deshidrata Vata y acelera la mente. Té de hierbas o café de achicoria son mejores alternativas.</li>
+    <li><strong>Quesos curados y fermentados:</strong> El queso parmesano, el yogur ácido, el vinagre. Agravan Pitta por su acidez. Prefiere quesos frescos como paneer o ricotta.</li>
+    <li><strong>Alimentos fríos y congelados:</strong> Helados, bebidas heladas, ensaladas frías en invierno. Apagan el agni y desequilibran Vata.</li>
+    <li><strong>Carne roja en exceso:</strong> Caliente y pesada. Si comes carne, prefiere pollo o pavo en preparaciones ligeras, y no más de 2-3 veces por semana.</li>
+  </ul>
+
+  <h3>Una especia clave para ti</h3>
+  <p>El <strong>hinojo</strong> (<em>Foeniculum vulgare</em>) es tu especia aliada. Es dulce, refrescante, digestiva y calma tanto a Pitta como a Vata. Mastica una cucharadita de semillas después de las comidas para aliviar la pesadez y refrescar el aliento. También puedes infusionarlo: una cucharadita en agua caliente como té digestivo.</p>
+
+  <h3>Regla de oro sobre cantidad y temperatura</h3>
+  <p>Para tu constitución, la regla es: <strong>come hasta llenar dos tercios del estómago</strong> (un tercio de alimento sólido, un tercio de líquido, un tercio vacío para la digestión). Las comidas deben estar <strong>tibias o a temperatura ambiente</strong>, nunca heladas ni hirviendo. La comida templada respeta tu agni sin inflamarlo. Y, sobre todo, <strong>come con calma, sin prisa ni pantallas</strong>. El acto de comer es una meditación en sí mismo; cuando comes con atención, tu digestión mejora y tu mente se aquieta.</p>
+</section>
+
+<section class="ayu-section" id="seccion-6">
+  <h2>6. Remedios para tu Nakshatra y Dasha</h2>
+  <p>La tradición védica ofrece herramientas de apoyo —gemas, mantras, hierbas y rituales— que pueden armonizar las energías planetarias y de los Nakshatras. No son prescripciones ni sustituyen a la medicina, sino <strong>prácticas ancestrales de sintonía vibracional</strong>. Tú, Alma, con tu conexión venusina y tu Nakshatra de agua, puedes beneficiarte de estas sugerencias.</p>
+
+  <h3>Gema para tu dasha lord: Venus</h3>
+  <p>La gema tradicional para Venus (<em>Shukra</em>) es el <strong>diamante</strong> (<em>heera</em>), pero su costo y pureza no están al alcance de todos. Una alternativa excelente es el <strong>zafiro blanco</strong> o el <strong>cristal de cuarzo claro</strong>. El zafiro blanco, de estructura cristalina pura, resuena con la claridad, el amor elevado y la prosperidad espiritual de Venus. Debe engarzarse en <strong>plata</strong> (metal de Venus) y llevarse en el dedo anular o medio de la mano derecha. Si optas por el cuarzo, elige uno natural sin inclusiones. La gema se activa sumergiéndola en leche cruda durante la noche de viernes (día de Venus) y luego enjuagándola con agua de rosas. Recuerda: las gemas canalizan energías, pero no son objetos mágicos; tu intención y tu alineación con la vibración son lo que realmente importa.</p>
+
+  <h3>Mantra asociado a Apas y Venus</h3>
+  <p>Las diosas Apas responden a la invocación del agua. Un mantra de 12 sílabas que puedes recitar (mentalmente o en voz baja) 108 veces al día, preferiblemente al amanecer o frente a un vaso de agua que luego beberás:</p>
+  <p><em>Om Apasam Praja Pataye Namaha</em> — "Saludo a las aguas primordiales, creadoras de vida".</p>
+  <p>Si prefieres un mantra venusino clásico: <em>Om Shukraya Namaha</em> (8 sílabas). Repítelo 21 veces antes de dormir para calmar la mente y atraer relaciones armoniosas. El mantra no es una fórmula mágica; es una herramienta para enfocar la mente y abrir el corazón a la cualidad del planeta.</p>
+
+  <h3>Hierba ayurvédica para tu Pitta-Vata</h3>
+  <p>Para tu constitución, la hierba más equilibradora es <strong>Brahmi (Bacopa monnieri)</strong>. Brahmi significa "la que expande la consciencia". Es refrescante (Pitta), nutritiva para el sistema nervioso (Vata), mejora la concentración, calma la ansiedad y protege el tejido cerebral. Puedes tomarla en cápsulas (según indicación del fabricante) o en infusión: 1 cucharadita de hojas secas en agua caliente, dos veces al día. Otra opción excelente es <strong>Shatavari (Asparagus racemosus)</strong>, especialmente si notas desequilibrios hormonales o sequedad femenina. Shatavari es dulce, refrescante, nutritiva y fortalece el sistema reproductivo. Si prefieres una fórmula combinada, el <strong>Triphala</strong> es seguro para todos los doshas y regula la digestión sin alterar Pitta ni Vata. Consulta siempre con un profesional de la salud antes de iniciar cualquier suplemento, especialmente si tomas medicación.</p>
+
+  <h3>Ritual semanal de 10 minutos: baño de pies con pétalos</h3>
+  <p>Este sencillo ritual conecta con el elemento agua (Apas) y con Venus. Una vez por semana, preferiblemente en viernes al atardecer:</p>
+  <ol>
+    <li>Llena una palangana con agua tibia (no caliente).</li>
+    <li>Añade 5 gotas de aceite esencial de rosa o jazmín, un puñado de pétalos de rosa secos y una cucharadita de leche en polvo.</li>
+    <li>Sumerge los pies durante 10 minutos. Mientras, cierra los ojos y respira profundamente. Visualiza que el agua disuelve cualquier tensión del día.</li>
+    <li>Al retirar los pies, sécalos con una toalla suave y masajea cada pie con aceite de sésamo tibio, prestando atención a los dedos y al arco plantar.</li>
+    <li>Da las gracias al agua y a Venus por su fluidez y belleza.</li>
+  </ol>
+  <p>Este baño de pies calma Vata (por el masaje con aceite), enfría Pitta (por la frescura de la rosa) y abre la puerta a la energía venusina del amor propio. Si tienes alguna herida abierta en los pies, evita el contacto con aceites esenciales y usa solo agua tibia. Recuerda: estos remedios son <strong>tradición védica, no medicina</strong>. Si persisten molestias físicas o emocionales, consulta con un profesional de la salud.</p>
+</section>
+
+<section class="ayu-section" id="seccion-7">
+  <h2>7. Tu momento astrológico ahora: los ciclos AMORC convergentes</h2>
+  <p>El sistema de ciclos del <strong>Antiguo y Místico Orden de la Rosa Cruz (AMORC)</strong>, desarrollado por H. Spencer Lewis en 1929, ofrece una lente complementaria a la astrología védica. Estos ciclos no contradicen tu carta jyotish; la enriquecen, como dos luces que iluminan el mismo paisaje desde ángulos distintos. En este momento, tres ciclos convergen para ti, Alma, creando una ventana energética única.</p>
+
+  <h3>Ciclo de Vida Personal: período 4</h3>
+  <p>Este ciclo dura aproximadamente 1100 días (unos 3 años). Hoy estás en el <strong>período 4</strong>, con un 47% completado. El período 4 representa el <strong>esfuerzo estructurado y la construcción de bases sólidas</strong>. No es tiempo de grandes vuelos, sino de consolidar lo que has sembrado. Se alinea perfectamente con tu antardasha de Saturno: ambos te piden disciplina, paciencia y trabajo meticuloso. Es un momento para revisar acuerdos, finanzas, relaciones y proyectos, y fortalecerlos desde los cimientos. Sentirás que el universo te reta a demostrar tu compromiso. No esquives el esfuerzo; cada hora de trabajo enfocado ahora te dará frutos más adelante.</p>
+
+  <h3>Ciclo Diario: letra P — creatividad y expansión</h3>
+  <p>Hoy tu ciclo diario vibra en la letra <strong>P</strong>, que corresponde a un período de apertura creativa, expansión mental y comunicación inspirada. Este ciclo diario suaviza la seriedad del ciclo de Vida Personal y del antardasha de Saturno. Te invita a <strong>soltar la rigidez</strong> y a permitir que la inspiración fluya, incluso mientras trabajas en tus responsabilidades. Hoy es un buen día para escribir, dibujar, hablar de tus sueños o compartir una idea que has guardado. La energía de la letra P también favorece los viajes cortos y las conexiones con personas que te aporten perspectiva.</p>
+
+  <h3>Ciclo del Alma: período 3, polaridad positiva — "Florecimiento Interior"</h3>
+  <p>El ciclo del Alma es el más profundo de los tres, pues toca tu evolución espiritual. Estás en el <strong>período 3 de polaridad positiva</strong>, que Lewis denominó "<strong>Florecimiento Interior</strong>". Es una fase de madurez emocional, de integración de las experiencias vividas, de florecimiento de tu sabiduría interna. No se trata de logros externos, sino de una <strong>transformación silenciosa</strong> que está ocurriendo en tu corazón. Puede manifestarse como una mayor compasión contigo misma, la capacidad de perdonar viejas heridas o una conexión más íntima con tu práctica espiritual. Este ciclo del alma <strong>potencia</strong> el mahadasha de Venus, porque ambos te llaman a la belleza interior y a la relación amorosa contigo misma. Venus te da el deseo; el ciclo del alma te da la profundidad.</p>
+
+  <h3>Integración de los tres ciclos con tu carta védica</h3>
+  <p>El panorama completo es: el mahadasha de Venus te pide amor y creatividad; el antardasha de Saturno te exige responsabilidad; el ciclo de Vida 4 te pide construir bases; el ciclo diario P te pide fluir creativamente; y el ciclo del Alma 3 te pide florecer desde dentro. ¿Cómo se conjugan? <strong>No como contradicción, sino como danza.</strong> Saturno pone los cimientos; el ciclo de Vida 4 los refuerza; Venus decora las paredes con belleza; el ciclo diario P abre las ventanas; y el ciclo del Alma 3 enciende la luz interior. Es un momento de <strong>construir con corazón</strong>.</p>
+
+  <h3>Tres claves prácticas para hoy</h3>
+  <ol>
+    <li><strong>Mañana estructurada, tarde creativa:</strong> Dedica la mañana (hasta las 12:00) a tareas que requieran concentración y orden: revisar finanzas, organizar documentos, hacer llamadas importantes. Por la tarde, permítete un espacio de 30-60 minutos para crear sin juicio: escribir, pintar, cocinar algo nuevo, bailar en casa. Saturno exige la mañana; el ciclo P pide la tarde.</li>
+    <li><strong>Un acto de amor propio tangible:</strong> El ciclo del Alma 3 y Venus te invitan a mimarte. Hoy, haz algo que normalmente pospones: un baño largo con sales, leer un poema en voz alta, comprarte una flor, decirte frente al espejo "te quiero". No es trivial; es un ritual de florecimiento.</li>
+    <li><strong>Siembra una intención a 90 días:</strong> Usa la energía constructiva de Saturno y del ciclo 4 para definir un objetivo pequeño pero concreto para los próximos tres meses (por ejemplo: "ahorrar 200€ al mes", "meditar 5 minutos cada día", "leer un libro sobre desarrollo personal"). Escríbelo en un papel y colócalo donde lo veas cada día. Los ciclos te apoyarán si actúas con constancia.</li>
+  </ol>
+</section>
+
+<section class="ayu-section" id="seccion-8">
+  <h2>8. Tu próximo año: predicción ayurvédica</h2>
+  <p>Alma, desde mayo de 2026 hasta mayo de 2027, tu vida se despliega bajo la influencia dominante del mahadasha de Venus y el antardasha de Saturno, que aún tiene unos 480 días por delante. Saturno, el maestro severo, seguirá siendo tu compañero de entrenamiento durante la primera mitad del año, para luego dar paso, aproximadamente en <strong>agosto-septiembre de 2026</strong>, al siguiente antardasha dentro del período de Venus: <strong>Mercurio</strong>. Este cambio marcará un giro significativo.</p>
+
+  <h3>Primer tramo: mayo a septiembre de 2026 — Saturno aún en juego</h3>
+  <p>Hasta que Saturno complete su antardasha (alrededor de agosto/septiembre 2026), la tónica será de <strong>responsabilidad, restricción y estructura</strong>. No es un período para grandes cambios externos, sino para ordenar internamente. <strong>Junio y julio</strong> son meses especialmente intensos: Saturno hará un aspecto tenso con tu Sol natal en Piscis, lo que puede traer desafíos de salud (cuida el sistema inmunológico y el agotamiento) o conflictos con figuras de autoridad. Evita decisiones impulsivas en el trabajo; en lugar de renunciar o lanzarte a un nuevo proyecto, <strong>negocia, reorganiza y paciencia</strong>. En el amor, Saturno puede sentir distancia; si estás en pareja, busca conversaciones sinceras sobre el futuro; si estás sola, es tiempo de sanar soledades no de llenar vacíos.</p>
+
+  <p><strong>Agosto</strong> trae un respiro: Júpiter (tu regente de Sagitario) forma un aspecto favorable, abriendo oportunidades de aprendizaje, viajes cortos o reconexión con la fe. Es un buen mes para una escapada de fin de semana que te renueve.</p>
+
+  <h3>Segundo tramo: octubre 2026 a febrero 2027 — Mercurio entra en escena</h3>
+  <p>Con el antardasha de <strong>Mercurio</strong> activo desde septiembre-octubre 2026, la energía cambia notablemente. Mercurio (<em>Budha</em>) es el planeta de la comunicación, el comercio, el intelecto y la agilidad. Ahora se alía con Venus para traerte: <strong>nuevas ideas, oportunidades de aprendizaje, proyectos creativos que requieren organización mental, y una vida social más activa</strong>. Será un período excelente para estudiar algo que te apasione (un curso online, un idioma, una certificación en tu campo), para iniciar un blog o canal, o para retomar una habilidad artística que habías dejado. <strong>Noviembre y diciembre</strong> son especialmente favorables para firmar contratos, asociarte o lanzar un proyecto pequeño. Tu mente estará más clara y tu capacidad de persuasión aumentará. Aprovecha para hacer networking y para ordenar tus finanzas con inteligencia.</p>
+
+  <p><strong>Enero 2027</strong> trae una nota de cautela: Venus (tu mahadasha lord) forma un aspecto difícil con Saturno (que aún está retrógrado desde Escorpio). Puede sentir nostalgia, añoranza por relaciones pasadas o dudas sobre tu camino actual. <strong>No tomes decisiones drásticas en enero</strong>; date espacio para sentir, meditar y escribir. Febrero, en cambio, trae un soplo de aire fresco con la entrada del Sol en Acuario, limpiando la atmósfera emocional.</p>
+
+  <h3>Tercer tramo: marzo a mayo 2027 — consolidación y cosecha</h3>
+  <p>La primavera de 2027 (marzo-abril) es una ventana de <strong>equilibrio y expansión</strong>. El mahadasha de Venus sigue activo, y Mercurio se refuerza con el tránsito de Júpiter en Tauro (signo de Venus). Esto puede traer: <strong>estabilidad financiera</strong>, reconocimiento en tu campo, o una relación que se vuelve más sólida. <strong>Abril</strong> es un mes clave para tomar decisiones importantes sobre tu hogar o tu carrera: la energía apoya los movimientos si son calculados. Mayo de 2027 cierra este ciclo anual con una nota de gratitud: habrás atravesado la disciplina de Saturno y la agilidad de Mercurio, y habrás aprendido a <strong>construir con amor y paciencia</strong>.</p>
+
+  <h3>Tu consigna espiritual para el año</h3>
+  <p>Guarda esta frase en tu corazón, Alma, como un mantra para los próximos doce meses:</p>
+  <p><strong>"Donde pongo atención, florece la vida."</strong></p>
+  <p>No necesitas cambiarlo todo ni correr hacia ninguna meta. Solo necesitas poner tu atención plena en aquello que merece tu energía: tu salud, tus relaciones auténticas, tu creatividad, tu paz interior. El resto se ordenará solo.</p>
+
+  <hr>
+
+  <p>Alma, has llegado hasta el final de esta lectura porque hay algo en ti que sabe que las estrellas no dictan tu destino, sino que iluminan tu camino. Tu carta es un mapa, no una condena. Eres una mujer de fuego y agua, de impulsos y sensibilidad, de disciplina y creatividad. La vida te ha puesto en esta encrucijada —Venus, Saturno, los ciclos AMORC, tu Nakshatra de agua— para que aprendas a danzar entre la entrega y el esfuerzo, entre el amor que das y el amor que te debes a ti misma.</p>
+
+  <p>Gracias por confiar tu luz a estas palabras. Que los próximos meses te traigan la serenidad de saber que estás exactamente donde debes estar, haciendo exactamente lo que tu alma necesita para crecer. Om Shanti, Shanti, Shanti.</p>
+</section>
+
+  <div class="footer">
+    <p>Informe generado por <strong>AstroDorado</strong> · Smoke test post-merge a1b5b8503c<br>
+    Modelo: deepseek-v4-flash · Generado: 2026-05-07</p>
+  </div>
+</div>
+
+</body>
+</html>
