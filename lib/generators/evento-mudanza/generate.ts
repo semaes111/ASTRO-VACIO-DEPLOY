@@ -19,14 +19,14 @@
  *   5. computeNatalChart natal + tránsitos al día objetivo
  *   5b.findOptimalDays sobre ventana ±90d (~2.7s, calcula 90 charts)
  *   6. markGenerationStarted
- *   7. buildEventoMudanzaPrompt + generateWithSonnet (incluye S5.2)
+ *   7. buildEventoMudanzaPrompt + generateForTask (incluye S5.2)
  *   8. sanitizeGeneratedHtml + assertValidReportHtml
  *   9. wrapInHtmlDocument + markGenerationReady
  *  10. Catch general → markGenerationError + relanza
  */
 
 import { createAdminClient } from '@/lib/supabase/admin';
-import { generateWithSonnet } from '@/lib/ai/sonnet';
+import { generateForTask } from '@/lib/ai/router';
 import { computeNatalChart } from '@/lib/astronomy/planets';
 import { loadTemplate } from '@/lib/generators/_shared/template-loader';
 import {
@@ -338,7 +338,8 @@ export async function generateEventoMudanza(
       templateHtml: template.html_template,
     });
 
-    const ai = await generateWithSonnet({
+    const ai = await generateForTask({
+      task: 'narrative',
       system,
       user: userPrompt,
       max_tokens: MAX_TOKENS,

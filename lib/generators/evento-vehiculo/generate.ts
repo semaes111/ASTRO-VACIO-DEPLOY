@@ -23,7 +23,7 @@
  *   - Si falla email, NO afecta al informe (se loguea y sigue)
  */
 import { createAdminClient } from '@/lib/supabase/admin';
-import { generateWithSonnetStream } from '@/lib/ai/sonnet';
+import { generateForTaskStream } from '@/lib/ai/router';
 import { computeNatalChart } from '@/lib/astronomy/planets';
 import { loadTemplate } from '@/lib/generators/_shared/template-loader';
 import {
@@ -232,7 +232,8 @@ async function generateSectionWithRetry(args: {
     acc.attempts = attempt;
 
     try {
-      const ai = await generateWithSonnetStream({
+      const ai = await generateForTaskStream({
+        task: 'narrative',
         system: systemShared,
         user: userPrompt,
         max_tokens: MAX_TOKENS_PER_SECTION,
