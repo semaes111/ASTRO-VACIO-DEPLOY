@@ -185,7 +185,32 @@ function findPrimaryHtml(dir: string): string {
 // =====================================================
 
 async function renderWithPuppeteer(browser: Browser, htmlPath: string): Promise<string> {
-  const rawHtml = readFileSync(htmlPath, 'utf-8');
+  // Servidor HTTP local efímero sirviendo el directorio del HTML.
+  // Motivo: page.setContent() carece de base URL -> los assets relativos de builds
+  // Vite dist (./assets/*.js type="module") nunca resuelven y React no monta.
+  // Servir por http:// también evita el bloqueo CORS de módulos ES sobre file://.
+  const { createServer } = await import('node:http');
+  const { dirname, extname, normalize } = await import('node:path');
+  const rootDir = dirname(htmlPath);
+  const MIME: Record<string, string> = {
+    '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/javascript',
+    '.css': 'text/css', '.json': 'application/json', '.svg': 'image/svg+xml',
+    '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
+    '.webp': 'image/webp', '.woff': 'font/woff', '.woff2': 'font/woff2', '.ico': 'image/x-icon',
+  };
+  const server = createServer((req, res) => {
+    try {
+      const urlPath = decodeURIComponent((req.url ?? '/').split('?')[0]);
+      const filePath = normalize(join(rootDir, urlPath === '/' ? basename(htmlPath) : urlPath));
+      if (!filePath.startsWith(rootDir) || !existsSync(filePath) || statSync(filePath).isDirectory()) {
+        res.writeHead(404); res.end(); return;
+      }
+      res.writeHead(200, { 'Content-Type': MIME[extname(filePath).toLowerCase()] ?? 'application/octet-stream' });
+      res.end(readFileSync(filePath));
+    } catch { res.writeHead(500); res.end(); }
+  });
+  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
+  const port = (server.address() as { port: number }).port;
 
   const page: Page = await browser.newPage();
   await page.setViewport({ width: 1200, height: 800 });
@@ -198,14 +223,27 @@ async function renderWithPuppeteer(browser: Browser, htmlPath: string): Promise<
   });
 
   try {
-    // Cargar HTML crudo. waitUntil='networkidle0' = esperar a que Google Fonts / unpkg terminen.
-    await page.setContent(rawHtml, { waitUntil: 'networkidle0', timeout: HYDRATION_TIMEOUT_MS });
+    // Navegar al HTML servido por HTTP. waitUntil='networkidle0' = esperar Google Fonts / CDN / assets.
+    // Navegar a '/' (no al nombre de fichero): las apps con React Router solo
+    // definen ruta para '/', y el servidor efímero ya sirve el HTML principal en la raíz.
+    // waitUntil 'domcontentloaded' (no 'networkidle0'): páginas con vídeo/streaming
+    // mantienen la red ocupada indefinidamente; el gate real de readiness es el
+    // waitForFunction de hidratación posterior. La captura es DOM, no píxeles.
+    await page.goto(`http://127.0.0.1:${port}/`, {
+      waitUntil: 'domcontentloaded',
+      timeout: HYDRATION_TIMEOUT_MS,
+    });
 
     // Esperar a que React hidrate: #root debe tener al menos 1 hijo con contenido.
     await page.waitForFunction(
       () => {
         const root = document.getElementById('root');
-        return root !== null && root.children.length > 0 && root.textContent!.trim().length > 50;
+        // Build React de Kimi: esperar hidratación dentro de #root
+        if (root !== null) {
+          return root.children.length > 0 && root.textContent!.trim().length > 50;
+        }
+        // HTML estático (sin #root): basta body con contenido real
+        return document.body !== null && document.body.textContent!.trim().length > 50;
       },
       { timeout: HYDRATION_TIMEOUT_MS },
     );
@@ -275,6 +313,7 @@ async function renderWithPuppeteer(browser: Browser, htmlPath: string): Promise<
 
     return fullHtml;
   } finally {
+    server.close();
     await page.close();
   }
 }
