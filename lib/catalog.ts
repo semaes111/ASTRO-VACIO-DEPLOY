@@ -26,6 +26,13 @@
 
 import type { CatalogProduct, ProductType } from '@/lib/types/catalog';
 
+/**
+ * @deprecated Fuente única de verdad del catálogo comercial: la vista
+ * `public.astrodorado_reports` vía `lib/supabase/catalog.ts`
+ * (`getCatalogFromDB` / `getProductFromDB`). Este array estático queda solo
+ * como referencia de shape y para las constantes de marketing ORACULO_360_*.
+ * No añadir nuevos consumidores. Eliminación prevista en un PR futuro.
+ */
 export const CATALOG: readonly CatalogProduct[] = [
   {
     slug: "carta-natal",

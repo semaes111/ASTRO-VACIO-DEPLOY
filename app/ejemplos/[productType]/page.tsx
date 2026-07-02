@@ -1,28 +1,25 @@
 import Link from 'next/link';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { CATALOG, type ProductType, getCatalogProductByType } from '@/lib/catalog';
+import { getCatalogFromDB } from '@/lib/supabase/catalog';
 import { DEMO_CHARACTER } from '@/lib/demo-character';
 import { notFound } from 'next/navigation';
 
 type Params = { params: Promise<{ productType: string }> };
 
+// ISR: los ejemplos de productos recién activados en DB aparecen sin redeploy
+// (dynamicParams por defecto renderiza on-demand los tipos no pre-generados).
+export const revalidate = 300;
+
 export async function generateStaticParams() {
-  return CATALOG.map((p) => ({ productType: p.product_type }));
+  const products = await getCatalogFromDB();
+  return products.map((p) => ({ productType: p.product_type }));
 }
 
-const PRODUCT_TYPE_VALUES: ProductType[] = [
-  'carta_natal', 'revolucion_solar', 'numerologia',
-  'iching', 'horoscopo_chino', 'kabbalah', 'oraculo_360',
-];
-
 export default async function EjemploPage({ params }: Params) {
-  const { productType: rawProductType } = await params;
-  if (!PRODUCT_TYPE_VALUES.includes(rawProductType as ProductType)) {
-    notFound();
-  }
-  const productType = rawProductType as ProductType;
-  const product = getCatalogProductByType(productType);
+  const { productType } = await params;
+  const products = await getCatalogFromDB();
+  const product = products.find((p) => p.product_type === productType);
   if (!product) notFound();
 
   let demoHtml: string | null = null;
@@ -121,7 +118,8 @@ export default async function EjemploPage({ params }: Params) {
 
 export async function generateMetadata({ params }: Params) {
   const { productType } = await params;
-  const product = getCatalogProductByType(productType as ProductType);
+  const products = await getCatalogFromDB();
+  const product = products.find((p) => p.product_type === productType);
   return {
     title: product ? `Ejemplo ${product.name_es} - Astro Dorado` : 'Ejemplo',
     description: product?.short_description,

@@ -1,17 +1,20 @@
 import Link from 'next/link';
-import { CATALOG, ORACULO_360_SAVINGS, ORACULO_360_SUM_INDIVIDUAL } from '@/lib/catalog';
+import { ORACULO_360_SAVINGS, ORACULO_360_SUM_INDIVIDUAL } from '@/lib/catalog';
+import { getCatalogFromDB } from '@/lib/supabase/catalog';
 
 export const metadata = {
   title: 'Precios - Astro Dorado',
   description: 'Compara los 6 informes individuales o descubre el Oraculo 360 con ahorro.',
 };
 
-export const dynamic = 'force-static';
+// ISR alineado con el TTL del cache del catálogo — ver app/catalogo/page.tsx.
+export const revalidate = 300;
 
-export default function PricingPage() {
-  // is_active filter — ver app/catalogo/page.tsx para rationale.
-  const individuales = CATALOG.filter((p) => p.is_active && p.product_type !== 'oraculo_360');
-  const oraculo = CATALOG.find((p) => p.product_type === 'oraculo_360')!;
+export default async function PricingPage() {
+  // Fuente única: vista public.astrodorado_reports (solo activos).
+  const products = await getCatalogFromDB();
+  const individuales = products.filter((p) => p.product_type !== 'oraculo_360');
+  const oraculo = products.find((p) => p.product_type === 'oraculo_360')!;
 
   return (
     <div style={{ minHeight: '100vh', background: '#050510', color: '#f0e5cc', padding: '80px 24px' }}>

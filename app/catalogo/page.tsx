@@ -1,19 +1,23 @@
 import Link from 'next/link';
-import { CATALOG, ORACULO_360_SAVINGS, ORACULO_360_SUM_INDIVIDUAL } from '@/lib/catalog';
+import { ORACULO_360_SAVINGS, ORACULO_360_SUM_INDIVIDUAL } from '@/lib/catalog';
+import { getCatalogFromDB } from '@/lib/supabase/catalog';
+import type { CatalogProduct } from '@/lib/types/catalog';
 
 export const metadata = {
   title: 'Catalogo - Astro Dorado',
   description: 'Seis tradiciones milenarias interpretadas por IA, mas el Oraculo 360 que las reune todas.',
 };
 
-export const dynamic = 'force-static';
+// ISR alineado con el TTL del cache del catálogo (CATALOG_CACHE_TTL_MS, 5 min):
+// cambios de precio/activación en DB se reflejan sin redeploy.
+export const revalidate = 300;
 
-export default function CatalogoPage() {
-  // Filtrado por is_active: oculta los 22 productos del nuevo patrón hasta que
-  // se ingeste su template (el trigger DB activa is_active=true automáticamente,
-  // pero esta página es force-static y consume CATALOG hardcoded en build time).
-  const individuales = CATALOG.filter((p) => p.is_active && p.product_type !== 'oraculo_360');
-  const oraculo = CATALOG.find((p) => p.product_type === 'oraculo_360')!;
+export default async function CatalogoPage() {
+  // Fuente única de verdad: vista public.astrodorado_reports (solo is_active=true).
+  // El trigger DB activa productos al ingerir su template — aquí aparecen solos.
+  const products = await getCatalogFromDB();
+  const individuales = products.filter((p) => p.product_type !== 'oraculo_360');
+  const oraculo = products.find((p) => p.product_type === 'oraculo_360')!;
 
   return (
     <div style={{ minHeight: '100vh', background: '#050510', color: '#f0e5cc', padding: '80px 24px' }}>
@@ -125,7 +129,7 @@ export default function CatalogoPage() {
   );
 }
 
-function ProductCard({ product }: { product: typeof CATALOG[0] }) {
+function ProductCard({ product }: { product: CatalogProduct }) {
   return (
     <div style={{
       border: '1px solid rgba(212,175,55,0.2)',

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe/client';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { getCatalogProduct } from '@/lib/catalog';
+import { getProductFromDB } from '@/lib/supabase/catalog';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -25,7 +25,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'missing_fields' }, { status: 400 });
   }
 
-  const product = getCatalogProduct(product_slug);
+  // Fuente única: vista public.astrodorado_reports (solo activos) →
+  // un slug inactivo o inexistente devuelve null → 404 (validación comercial).
+  const product = await getProductFromDB(product_slug);
   if (!product) {
     return NextResponse.json({ error: 'product_not_found' }, { status: 404 });
   }
