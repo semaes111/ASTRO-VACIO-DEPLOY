@@ -22,14 +22,17 @@
  *   // Solo uno:
  *   const carta = await getProductFromDB('carta-natal');
  *
- * Cliente: usa `createAdminClient` (service_role) por consistencia con el
- * resto de helpers — funciona en Route Handlers, scripts CLI y Edge Functions.
+ * Cliente: usa `createPublicClient` (anon key) — el catálogo es información
+ * comercial pública y la vista `public.astrodorado_reports` tiene grant de
+ * SELECT para anon (verificado). Mínimo privilegio: la service_role key no
+ * participa en lecturas públicas, y el build (generateStaticParams / ISR)
+ * funciona en cualquier entorno con solo las vars NEXT_PUBLIC_*.
  *
  * Configuración:
  *   CATALOG_CACHE_TTL_MS — default 5 min (300_000)
  */
 
-import { createAdminClient } from '@/lib/supabase/admin';
+import { createPublicClient } from '@/lib/supabase/public';
 import type {
   CatalogProduct,
   CategoryId,
@@ -109,7 +112,7 @@ export async function getCatalogFromDB(
   // 3. Fetch real
   listInflight = (async () => {
     try {
-      const supabase = createAdminClient();
+      const supabase = createPublicClient();
       const { data, error } = await supabase
         .from('astrodorado_reports')
         .select(COLUMNS)
