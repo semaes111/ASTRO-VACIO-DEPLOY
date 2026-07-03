@@ -43,6 +43,35 @@ export async function POST(req: Request) {
 
   const supabase = createAdminClient();
 
+  // Guard puente (SDD 001): bloquea el cobro de productos activos que aún no
+  // pueden generar informe (sin dispatcher bespoke Y sin plantilla con slots).
+  // Auto-mantenido: cuando el producto reciba plantilla + data_schema, pasa a
+  // ser comprable sin tocar este código. Evita cobrar-sin-entregar. R1-R4
+  // intactas: catálogo y páginas no cambian; el mensaje solo aparece si alguien
+  // intenta comprar uno de los productos aún no disponibles.
+  const BESPOKE_GENERATORS = new Set(['ayurveda', 'evento-vehiculo', 'evento-mudanza']);
+  let esGenerable = BESPOKE_GENERATORS.has(product.slug);
+  if (!esGenerable) {
+    const { data: tpl } = await supabase
+      .from('astrodorado_report_templates')
+      .select('data_schema')
+      .eq('slug', product.slug)
+      .eq('is_active', true)
+      .maybeSingle();
+    const slots = Array.isArray(tpl?.data_schema) ? tpl.data_schema : [];
+    esGenerable = slots.length > 0;
+  }
+  if (!esGenerable) {
+    return NextResponse.json(
+      {
+        error:
+          'Este informe estará disponible muy pronto — estamos afinando los últimos detalles. Vuelve en unos días.',
+        code: 'not_yet_available',
+      },
+      { status: 409 },
+    );
+  }
+
   // Buscar o crear user
   let userId: string;
   const { data: existingUser } = await supabase
