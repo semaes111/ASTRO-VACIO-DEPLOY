@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { computeNumerology, reduceNumber } from '../lib/astrology/numerology';
+import { computeNumerology, reduceNumber, karmicLessons } from '../lib/astrology/numerology';
 import {
   computeChineseZodiac,
   getChineseAnimal,
@@ -33,6 +33,21 @@ test('numerología: los acentos no alteran el cálculo (í→i, ñ→n)', () => 
   const a = computeNumerology('Sergio Martínez Escobar', '1973-06-30', 2026);
   const b = computeNumerology('Sergio Martinez Escobar', '1973-06-30', 2026);
   assert.deepEqual(a, b);
+});
+
+// ── Fase A2: los 3 números que antes inventaba el LLM (auditoría T8) ──
+test('numerología A2: Sergio → sin kármicas, cuadrado rector 3, consigna (2027) = 2', () => {
+  const n = computeNumerology('Sergio Martínez Escobar', '1973-06-30', 2026);
+  assert.deepEqual(n.karmicLessons, [], 'nombre kármicamente completo');
+  assert.equal(n.pythagoreanRuler, 3, 'dígito más frecuente en 30061973');
+  assert.equal(n.pythagoreanGrid[3], 2, 'el 3 aparece 2 veces');
+  assert.equal(n.pythagoreanGrid[2], 0, 'el 2 no aparece');
+  assert.equal(n.nextCycleYear, 2, 'Año Personal 2027');
+});
+
+test('lecciones kármicas: un nombre con dígitos ausentes los detecta', () => {
+  // "ANA" → A=1, N=5, A=1 → presentes {1,5} → ausentes {2,3,4,6,7,8,9}
+  assert.deepEqual(karmicLessons('ANA'), [2, 3, 4, 6, 7, 8, 9]);
 });
 
 // ── Zodiaco chino: valores reales verificados ──

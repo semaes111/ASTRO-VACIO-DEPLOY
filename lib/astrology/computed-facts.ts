@@ -19,6 +19,14 @@ export function buildComputedFacts(slug: string, fullName: string, birthDate: st
 
   if (slug === 'numerologia') {
     const n = computeNumerology(fullName, birthDate);
+    const karmic =
+      n.karmicLessons.length > 0
+        ? n.karmicLessons.join(', ')
+        : 'ninguna (el nombre contiene los 9 dígitos; kármicamente completo)';
+    const gridStr = Object.entries(n.pythagoreanGrid)
+      .filter(([, c]) => c > 0)
+      .map(([d, c]) => `${d}×${c}`)
+      .join(', ');
     return [
       'DATOS CALCULADOS — numerología pitagórica. Usa estos valores EXACTOS, NO los recalcules:',
       `- Camino de Vida: ${n.lifePath}`,
@@ -26,6 +34,9 @@ export function buildComputedFacts(slug: string, fullName: string, birthDate: st
       `- Impulso del Alma: ${n.soulUrge}`,
       `- Personalidad: ${n.personality}`,
       `- Año Personal ${n.targetYear}: ${n.personalYear}`,
+      `- Lecciones Kármicas (dígitos ausentes en el nombre): ${karmic}`,
+      `- Cuadrado Pitagórico (frecuencia de dígitos en la fecha): ${gridStr}; dígito rector: ${n.pythagoreanRuler}`,
+      `- Consigna del próximo ciclo (Año Personal ${n.targetYear + 1}): ${n.nextCycleYear}`,
     ].join('\n');
   }
 
