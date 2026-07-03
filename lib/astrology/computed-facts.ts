@@ -9,6 +9,10 @@
  */
 import { computeNumerology } from '@/lib/astrology/numerology';
 import { computeChineseZodiac } from '@/lib/astrology/chinese-zodiac';
+import { computeTransits } from '@/lib/astronomy/transits';
+
+/** Productos cuya narrativa depende de tránsitos reales datados (§1.3). */
+const TRANSIT_PRODUCTS = new Set(['revolucion-solar', 'neg-financiero-anual', 'amistad-karmica']);
 
 export function buildComputedFacts(slug: string, fullName: string, birthDate: string): string {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(birthDate);
@@ -58,6 +62,23 @@ export function buildComputedFacts(slug: string, fullName: string, birthDate: st
       '- Pilares de mes/día/hora: explica el concepto pero NO inventes animales concretos para ellos (requieren el calendario solar completo).',
     );
     return lines.join('\n');
+  }
+
+  if (TRANSIT_PRODUCTS.has(slug)) {
+    const birth = new Date(Date.UTC(year, month - 1, day, 12));
+    const from = new Date();
+    const to = new Date(from.getTime() + 365 * 86400000);
+    // Significativos: Júpiter/Saturno (timing personal) siempre; exteriores solo si son muy exactos.
+    const sig = computeTransits(birth, from, to)
+      .filter((c) => c.transiting === 'Júpiter' || c.transiting === 'Saturno' || c.orb <= 0.5)
+      .slice(0, 16);
+    if (sig.length === 0) return '';
+    return [
+      'DATOS CALCULADOS — tránsitos reales datados del año (efemérides astronómicas). Usa estas fechas y aspectos EXACTOS, NO inventes otros ni cambies las fechas:',
+      ...sig.map(
+        (c) => `- ${c.date}: ${c.transiting} ${c.aspectSymbol} ${c.natalPoint} natal (orbe ${c.orb}°)`,
+      ),
+    ].join('\n');
   }
 
   return '';
