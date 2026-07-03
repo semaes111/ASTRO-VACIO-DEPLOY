@@ -13,6 +13,7 @@
 import { createAdminClient } from '@/lib/supabase/admin';
 import { generateForTaskStream } from '@/lib/ai/router';
 import { resolveBirthData } from '@/lib/generators/_shared/birth-data';
+import { buildComputedFacts } from '@/lib/astrology/computed-facts';
 import { computeNatalChart, type NatalChart, type PlanetPosition } from '@/lib/astronomy/planets';
 import { loadTemplate } from '@/lib/generators/_shared/template-loader';
 import { sanitizeGeneratedHtml } from '@/lib/generators/_shared/html-sanitizer';
@@ -110,6 +111,11 @@ export async function generateFromTemplate(userReportId: string): Promise<void> 
     const listaSlots = slots
       .map((s) => `- "${s.key}": ${s.label ?? s.key}. ${s.hint ?? ''} (máx ${s.word_limit ?? 150} palabras)`)
       .join('\n');
+    // Patrón compute-then-narrate (§1.3): para productos con núcleo computacional
+    // (numerología, zodiaco chino), calculamos los valores en código y se los damos
+    // al LLM como hechos. El LLM redacta, nunca recalcula ni inventa cifras.
+    const computedFacts = buildComputedFacts(slug, birth.name, birth.birth_date);
+
     const user = `Genera el contenido del informe "${brief}" para este cliente.
 
 CLIENTE:
@@ -118,7 +124,7 @@ CLIENTE:
 
 CARTA NATAL (trópica):
 ${chartSummary(chart)}
-
+${computedFacts ? '\n' + computedFacts + '\n' : ''}
 SECCIONES A REDACTAR (claves exactas):
 ${listaSlots}
 
