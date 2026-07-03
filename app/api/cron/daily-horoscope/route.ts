@@ -28,6 +28,7 @@ import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { generateForTaskStream } from '@/lib/ai/router';
+import { ensureDeepSeekKey } from '@/lib/ai/ensure-deepseek-key';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -176,6 +177,9 @@ export async function POST(req: Request) {
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY || auth !== expected) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
+
+  // Puente de secreto: carga DEEPSEEK_API_KEY desde Vault si falta en el env
+  await ensureDeepSeekKey();
 
   const url = new URL(req.url);
   const force = url.searchParams.get('force') === '1';
