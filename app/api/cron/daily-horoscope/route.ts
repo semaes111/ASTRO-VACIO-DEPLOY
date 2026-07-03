@@ -73,8 +73,40 @@ const NIVELES = [
 
 function clampNivel(v: unknown): number {
   const n = typeof v === 'number' ? Math.round(v) : Number.parseInt(String(v), 10);
-  if (Number.isNaN(n)) return 3;
-  return Math.min(5, Math.max(1, n));
+  if (Number.isNaN(n)) return 50;
+  return Math.min(100, Math.max(0, n));
+}
+
+/** Vocabulario EXACTO del CHECK daily_readings_featured_area_check. */
+const AREAS_VALIDAS = new Set([
+  'amor', 'trabajo', 'salud', 'dinero', 'creatividad', 'espiritualidad',
+]);
+
+/** Red de seguridad: sinónimos probables del modelo -> área válida. */
+const AREA_SINONIMOS: Record<string, string> = {
+  fortuna: 'dinero',
+  finanzas: 'dinero',
+  abundancia: 'dinero',
+  comunicacion: 'trabajo',
+  carrera: 'trabajo',
+  familia: 'amor',
+  relaciones: 'amor',
+  pareja: 'amor',
+  introspeccion: 'espiritualidad',
+  espiritual: 'espiritualidad',
+  general: 'espiritualidad',
+  bienestar: 'salud',
+  energia: 'salud',
+};
+
+function normalizarArea(v: unknown): string {
+  const s = String(v ?? '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim();
+  if (AREAS_VALIDAS.has(s)) return s;
+  return AREA_SINONIMOS[s] ?? 'espiritualidad';
 }
 
 function asReading(raw: unknown, validSlugs: Set<string>): ReadingGenerated | null {
@@ -93,7 +125,7 @@ function asReading(raw: unknown, validSlugs: Set<string>): ReadingGenerated | nu
   return {
     sign,
     energy_general: texto('energy_general', 'Energía en equilibrio.'),
-    featured_area: texto('featured_area', 'general'),
+    featured_area: normalizarArea(r.featured_area),
     advice: texto('advice', 'Confía en tu intuición.'),
     dominant_planet: texto('dominant_planet', 'Sol'),
     compatibility: texto('compatibility', 'leo'),
@@ -148,22 +180,22 @@ Devuelve un ARRAY JSON de exactamente 12 objetos, uno por signo, con este shape 
 {
   "sign": "slug del signo",
   "energy_general": "2-3 frases sobre la energía del día para este signo",
-  "featured_area": "una palabra: amor | trabajo | salud | fortuna | creatividad | comunicacion | familia | introspeccion",
+  "featured_area": "EXACTAMENTE una de: amor | trabajo | salud | dinero | creatividad | espiritualidad",
   "advice": "1-2 frases de consejo accionable",
   "dominant_planet": "planeta dominante del día para el signo",
   "compatibility": "slug del signo más compatible hoy",
   "costar_phrase": "frase corta y punzante, máximo 12 palabras",
   "vip_reading": "4-6 frases de lectura profunda y personal (versión premium)",
-  "nivel_amor": entero 1-5,
-  "nivel_fortuna": entero 1-5,
-  "nivel_salud": entero 1-5,
-  "nivel_trabajo": entero 1-5,
-  "nivel_energia": entero 1-5,
+  "nivel_amor": entero 0-100,
+  "nivel_fortuna": entero 0-100,
+  "nivel_salud": entero 0-100,
+  "nivel_trabajo": entero 0-100,
+  "nivel_energia": entero 0-100,
   "lucky_number": entero 1-99,
   "lucky_color": "un color en español"
 }
 
-Reglas: español de España, sin repetir estructuras entre signos, niveles variados y coherentes con el texto. SOLO el array JSON.`;
+Reglas: español de España, sin repetir estructuras entre signos, niveles 0-100 variados y coherentes con el texto (rango tipico 35-95, evita repetir valores). SOLO el array JSON.`;
 }
 
 // ---------------------------------------------------------------------------
