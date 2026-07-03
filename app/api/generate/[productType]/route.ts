@@ -25,6 +25,8 @@
  */
 import { NextResponse, after } from 'next/server';
 import { ensureDeepSeekKey } from '@/lib/ai/ensure-deepseek-key';
+import { generateFromTemplate } from '@/lib/generators/_template-engine/generate';
+import { loadTemplate } from '@/lib/generators/_shared/template-loader';
 import { generateAyurveda } from '@/lib/generators/ayurveda/generate';
 import { generateEventoVehiculo } from '@/lib/generators/evento-vehiculo/generate';
 import { generateEventoMudanza } from '@/lib/generators/evento-mudanza/generate';
@@ -62,8 +64,14 @@ export async function POST(req: Request, { params }: Ctx) {
   await ensureDeepSeekKey();
 
   // ─── Auth interna ────────────────────────────────────────
+  // Auth interna: x-internal-secret (webhook) O Bearer service-role
+  // (pg_cron/operativa — mismo patrón que /api/cron/daily-horoscope).
   const secretHeader = req.headers.get('x-internal-secret');
-  if (secretHeader !== process.env.INTERNAL_API_SECRET) {
+  const bearer = req.headers.get('authorization');
+  const bearerOk =
+    !!process.env.SUPABASE_SERVICE_ROLE_KEY &&
+    bearer === `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`;
+  if (secretHeader !== process.env.INTERNAL_API_SECRET && !bearerOk) {
     return NextResponse.json({ error: 'unauthorized' }, { status: 401 });
   }
 
@@ -76,7 +84,9 @@ export async function POST(req: Request, { params }: Ctx) {
   }
 
   // ─── Resolver dispatcher ─────────────────────────────────
-  const dispatcher = DISPATCHERS[productType];
+  const dispatcher = DISPATCHERS[productType] ??
+    // Motor genérico (SDD 001): productos con plantilla activa sin bespoke
+    ((await loadTemplate(productType)) ? generateFromTemplate : undefined);
   if (!dispatcher) {
     // Antes había un stub default; ahora rechazamos explícitamente para
     // evitar que un product_type inválido marque status='ready' con
