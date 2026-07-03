@@ -24,6 +24,7 @@
  *   cambia a 'ready' (o 'error').
  */
 import { NextResponse, after } from 'next/server';
+import { ensureDeepSeekKey } from '@/lib/ai/ensure-deepseek-key';
 import { generateAyurveda } from '@/lib/generators/ayurveda/generate';
 import { generateEventoVehiculo } from '@/lib/generators/evento-vehiculo/generate';
 import { generateEventoMudanza } from '@/lib/generators/evento-mudanza/generate';
@@ -57,6 +58,9 @@ const DISPATCHERS: Record<string, (userReportId: string) => Promise<unknown>> = 
 };
 
 export async function POST(req: Request, { params }: Ctx) {
+  // Puente de secreto: carga DEEPSEEK_API_KEY desde Vault si falta en el env
+  await ensureDeepSeekKey();
+
   // ─── Auth interna ────────────────────────────────────────
   const secretHeader = req.headers.get('x-internal-secret');
   if (secretHeader !== process.env.INTERNAL_API_SECRET) {
