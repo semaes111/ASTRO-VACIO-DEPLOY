@@ -10,6 +10,7 @@
 import { computeNumerology } from '@/lib/astrology/numerology';
 import { computeChineseZodiac } from '@/lib/astrology/chinese-zodiac';
 import { computeTransits } from '@/lib/astronomy/transits';
+import { computeSolarReturn } from '@/lib/astronomy/solar-return';
 
 /** Productos cuya narrativa depende de tránsitos reales datados (§1.3). */
 const TRANSIT_PRODUCTS = new Set(['revolucion-solar', 'neg-financiero-anual', 'amistad-karmica']);
@@ -76,6 +77,34 @@ export function buildComputedFacts(slug: string, fullName: string, birthDate: st
     return [
       'DATOS CALCULADOS — tránsitos reales datados del año (efemérides astronómicas). Usa estas fechas y aspectos EXACTOS, NO inventes otros ni cambies las fechas:',
       ...sig.map(
+        (c) => `- ${c.date}: ${c.transiting} ${c.aspectSymbol} ${c.natalPoint} natal (orbe ${c.orb}°)`,
+      ),
+    ].join('\n');
+  }
+
+  if (slug === 'oraculo-360') {
+    const birth = new Date(Date.UTC(year, month - 1, day, 12));
+    const targetYear = new Date().getUTCFullYear();
+    const n = computeNumerology(fullName, birthDate);
+    const z = computeChineseZodiac(year, month, day);
+    const sr = computeSolarReturn(birth, targetYear);
+    const from = new Date();
+    const to = new Date(from.getTime() + 365 * 86400000);
+    const tr = computeTransits(birth, from, to)
+      .filter((c) => c.transiting === 'Júpiter' || c.transiting === 'Saturno' || c.orb <= 0.4)
+      .slice(0, 12);
+    return [
+      'DATOS CALCULADOS — INFORME INTEGRAL. Usa TODOS estos valores EXACTOS, NO recalcules ni inventes ninguno:',
+      '[NUMEROLOGÍA]',
+      `- Camino de Vida ${n.lifePath} · Expresión ${n.expression} · Alma ${n.soulUrge} · Personalidad ${n.personality}`,
+      `- Año Personal ${n.targetYear}: ${n.personalYear} · Cuadrado Pitagórico rector ${n.pythagoreanRuler} · Consigna próximo ciclo ${n.nextCycleYear}`,
+      '[ZODIACO CHINO]',
+      `- ${z.animal} de ${z.element} (${z.polarity}); pilar de año ${z.yearPillar}`,
+      `[REVOLUCIÓN SOLAR ${targetYear}]`,
+      `- Retorno solar exacto: ${sr.moment.toISOString()} (el Sol vuelve a ${sr.natalSunLongitude.toFixed(2)}° tropicales)`,
+      `- Luna de la Revolución Solar en ${sr.chart.moon.sign_tropical}`,
+      '[TRÁNSITOS DATADOS DEL AÑO]',
+      ...tr.map(
         (c) => `- ${c.date}: ${c.transiting} ${c.aspectSymbol} ${c.natalPoint} natal (orbe ${c.orb}°)`,
       ),
     ].join('\n');
