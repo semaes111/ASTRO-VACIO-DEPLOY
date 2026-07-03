@@ -18,6 +18,14 @@ export interface NumerologyResult {
   personality: number;
   personalYear: number;
   targetYear: number;
+  /** Dígitos 1-9 ausentes en el nombre (lecciones a aprender). Vacío = nombre completo. */
+  karmicLessons: number[];
+  /** Cuadrado Pitagórico (Lo Shu): frecuencia de cada dígito 1-9 en la fecha DDMMYYYY. */
+  pythagoreanGrid: Record<number, number>;
+  /** Dígito rector del cuadrado: el más frecuente (desempate por el mayor). */
+  pythagoreanRuler: number;
+  /** Consigna del próximo ciclo = Año Personal del año siguiente (targetYear + 1). */
+  nextCycleYear: number;
 }
 
 /** Reduce un entero a un solo dígito, conservando los números maestros 11/22/33. */
@@ -68,8 +76,45 @@ function personalYearNumber(month: number, day: number, targetYear: number): num
   return reduceNumber(reduceNumber(month) + reduceNumber(day) + reduceNumber(targetYear));
 }
 
+/** Lecciones Kármicas: dígitos 1-9 AUSENTES en las letras del nombre completo. */
+export function karmicLessons(fullName: string): number[] {
+  const present = new Set<number>();
+  for (const ch of lettersOnly(fullName)) present.add(letterValue(ch));
+  const missing: number[] = [];
+  for (let n = 1; n <= 9; n++) if (!present.has(n)) missing.push(n);
+  return missing;
+}
+
+/** Cuadrado Pitagórico (Lo Shu): frecuencia de cada dígito 1-9 en la fecha DDMMYYYY (los 0 no cuentan). */
+export function pythagoreanSquare(birthDate: string): Record<number, number> {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(birthDate);
+  if (!m) throw new Error(`Fecha de nacimiento inválida: ${birthDate}`);
+  const digits = `${m[3]}${m[2]}${m[1]}`; // DDMMYYYY
+  const grid: Record<number, number> = {};
+  for (let n = 1; n <= 9; n++) grid[n] = 0;
+  for (const d of digits) {
+    const n = Number(d);
+    if (n >= 1 && n <= 9) grid[n] = (grid[n] ?? 0) + 1;
+  }
+  return grid;
+}
+
+/** Dígito rector del cuadrado: el más frecuente; empate → el dígito mayor. */
+export function pythagoreanRuler(grid: Record<number, number>): number {
+  let ruler = 1;
+  let best = -1;
+  for (let n = 1; n <= 9; n++) {
+    const count = grid[n] ?? 0;
+    if (count > best || (count === best && n > ruler)) {
+      best = count;
+      ruler = n;
+    }
+  }
+  return ruler;
+}
+
 /**
- * Calcula los cinco números nucleares.
+ * Calcula los OCHO números nucleares (compute-then-narrate, §1.3).
  * @param birthDate ISO 'YYYY-MM-DD'
  * @param targetYear año para el "Año Personal" (por defecto, el año UTC actual)
  */
@@ -83,6 +128,7 @@ export function computeNumerology(
   const year = Number(m[1]);
   const month = Number(m[2]);
   const day = Number(m[3]);
+  const grid = pythagoreanSquare(birthDate);
   return {
     lifePath: lifePathFromDate(year, month, day),
     expression: reduceNumber(nameSum(fullName, 'all')),
@@ -90,5 +136,9 @@ export function computeNumerology(
     personality: reduceNumber(nameSum(fullName, 'consonants')),
     personalYear: personalYearNumber(month, day, targetYear),
     targetYear,
+    karmicLessons: karmicLessons(fullName),
+    pythagoreanGrid: grid,
+    pythagoreanRuler: pythagoreanRuler(grid),
+    nextCycleYear: personalYearNumber(month, day, targetYear + 1),
   };
 }
