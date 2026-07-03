@@ -27,7 +27,7 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 import { createAdminClient } from '@/lib/supabase/admin';
-import { generateForTask } from '@/lib/ai/router';
+import { generateForTaskStream } from '@/lib/ai/router';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -211,7 +211,9 @@ export async function POST(req: Request) {
   }
 
   // 5) Generación — UNA llamada para los 12 signos
-  const gen = await generateForTask({
+  // Streaming obligatorio: learning del repo — llamadas no-streaming con
+  // max_tokens > 2000 mueren por idle-timeout de red (SSE mantiene TCP vivo).
+  const gen = await generateForTaskStream({
     task: 'narrative',
     system: SYSTEM_PROMPT,
     user: buildUserPrompt(fecha, signos),
