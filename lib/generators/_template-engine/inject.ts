@@ -5,7 +5,7 @@
  * sin fragmento o sin match conserva el contenido demo de la plantilla
  * (degradación invisible, nunca rotura).
  */
-import { parse } from 'node-html-parser';
+import { parse, HTMLElement } from 'node-html-parser';
 import type { ReportTemplateSlot } from '@/lib/types/report-templates';
 
 export interface InjectResult {
@@ -37,17 +37,17 @@ export function injectSlots(
       continue;
     }
     // Resolución del ancla (selector-first: un selector roto SIEMPRE aflora)
-    let node: ReturnType<typeof root.querySelector> = null;
+    let node: HTMLElement | null = null;
     if (slot.selector.endsWith('::content')) {
       const base = root.querySelector(slot.selector.slice(0, -'::content'.length).trim());
       if (base) {
-        let best: typeof node = null;
+        let best: HTMLElement | null = null;
         let bestP = 0;
         const stack = [...base.childNodes];
         while (stack.length) {
           const n = stack.shift();
           if (!n || n.nodeType !== 1) continue;
-          const el = n as unknown as NonNullable<typeof node>;
+          const el = n as HTMLElement;
           const pCount = el.querySelectorAll('p').length;
           if (pCount > bestP && el.querySelectorAll('h1,h2,h3').length === 0) {
             best = el;
