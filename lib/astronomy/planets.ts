@@ -133,7 +133,7 @@ export function longitudeToNakshatra(longitudeSidereal: number): NakshatraPositi
 // ============================================================
 // Cálculos planetarios
 // ============================================================
-function bodyLongitudeTropical(body: Astronomy.Body, date: Date): number {
+export function bodyLongitudeTropical(body: Astronomy.Body, date: Date): number {
   const vec = Astronomy.GeoVector(body, date, false);
   const ecl = Astronomy.Ecliptic(vec);
   return normalizeAngle(ecl.elon);
