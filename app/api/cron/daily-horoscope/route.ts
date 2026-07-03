@@ -179,13 +179,13 @@ ${lista}
 Devuelve un ARRAY JSON de exactamente 12 objetos, uno por signo, con este shape exacto:
 {
   "sign": "slug del signo",
-  "energy_general": "2-3 frases sobre la energía del día para este signo",
+  "energy_general": "2 frases sobre la energía del día para este signo",
   "featured_area": "EXACTAMENTE una de: amor | trabajo | salud | dinero | creatividad | espiritualidad",
   "advice": "1-2 frases de consejo accionable",
   "dominant_planet": "planeta dominante del día para el signo",
   "compatibility": "slug del signo más compatible hoy",
   "costar_phrase": "frase corta y punzante, máximo 12 palabras",
-  "vip_reading": "4-6 frases de lectura profunda y personal (versión premium)",
+  "vip_reading": "3-4 frases de lectura profunda y personal (versión premium)",
   "nivel_amor": entero 0-100,
   "nivel_fortuna": entero 0-100,
   "nivel_salud": entero 0-100,
@@ -202,7 +202,7 @@ Reglas: español de España, sin repetir estructuras entre signos, niveles 0-100
 // Handler
 // ---------------------------------------------------------------------------
 
-export async function POST(req: Request) {
+async function handleDailyHoroscope(req: Request) {
   // 1) Autenticación: Bearer == service role key (patrón pg_cron de la casa)
   const auth = req.headers.get('authorization') ?? '';
   const expected = `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''}`;
@@ -253,12 +253,39 @@ export async function POST(req: Request) {
     task: 'narrative',
     system: SYSTEM_PROMPT,
     user: buildUserPrompt(fecha, signos),
-    max_tokens: 6000,
+    max_tokens: 12000,
     temperature: 0.9,
   });
 
   // 6) Parseo y validación
-  const crudos = parseJsonArray(gen.content);
+  if (gen.stop_reason === 'length') {
+    return NextResponse.json(
+      {
+        error: 'truncated_generation',
+        stop_reason: gen.stop_reason,
+        tokens_out: gen.tokens_out,
+        content_tail: gen.content.slice(-200),
+      },
+      { status: 502 },
+    );
+  }
+
+  let crudos: unknown[];
+  try {
+    crudos = parseJsonArray(gen.content);
+  } catch (e) {
+    return NextResponse.json(
+      {
+        error: 'parse_failed',
+        message: e instanceof Error ? e.message : String(e),
+        stop_reason: gen.stop_reason,
+        tokens_out: gen.tokens_out,
+        content_head: gen.content.slice(0, 200),
+        content_tail: gen.content.slice(-200),
+      },
+      { status: 502 },
+    );
+  }
   const lecturas: ReadingGenerated[] = [];
   for (const raw of crudos) {
     const lectura = asReading(raw, validSlugs);
@@ -317,4 +344,13 @@ export async function POST(req: Request) {
     cost_usd: gen.cost_usd,
     duration_ms: gen.duration_ms,
   });
+}
+
+export async function POST(req: Request) {
+  try {
+    return await handleDailyHoroscope(req);
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    return NextResponse.json({ error: 'unhandled', message }, { status: 500 });
+  }
 }
