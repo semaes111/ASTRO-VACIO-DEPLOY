@@ -53,6 +53,12 @@ export interface ReportTemplateSlot {
   required?: boolean;
   /** Notas libres para el prompt. */
   hint?: string;
+  /**
+   * Selector CSS de la zona cuyo innerHTML se sustituye (modo selector,
+   * motor genérico 001). Si se omite, el motor busca el marcador literal
+   * {{SLOT:key}} en el HTML (modo V2 original).
+   */
+  selector?: string;
 }
 
 // ---------------------------------------------------------------------------

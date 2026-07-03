@@ -2,7 +2,7 @@
   "name": "astrodorado-v3",
   "version": "0.1.0",
   "private": true,
-  "description": "AstroDorado \u2014 Hor\u00f3scopo diario + astrolog\u00eda de precisi\u00f3n (NextHorizont AI)",
+  "description": "AstroDorado — Horóscopo diario + astrología de precisión (NextHorizont AI)",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -20,13 +20,14 @@
     "date-fns-tz": "^3.2.0",
     "lucide-react": "^0.460.0",
     "next": "^15.1.0",
+    "node-html-parser": "^8.0.4",
+    "openai": "^4.65.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "resend": "^4.0.0",
     "stripe": "^22.0.2",
     "tailwind-merge": "^2.5.5",
-    "zod": "^3.23.8",
-    "openai": "^4.65.0"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/node": "^22.9.0",
@@ -37,7 +38,7 @@
     "eslint-config-next": "^15.1.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.15",
-    "tsx": "^4.21.0",
+    "tsx": "^4.22.5",
     "typescript": "^5.6.3"
   },
   "engines": {
