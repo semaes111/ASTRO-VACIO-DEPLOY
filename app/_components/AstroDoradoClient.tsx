@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { AiDisclosure } from './AiDisclosure';
 import Image from 'next/image';
 import type {
   CurrentHoroscope,
@@ -591,6 +592,7 @@ export default function AstroDoradoClient({ horoscopes, pricing, telegramBot, ta
           </div>
         )}
       </footer>
+      <AiDisclosure />
     </>
   );
 }
