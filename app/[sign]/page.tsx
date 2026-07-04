@@ -7,6 +7,7 @@ import {
   getReadingBySignAndDate,
 } from '@/lib/supabase/horoscopes';
 import type { ZodiacSlug } from '@/lib/types/astrodorado';
+import { AiDisclosure } from '../_components/AiDisclosure';
 
 export const revalidate = 21600; // ISR cada 6h
 export const dynamicParams = false; // solo los 12 slugs válidos
@@ -157,6 +158,7 @@ export default async function SignPage({ params }: PageProps) {
           </p>
         )}
       </article>
+      <AiDisclosure />
     </main>
   );
 }
