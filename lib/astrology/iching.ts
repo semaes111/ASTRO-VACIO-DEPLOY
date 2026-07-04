@@ -109,7 +109,14 @@ function fnv1a(s: string): number {
  * @param birthDate ISO 'YYYY-MM-DD'
  */
 export function computeIChing(fullName: string, birthDate: string): IChingReading {
-  const seed = fnv1a(`${fullName.trim().toLowerCase()}|${birthDate}`);
+  // Normaliza acentos (NFD → sin diacríticos) para que 'Martínez' y 'Martinez'
+  // produzcan el MISMO hexagrama (reproducibilidad estable por persona, §1.3).
+  const normalized = fullName
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase();
+  const seed = fnv1a(`${normalized}|${birthDate}`);
   const index = seed % 64;
   const changingLine = (Math.floor(seed / 64) % 6) + 1;
   const hex = HEXAGRAMS[index];

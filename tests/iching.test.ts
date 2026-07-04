@@ -22,8 +22,8 @@ test('I Ching: entradas distintas resuelven a hexagramas válidos', () => {
   assert.ok(b.number >= 1 && b.number <= 64);
 });
 
-test('I Ching: normaliza espacios/mayúsculas (mismo resultado)', () => {
+test('I Ching: normaliza espacios, mayúsculas y ACENTOS (mismo hexagrama)', () => {
   const a = computeIChing('  Sergio Martínez Escobar  ', '1973-06-30');
-  const b = computeIChing('sergio martínez escobar', '1973-06-30');
+  const b = computeIChing('sergio martinez escobar', '1973-06-30');
   assert.deepEqual(a, b);
 });
