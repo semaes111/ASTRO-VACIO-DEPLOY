@@ -11,6 +11,7 @@ import { computeNumerology } from '@/lib/astrology/numerology';
 import { computeChineseZodiac } from '@/lib/astrology/chinese-zodiac';
 import { computeTransits } from '@/lib/astronomy/transits';
 import { computeSolarReturn } from '@/lib/astronomy/solar-return';
+import { computeIChing } from '@/lib/astrology/iching';
 
 /** Productos cuya narrativa depende de tránsitos reales datados (§1.3). */
 const TRANSIT_PRODUCTS = new Set(['revolucion-solar', 'neg-financiero-anual', 'amistad-karmica']);
@@ -93,6 +94,7 @@ export function buildComputedFacts(slug: string, fullName: string, birthDate: st
     const tr = computeTransits(birth, from, to)
       .filter((c) => c.transiting === 'Júpiter' || c.transiting === 'Saturno' || c.orb <= 0.4)
       .slice(0, 12);
+    const ich = computeIChing(fullName, birthDate);
     return [
       'DATOS CALCULADOS — INFORME INTEGRAL. Usa TODOS estos valores EXACTOS, NO recalcules ni inventes ninguno:',
       '[NUMEROLOGÍA]',
@@ -107,6 +109,18 @@ export function buildComputedFacts(slug: string, fullName: string, birthDate: st
       ...tr.map(
         (c) => `- ${c.date}: ${c.transiting} ${c.aspectSymbol} ${c.natalPoint} natal (orbe ${c.orb}°)`,
       ),
+      '[ORÁCULO I CHING]',
+      `- Hexagrama ${ich.number}: ${ich.name} (${ich.upperTrigram} sobre ${ich.lowerTrigram}), línea cambiante ${ich.changingLine}`,
+    ].join('\n');
+  }
+
+  if (slug === 'iching') {
+    const h = computeIChing(fullName, birthDate);
+    return [
+      'DATOS CALCULADOS — I Ching. El hexagrama está SEMBRADO de forma determinista desde los datos natales (misma carta → mismo hexagrama). Usa EXACTAMENTE este hexagrama, NO elijas ni inventes otro:',
+      `- Hexagrama ${h.number}: ${h.name}`,
+      `- Trigrama superior: ${h.upperTrigram} · Trigrama inferior: ${h.lowerTrigram}`,
+      `- Línea cambiante: ${h.changingLine}`,
     ].join('\n');
   }
 
