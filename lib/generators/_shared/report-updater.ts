@@ -19,6 +19,7 @@
  *     generación chunked. Frontend lee este campo via /api/informe-status.
  */
 import { createAdminClient } from '@/lib/supabase/admin';
+import { withAiDisclosure } from './ai-disclosure';
 import type { ProgressState } from './progress';
 
 /**
@@ -116,7 +117,7 @@ export async function markGenerationReady(
   const supabase = createAdminClient();
   const update: Record<string, unknown> = {
     status: 'ready',
-    output_html: metrics.output_html,
+    output_html: withAiDisclosure(metrics.output_html),
     tokens_used: metrics.tokens_used,
     model_used: metrics.model_used,
     actual_cost_usd: metrics.actual_cost_usd,
